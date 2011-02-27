@@ -1,0 +1,11 @@
+<launch>
+  <!-- load empty world -->
+  <include file="$(find pr2_gazebo)/pr2_empty_world.launch"/>
+
+  <!-- load common nodes for motion planning tests -->
+  <include file="$(find arm_navigation_tests)/tests/motion_planners/common/motion_planning_common_both_arms.launch"/>
+
+  <!-- load planning -->
+<!--  <include file="$(find sbpl_arm_planner)/launch/sbpl_planning_right_arm.launch"/> -->
+
+</launch>

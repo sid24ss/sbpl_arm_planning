@@ -1,0 +1,7 @@
+<launch>  
+  <node pkg="sbpl_arm_planner_node" type="attachObject" name="sbpl_attach_object_to_right_gripper" output="screen">
+    <param name="shape" value="mesh" type="string" />
+    <param name="mesh_filename" value="package://pr2_description/meshes/forearm_v0/forearm.stl" type="string" />
+  </node>
+</launch>
+

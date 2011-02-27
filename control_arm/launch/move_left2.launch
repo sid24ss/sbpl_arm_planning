@@ -1,0 +1,13 @@
+<launch>
+  <node pkg="control_arm" type="move_arm" name="move_arm_to_position" output="screen">
+    <param name="arm_name" value="left_arm" />
+    <param name="planner_service_name" value="sbpl_planning/plan_path"/>
+    <param name="goal_x" value="0.6"    type="double"/>
+    <param name="goal_y" value="-0.35"  type="double"/>
+    <param name="goal_z" value="0.0"     type="double"/>
+    <param name="goal_roll" value="2.682"  type="double"/>
+    <param name="goal_pitch" value="-0.528"  type="double"/>
+    <param name="goal_yaw" value="0.052"    type="double"/>	   
+    <param name="planning_duration" value="300.0" type="double" />
+  </node>
+</launch>

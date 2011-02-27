@@ -1,0 +1,12 @@
+<launch>
+<!--
+  <include file="$(find control_arm)/launch/swing_out_left_arm.launch"/>
+-->
+  <node pkg="pr2_arm_planning_tests" type="arm_test" name="sbpl_test" output="screen" respawn="false">
+    <param name="planner_name" value="sbpl" />
+    <param name="test_file_path" value="$(find pr2_arm_planning_tests)/" />
+    <param name="test_file_name" value="window.env" />
+    <param name="output_file_path" value="/home/bcohen/" />
+  </node>
+
+</launch>

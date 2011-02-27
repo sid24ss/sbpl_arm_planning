@@ -1,0 +1,14 @@
+<launch>
+
+  <include file="$(find pr2_machine)/$(env ROBOT).machine" />
+
+  <node pkg="sbpl_arm_planner_node" type="sbpl_arm_planner_node" name="sbpl_left_arm" output="screen" respawn="false" >
+
+    <rosparam command="load" file="$(find sbpl_arm_planner)/config/pr2_left_arm.yaml" />
+
+    <!-- parameter files -->
+    <param name="planner/env_config" textfile="$(find sbpl_arm_planner)/config/pr2_left_arm.cfg" />
+    <param name="planner/mprims_config" textfile="$(find sbpl_arm_planner)/config/pr2.mprim" />
+  </node>
+
+</launch>

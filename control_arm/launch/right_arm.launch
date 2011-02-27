@@ -1,0 +1,5 @@
+<launch>
+
+	<include file="$(find arm_navigation_tests)/tests/motion_planners/common/motion_planning_common_right_arm.launch"/>
+
+</launch>

@@ -1,0 +1,21 @@
+<launch>
+
+  <!-- load perception -->
+<!--  <include file="$(find sbpl_arm_planner_node)/launch/laser-perception.launch"/> -->
+
+  <include file="$(find pr2_arm_navigation_perception)/launch/laser-perception.launch"/>
+
+  <!-- load move_arm -->
+  <include file="$(find pr2_arm_navigation_actions)/launch/move_right_arm.launch"/>
+
+  <!-- load planning_environment -->
+  <include file="$(find pr2_arm_navigation_actions)/launch/environment_server_right_arm.launch"/>
+
+  <!-- load filters -->
+  <include file="$(find pr2_arm_navigation_filtering)/launch/trajectory_filter.launch"/>
+
+  <!-- load ik -->
+  <include file="$(find pr2_arm_navigation_kinematics)/launch/right_arm_collision_free_ik.launch"/>
+
+
+</launch>

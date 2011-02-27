@@ -1,0 +1,5 @@
+<launch>  
+  <include file="$(find arm_navigation_tests)/config/pr2_floorobj_world.launch"/>
+
+</launch>
+
