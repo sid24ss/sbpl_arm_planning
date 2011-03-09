@@ -692,7 +692,7 @@ bool SBPLCollisionSpace::isValidPoint(double &x, double &y, double &z, short uns
   return true;
 }
 
-void SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, std::vector<std::vector<double> > &xyz)
+bool SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, std::vector<std::vector<double> > &xyz)
 {
   KDL::Frame f_base_obj;
   KDL::Vector p_base,p1,p2;
@@ -701,10 +701,10 @@ void SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, st
   std::vector<std::vector<int> > cells;
 
   if(!object_attached_)
-    return;
+    return false;
 
   if(!arm_->computeFK(angles, attached_object_frame_num_, &f_base_obj))
-    return;
+    return false;
 
   xyz.resize(object_points_.size(), std::vector<double>(6,0));
   for(size_t i = 0; i < object_points_.size(); i++)
@@ -733,6 +733,8 @@ void SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, st
       xyz.push_back(point);
     }
   }
+
+  return true;
 }
 
 double SBPLCollisionSpace::getAttachedObjectRadius()

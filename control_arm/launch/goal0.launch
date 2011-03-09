@@ -11,6 +11,7 @@
 	   <param name="goal_yaw" value="0.0"    type="double"/>
 	   <param name="goal_pitch" value="0.0"  type="double"/>
 
+     <param name="planning_duration" value="45.0" type="double" />
 	</node>
 
 </launch>

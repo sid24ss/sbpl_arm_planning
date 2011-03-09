@@ -99,7 +99,7 @@ class SBPLCollisionSpace
     
     void attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices);
 
-    void getAttachedObject(const std::vector<double> &angles, std::vector<std::vector<double> > &xyz);
+    bool getAttachedObject(const std::vector<double> &angles, std::vector<std::vector<double> > &xyz);
 
     double getAttachedObjectRadius();
     

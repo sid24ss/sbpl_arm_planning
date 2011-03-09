@@ -12,6 +12,7 @@ int main(int argc, char **argv){
   ros::NodeHandle ph("~");
   std::string arm_name;
   ROS_INFO("using right arm"); 
+//  actionlib::SimpleActionClient<move_arm_msgs::MoveArmAction> move_arm(nh,"move_arm");
   actionlib::SimpleActionClient<move_arm_msgs::MoveArmAction> move_arm("move_right_arm",true);
   move_arm.waitForServer();
   ROS_INFO("Connected to server");

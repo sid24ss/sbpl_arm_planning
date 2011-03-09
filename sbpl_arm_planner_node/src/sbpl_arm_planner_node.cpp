@@ -568,7 +568,7 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
 
           ROS_INFO("[plan] Visualizing the attached object (throttle = %d)", throttle_);
           //TODO: add in check to see if we have an attached object...
-          //visualizeAttachedObject(res.trajectory.joint_trajectory, throttle_);
+          visualizeAttachedObject(res.trajectory.joint_trajectory, throttle_);
         }
 
         //if(visualize_collision_model_trajectory_)
@@ -886,15 +886,14 @@ void SBPLArmPlannerNode::visualizeAttachedObject(trajectory_msgs::JointTrajector
   {
     angles = traj_msg.points[i].positions;
 
-    cspace_->getAttachedObject(angles, xyz);
+    if(!cspace_->getAttachedObject(angles, xyz))
+      continue;
    
     //ROS_INFO("%d: Visualizing %d points",int(i),int(xyz.size()));
     aviz_->visualizeSpheres(xyz, 10*(i+1), "sbpl_attached_object_" + boost::lexical_cast<std::string>(i), cspace_->getAttachedObjectRadius());
   }
 
   ROS_INFO("IGNORING THROTTLE");
-
-  //ROS_DEBUG("Visualizing attached objects of trajectory.");
 }
 
 void SBPLArmPlannerNode::displayShortestPath()
