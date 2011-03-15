@@ -5,7 +5,7 @@
   <author>Benjamin Cohen/bcohen@seas.upenn.edu</author>
   <license>BSD</license>
   <review status="unreviewed" notes="" />
-  <url>http://www.ros.org/wiki/sbpl</url>
+  <url>http://www.ros.org/wiki/sbpl_arm_planner</url>
 
 <!-- from sbpl_arm_planner -->
 	<depend package="sbpl" />
