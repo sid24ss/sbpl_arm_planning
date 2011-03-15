@@ -1,9 +1,12 @@
 <launch>
   <!-- load perception -->
-  <include file="$(find pr2_arm_navigation_perception)/launch/laser-perception.launch"/>
+  <include file="$(find sbpl_arm_planner_node)/launch/laser-perception.launch"/>
+
+  <!-- load planning -->
+  <include file="$(find pr2_arm_navigation_planning)/launch/ompl_planning.launch"/>
 
   <!-- load move_arm -->
- <!-- <include file="$(find pr2_arm_navigation_actions)/launch/move_right_arm.launch"/> -->
+  <include file="$(find pr2_arm_navigation_actions)/launch/move_right_arm.launch"/>
 
   <!-- load planning_environment -->
   <include file="$(find pr2_arm_navigation_actions)/launch/environment_server.launch"/>

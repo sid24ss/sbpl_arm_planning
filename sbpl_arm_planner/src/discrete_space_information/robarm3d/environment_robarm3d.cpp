@@ -33,7 +33,7 @@
 #define DEG2RAD(d) ((d)*(M_PI/180.0))
 #define RAD2DEG(r) ((r)*(180.0/M_PI))
 
-#define DEBUG_SEARCH 1
+#define DEBUG_SEARCH 0
 #define DEBUG_HEURISTIC 0
 
 #if DEBUG_SEARCH
@@ -873,7 +873,7 @@ bool EnvironmentROBARM3D::isGoalPosition(const std::vector<double> &pose, const 
         {
           time_to_goal_region = (clock() - starttime) / (double)CLOCKS_PER_SEC;
           near_goal = true;
-          SBPL_INFO("Search is at %0.2f %0.2f %0.2f, within %0.3fm of the goal (%0.2f %0.2f %0.2f) after %.4f sec. (after %d expansions)", pose[0],pose[1],pose[2],goal.pos_tolerance[0], goal.pos[0], goal.pos[1], goal.pos[2], time_to_goal_region,(int)expanded_states.size());
+          printf("Search is at %0.2f %0.2f %0.2f, within %0.3fm of the goal (%0.2f %0.2f %0.2f) after %.4f sec. (after %d expansions)\n", pose[0],pose[1],pose[2],goal.pos_tolerance[0], goal.pos[0], goal.pos[1], goal.pos[2], time_to_goal_region,(int)expanded_states.size());
           EnvROBARMCfg.num_expands_to_position_constraint = expanded_states.size();
         }
         
@@ -978,9 +978,7 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, con
     return false;
   }
 
-#if DEBUG_SEARCH
-  SBPL_DEBUG_NAMED("search", "[isGoalStateWithIK] The path to the IK solution for the goal is valid.\n");
-#endif
+  SBPL_DEBUG("[isGoalStateWithIK] The path to the IK solution for the goal is valid.");
 
   //added to be compatible with OP - 7/5/2010
   prefinal_joint_config = jnt_angles;
@@ -1058,8 +1056,6 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
   if(!arm_->getPlanningJointPose(angles, pose))
     SBPL_WARN("Unable to compute forward kinematics for initial robot state. Attempting to plan anyway.");
 
-  grid_->worldToGrid(pose[0],pose[1],pose[2],x,y,z);
-
   //check joint limits of starting configuration but plan anyway
   if(!arm_->checkJointLimits(angles, true))
     SBPL_WARN("Starting configuration violates the joint limits. Attempting to plan anyway.");
@@ -1071,6 +1067,7 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
   //get arm position in environment
   anglesToCoord(angles, EnvROBARM.startHashEntry->coord);
 
+  grid_->worldToGrid(pose[0],pose[1],pose[2],x,y,z);
   EnvROBARM.startHashEntry->xyz[0] = (short unsigned int)x;
   EnvROBARM.startHashEntry->xyz[1] = (short unsigned int)y;
   EnvROBARM.startHashEntry->xyz[2] = (short unsigned int)z;
@@ -1150,20 +1147,17 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
   // set goal hash entry
   EnvROBARM.goalHashEntry->xyz[0] = EnvROBARMCfg.EndEffGoals[0].xyz[0];
   EnvROBARM.goalHashEntry->xyz[1] = EnvROBARMCfg.EndEffGoals[0].xyz[1];
-  EnvROBARM.goalHashEntry->xyz[2] = EnvROBARMCfg.EndEffGoals[0].xyz[2];
-  EnvROBARM.goalHashEntry->action = 0;
+  EnvROBARM.goalHashEntry->xyz[2] = EnvROBARMCfg.EndEffGoals[0].xyz[2]; 
   EnvROBARM.goalHashEntry->rpy[0] = EnvROBARMCfg.EndEffGoals[0].rpy[0];
   EnvROBARM.goalHashEntry->rpy[1] = EnvROBARMCfg.EndEffGoals[0].rpy[1];
   EnvROBARM.goalHashEntry->rpy[2] = EnvROBARMCfg.EndEffGoals[0].rpy[2];
+  EnvROBARM.goalHashEntry->action = 0;
 
   for(int i = 0; i < arm_->num_joints_; i++)
     EnvROBARM.goalHashEntry->coord[i] = 0;
 
   for(unsigned int i = 0; i < EnvROBARMCfg.EndEffGoals.size(); i++)
-    SBPL_DEBUG("goal %i:  grid: %u %u %u (cells)  xyz: %.2f %.2f %.2f (meters)  (tol: %.3f) rpy: %1.2f %1.2f %1.2f (radians) (tol: %.3f)", i ,
-        EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],
-        EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],
-        EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][1]);
+    SBPL_INFO("goal %i:  grid: %u %u %u (cells)  xyz: %0.2f %0.2f %0.2f (meters)  (tol: %0.3fm %0.3fm %0.3fm) rpy: %1.2f %1.2f %1.2f (radians) (tol: %0.3f %0.3f %0.3f)",i,EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],tolerances[i][1],tolerances[i][2],EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][3],tolerances[i][4],tolerances[i][5]);
 
 #if DEBUG_SEARCH
   if(prms_.verbose_)
@@ -1186,6 +1180,8 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     SBPL_ERROR("Precomputing heuristics failed. Exiting.");
     return false;
   }
+
+  clearStats();
 
   return true;
 }
@@ -1646,7 +1642,7 @@ void EnvironmentROBARM3D::debugAdaptiveMotionPrims()
   {
     rpysolver_->printStats();
 
-    SBPL_DEBUG("Calls to IK: %d   No Solutions Returned: %d  Invalid Joint Limits: %d   Invalid Solutions: %d   Invalid Paths to Solutions: %d", EnvROBARMCfg.num_calls_to_ik, EnvROBARMCfg.num_no_ik_solutions, EnvROBARMCfg.num_ik_invalid_joint_limits,EnvROBARMCfg.num_invalid_ik_solutions, EnvROBARMCfg.num_ik_invalid_path);
+    SBPL_INFO("Calls to IK: %d   No Solutions Returned: %d  Invalid Joint Limits: %d   Invalid Solutions: %d   Invalid Paths to Solutions: %d", EnvROBARMCfg.num_calls_to_ik, EnvROBARMCfg.num_no_ik_solutions, EnvROBARMCfg.num_ik_invalid_joint_limits,EnvROBARMCfg.num_invalid_ik_solutions, EnvROBARMCfg.num_ik_invalid_path);
   }
   
   //print out elbow cell for final joint configuration - 9/5/2010

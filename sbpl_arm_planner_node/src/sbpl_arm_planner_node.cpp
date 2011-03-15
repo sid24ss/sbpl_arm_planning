@@ -53,9 +53,8 @@ bool SBPLArmPlannerNode::init()
 
   //planner
   node_handle_.param ("planner/search_mode", search_mode_, true); //true: stop after first solution
-  node_handle_.param ("planner/allocated_time", allocated_time_, 50.0);
+  node_handle_.param ("planner/allocated_time", allocated_time_, 10.0);
   node_handle_.param ("planner/forward_search", forward_search_, true);
-  node_handle_.param ("planner/use_first_solution", use_first_solution_, true);
   node_handle_.param ("debug/print_out_path", print_path_, true);
   node_handle_.param ("seconds_per_waypoint", waypoint_time_, 0.35);
   node_handle_.param<std::string>("reference_frame", reference_frame_, std::string("base_link"));
@@ -391,7 +390,11 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
 
   //allowable tolerance from goal
   sbpl_tolerance[0][0] = goals.position_constraints[0].constraint_region_shape.dimensions[0] / 2.0;
-  sbpl_tolerance[0][1] = goals.orientation_constraints[0].absolute_roll_tolerance;
+  sbpl_tolerance[0][1] = goals.position_constraints[0].constraint_region_shape.dimensions[0] / 2.0;
+  sbpl_tolerance[0][2] = goals.position_constraints[0].constraint_region_shape.dimensions[0] / 2.0;
+  sbpl_tolerance[0][3] = goals.orientation_constraints[0].absolute_roll_tolerance;
+  sbpl_tolerance[0][4] = goals.orientation_constraints[0].absolute_pitch_tolerance;
+  sbpl_tolerance[0][5] = goals.orientation_constraints[0].absolute_yaw_tolerance;
 
   ROS_INFO("goal xyz: %.2f %.2f %.2f (tol: %.3fm) rpy: %.2f %.2f %.2f (tol: %.3frad) in the %s frame", sbpl_goal[0][0],sbpl_goal[0][1],sbpl_goal[0][2],sbpl_tolerance[0][0],sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5], sbpl_tolerance[0][1], reference_frame_.c_str());
 
@@ -653,6 +656,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   {
     unsigned int i;
     ROS_DEBUG("[plan] A path was returned with %d waypoints.", int(solution_state_ids_v.size()));
+    ROS_INFO("Initial Epsilon: %0.3f   Final Epsilon: %0.3f", planner_->get_initial_eps(),planner_->get_final_epsilon());
     arm_path.resize(solution_state_ids_v.size()+1);
     for(i=0; i < solution_state_ids_v.size(); i++)
     {       
