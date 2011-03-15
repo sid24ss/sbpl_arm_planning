@@ -32,14 +32,14 @@
 #include <sbpl_arm_planner/bfs_3d.h>
 
 
-BFS3D::BFS3D(int width, int depth, int height, int radius, int cost_per_cell)
+BFS3D::BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell)
 {
-  if(width < 0 || depth < 0 || height < 0)
+  if(dim_x < 0 || dim_y < 0 || dim_z < 0)
     SBPL_ERROR("Dimensions must have positive values. Fix this.\n");
 
-  dimX_ = width;
-  dimZ_ = depth;
-  dimY_ = height;
+  dimX_ = dim_x;
+  dimY_ = dim_y;
+  dimZ_ = dim_z;
   radius_ = radius;
 
   cost_1_move_ = cost_per_cell;
@@ -49,7 +49,7 @@ BFS3D::BFS3D(int width, int depth, int height, int radius, int cost_per_cell)
   enable_df_ = false; //configDistanceField() should be called to enable
   radius_m_ = 0.1;
 
-  //init();
+  SBPL_DEBUG("goal bounds: %d %d %d\n",dimX_, dimY_,dimZ_);
 }
 
 BFS3D::~BFS3D()
@@ -92,15 +92,12 @@ bool BFS3D::setGoal(std::vector<short unsigned int> goal)
 
   goal_.clear();
 
-  SBPL_DEBUG("goal bounds: %d %d %d\n",dimX_, dimY_,dimZ_);
-
-  //if(goal[0] < dimX_ && goal[1] < dimZ_ && goal[2] < dimY_)
   if(goal[0] < dimX_ && goal[1] < dimY_ && goal[2] < dimZ_)
     goal_.push_back(goal);
 
   if(goal_.empty())
   { 
-    SBPL_ERROR("Error: No valid goals were received.\n");
+    SBPL_ERROR("[bfs3d] Error: No valid goals were received.\n");
     return false;
   }
   return true;
@@ -122,7 +119,7 @@ bool BFS3D::setGoals(std::vector<std::vector<short unsigned int> > goals)
     if(goals[i].size() < 3)
       continue;
 
-    if(goals[i][0] < dimX_ && goals[i][1] < dimZ_ && goals[i][2] < dimY_)
+    if(goals[i][0] < dimX_ && goals[i][1] < dimY_ && goals[i][2] < dimZ_)
       goal_.push_back(goals[i]);
     else
       SBPL_DEBUG("Goal: %u %u %u is invalid.\n",goals[i][0],goals[i][1],goals[i][2]);
@@ -256,11 +253,11 @@ void BFS3D::search3DwithQueue(State3D*** statespace)
     Queue.pop();
 
     //it may be that the state is already closed
-    if(ExpState->iterationclosed == 1)
-      continue;
+    //if(ExpState->iterationclosed == 1)
+    //  continue;
 
     //close it
-    ExpState->iterationclosed = 1;
+    //ExpState->iterationclosed = 1;
 
     //set the corresponding distances to the goal
     dist_[xyzToIndex(ExpState->x, ExpState->y, ExpState->z)] = ExpState->g;
@@ -272,16 +269,21 @@ void BFS3D::search3DwithQueue(State3D*** statespace)
       newy = ExpState->y + dy[d];
       newz = ExpState->z + dz[d];
 
+      //if(!isValidCell(newx,newy,newz))
+      //  continue;
+      
       //make sure it is inside the map and has no obstacle
       if(0 > newx || newx >= dimX_ || 0 > newy || newy >= dimY_ || 0 > newz || newz >= dimZ_)
         continue;
 
-      if(!isValidCell(newx,newy,newz))
-        continue;
-
       if(statespace[newx][newy][newz].iterationclosed == 0)
       {
-        //insert into the stack
+        ExpState->iterationclosed = 1;
+
+        if(!isValidCell(newx,newy,newz))
+          continue;
+  
+       //insert into the stack
         Queue.push(&statespace[newx][newy][newz]);
 
         //set the g-value
@@ -317,7 +319,7 @@ bool BFS3D::isGoal(const std::vector<int> &state)
 
 bool BFS3D::getShortestPath(std::vector<short unsigned int> start, std::vector<std::vector<int> > &path)
 {
-  int val = 0, min_val = INFINITE_COST;
+  int val = 0, cntr = 0, min_val = INFINITE_COST;
   std::vector<int> state(3,0);
   std::vector<int> next_state(3,0);
   int newx,newy,newz;
@@ -331,7 +333,7 @@ bool BFS3D::getShortestPath(std::vector<short unsigned int> start, std::vector<s
   next_state[1] = start[1];
   next_state[2] = start[2];
 
-  while(!isGoal(next_state))
+  while(!isGoal(next_state) || cntr >= dimX_*dimY_)
   {
     state = next_state;
     min_val = INFINITE_COST;
@@ -370,6 +372,9 @@ bool BFS3D::getShortestPath(std::vector<short unsigned int> start, std::vector<s
       }
     }
     path.push_back(next_state);
+
+    //make sure that we aren't looping forever...
+    cntr++;
   }
 
 /*  

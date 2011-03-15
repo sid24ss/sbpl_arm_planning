@@ -87,27 +87,27 @@ OccupancyGrid::~OccupancyGrid()
   delete grid_;
 }
 
-void OccupancyGrid::getGridSize(int &width, int &depth, int &height)
+void OccupancyGrid::getGridSize(int &dim_x, int &dim_y, int &dim_z)
 {
-  width = grid_size_[0];
-  depth = grid_size_[1];
-  height = grid_size_[2];
+  dim_x = grid_size_[0];
+  dim_y = grid_size_[1];
+  dim_z = grid_size_[2];
 }
 
-void OccupancyGrid::setWorldSize(double width, double depth, double height)
+void OccupancyGrid::setWorldSize(double dim_x, double dim_y, double dim_z)
 {
-  world_size_[0] = width;
-  world_size_[1] = depth;
-  world_size_[2] = height;
+  world_size_[0] = dim_x;
+  world_size_[1] = dim_y;
+  world_size_[2] = dim_z;
 
   SBPL_PRINTF("[OccupancyGrid] Set internal world dimensions but not distance field\n");
 }
 
-void OccupancyGrid::getWorldSize(double &width, double &depth, double &height)
+void OccupancyGrid::getWorldSize(double &dim_x, double &dim_y, double &dim_z)
 {
-  width = grid_->getSize(distance_field::PropagationDistanceField::DIM_X);
-  depth = grid_->getSize(distance_field::PropagationDistanceField::DIM_Y);
-  height = grid_->getSize(distance_field::PropagationDistanceField::DIM_Z);
+  dim_x = grid_->getSize(distance_field::PropagationDistanceField::DIM_X);
+  dim_y = grid_->getSize(distance_field::PropagationDistanceField::DIM_Y);
+  dim_z = grid_->getSize(distance_field::PropagationDistanceField::DIM_Z);
 }
 
 void OccupancyGrid::setOrigin(double wx, double wy, double wz)

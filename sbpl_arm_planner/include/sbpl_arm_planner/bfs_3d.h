@@ -67,12 +67,12 @@ class BFS3D
   public:
 
     /**  \brief Constructor
-     * @param width width in cells
-     * @param depth depth of grid in cells
-     * @param height height of grid in cells
+     * @param dim_x dim_x in cells
+     * @param dim_y dim_y of grid in cells
+     * @param dim_z dim_z of grid in cells
      * @param radius radius in cells of the point robot
      * @param cost_per_cell cost of traversing one cell in the grid*/
-    BFS3D(int width, int depth, int height, int radius, int cost_per_cell);
+    BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell);
     ~BFS3D();
 
     /** \brief Initialize the occupancy grid (required if not using

@@ -83,16 +83,16 @@ class OccupancyGrid{
     const distance_field::PropagationDistanceField* getDistanceFieldPtr();
     
     /** @brief get the dimensions of the grid */
-    void getGridSize(int &width, int &depth, int &height);
+    void getGridSize(int &dim_x, int &dim_y, int &dim_z);
 
     /** @brief get the dimensions of the grid */
     void getGridSize(short unsigned int *dims); //FILL IN THIS FUNCTION
 
     /** @brief set the dimensions of the world (meters)*/
-    void setWorldSize(double width, double depth, double height);
+    void setWorldSize(double dim_x, double dim_y, double dim_z);
     
     /** @brief get the dimensions of the world (meters)*/
-    void getWorldSize(double &width, double &depth, double &height);
+    void getWorldSize(double &dim_x, double &dim_y, double &dim_z);
 
     /** @brief set the origin of the world (meters)*/
     void setOrigin(double wx, double wy, double wz);
