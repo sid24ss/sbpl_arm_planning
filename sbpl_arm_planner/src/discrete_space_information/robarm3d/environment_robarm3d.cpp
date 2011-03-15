@@ -388,8 +388,8 @@ if(prms_.verbose_)
       continue;
 
     //get grid coordinates of endeff
-    grid_->worldToGrid(pose[0],pose[1],pose[2],false, endeff[0],endeff[1],endeff[2]);
-    grid_->worldToGrid(pose[0],pose[1],pose[2],prms_.use_lowres_cc_,xyz_cc[0],xyz_cc[1],xyz_cc[2]);
+    grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
+    grid_->worldToGrid(pose[0],pose[1],pose[2],xyz_cc[0],xyz_cc[1],xyz_cc[2]);
 
     short unsigned int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
@@ -407,7 +407,7 @@ if(prms_.verbose_)
       EnvROBARM.goalHashEntry->action = i;
       EnvROBARM.goalHashEntry->dist = dist;
 
-      SBPL_DEBUG("[GetSuccs] Goal successor is generated. SourceStateID: %d (distance to nearest obstacle: %0.2fm)",SourceStateID,  (double)dist*grid_->getResolution(grid_->isDualGrids()));
+      SBPL_DEBUG("[GetSuccs] Goal successor is generated. SourceStateID: %d (distance to nearest obstacle: %0.2fm)",SourceStateID,  (double)dist*grid_->getResolution());
     }
 
     //check if hash entry already exists, if not then create one
@@ -577,11 +577,11 @@ EnvROBARM3DHashEntry_t* EnvironmentROBARM3D::createHashEntry(const std::vector<s
 void EnvironmentROBARM3D::initDijkstra()
 {
   int dimX,dimY,dimZ;
-  grid_->getGridSize(dimX, dimY, dimZ, prms_.use_lowres_cc_);
+  grid_->getGridSize(dimX, dimY, dimZ);
 
   dijkstra_ = new BFS3D(dimX, dimY, dimZ, int(arm_->getLinkRadiusCells(2)), prms_.cost_per_cell_);
 
-  dijkstra_->configDistanceField(true, grid_->getDistanceFieldPtr(prms_.use_lowres_cc_));
+  dijkstra_->configDistanceField(true, grid_->getDistanceFieldPtr());
 
 #if DEBUG_SEARCH
   if(prms_.verbose_)
@@ -593,11 +593,11 @@ void EnvironmentROBARM3D::initDijkstra()
 void EnvironmentROBARM3D::initElbowDijkstra()
 {
   int dimX,dimY,dimZ;
-  grid_->getGridSize(dimX, dimY, dimZ, prms_.use_lowres_cc_);
+  grid_->getGridSize(dimX, dimY, dimZ);
 
   elbow_dijkstra_ = new BFS3D(dimX, dimY, dimZ, int(arm_->getLinkRadiusCells(2)), prms_.cost_per_cell_);
 
-  elbow_dijkstra_->configDistanceField(true, grid_->getDistanceFieldPtr(prms_.use_lowres_cc_));
+  elbow_dijkstra_->configDistanceField(true, grid_->getDistanceFieldPtr());
 
 #if DEBUG_SEARCH
   if(prms_.verbose_)
@@ -730,9 +730,6 @@ bool EnvironmentROBARM3D::initGeneral()
 {
   //create the occupancy grid
   grid_ = new OccupancyGrid(prms_.sizeX_,prms_.sizeY_,prms_.sizeZ_, prms_.resolution_,prms_.originX_,prms_.originY_,prms_.originZ_);
-
-  if(prms_.use_lowres_cc_)
-    grid_->enableGrid2(prms_.resolution_cc_);
 
   //create the collision space
   cspace_ = new SBPLCollisionSpace(arm_, grid_);
@@ -930,8 +927,6 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const short unsigned int endeff[3], 
   if(prms_.use_dijkstra_heuristic_)
   {
     int endeff_cc[3] = {endeff[0],endeff[1],endeff[2]};
-    if(prms_.use_lowres_cc_)
-      grid_->gridToGrid2(int(endeff[0]),int(endeff[1]),int(endeff[2]),endeff_cc[0],endeff_cc[1],endeff_cc[2]);
     
     if(dijkstra_->getDist(endeff_cc[0],endeff_cc[1],endeff_cc[2]) > prms_.solve_for_ik_thresh_)
       return false;
@@ -1066,7 +1061,7 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
   if(!arm_->getPlanningJointPose(angles, pose))
     SBPL_WARN("Unable to compute forward kinematics for initial robot state. Attempting to plan anyway.");
 
-  grid_->worldToGrid(pose[0],pose[1],pose[2],false,x,y,z);
+  grid_->worldToGrid(pose[0],pose[1],pose[2],x,y,z);
 
   //check joint limits of starting configuration but plan anyway
   if(!arm_->checkJointLimits(angles, true))
@@ -1074,7 +1069,7 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
 
   //check if the start configuration is in collision but plan anyway
   if(!cspace_->checkCollision(angles, true, false, dist))
-    SBPL_WARN("The starting configuration is in collision. Attempting to plan anyway. (distance to nearest obstacle %0.2fm)", double(dist)*grid_->getResolution(grid_->isDualGrids()));
+    SBPL_WARN("The starting configuration is in collision. Attempting to plan anyway. (distance to nearest obstacle %0.2fm)", double(dist)*grid_->getResolution());
 
   //get arm position in environment
   anglesToCoord(angles, EnvROBARM.startHashEntry->coord);
@@ -1083,7 +1078,7 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
   EnvROBARM.startHashEntry->xyz[1] = (short unsigned int)y;
   EnvROBARM.startHashEntry->xyz[2] = (short unsigned int)z;
 
-  grid_->worldToGrid(pose[0],pose[1],pose[2],prms_.use_lowres_cc_,x,y,z);
+  grid_->worldToGrid(pose[0],pose[1],pose[2],x,y,z);
   EnvROBARM.startHashEntry->xyz_cc[0] = (short unsigned int)x;
   EnvROBARM.startHashEntry->xyz_cc[1] = (short unsigned int)y;
   EnvROBARM.startHashEntry->xyz_cc[2] = (short unsigned int)z;
@@ -1138,7 +1133,7 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     EnvROBARMCfg.EndEffGoals[i].rpy[1] = goals[i][4];
     EnvROBARMCfg.EndEffGoals[i].rpy[2] = goals[i][5];
 
-    EnvROBARMCfg.EndEffGoals[i].xyz_tolerance = tolerances[i][0] / grid_->getResolution(false);
+    EnvROBARMCfg.EndEffGoals[i].xyz_tolerance = tolerances[i][0] / grid_->getResolution();
     EnvROBARMCfg.EndEffGoals[i].roll_tolerance = tolerances[i][1];
 
     EnvROBARMCfg.EndEffGoals[i].is_6dof_goal = goals[i][6];
@@ -1148,8 +1143,8 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
       SBPL_DEBUG("[setGoalPosition] Goal position constraint set. No goal orientation constraint requested.\n");
 
     //convert goal position from meters to cells
-    grid_->worldToGrid(goals[i][0], goals[i][1], goals[i][2], false, EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1], EnvROBARMCfg.EndEffGoals[i].xyz[2]);
-    grid_->worldToGrid(goals[i][0], goals[i][1], goals[i][2], prms_.use_lowres_cc_, EnvROBARMCfg.EndEffGoals[i].xyz_lr[0], EnvROBARMCfg.EndEffGoals[i].xyz_lr[1], EnvROBARMCfg.EndEffGoals[i].xyz_lr[2]);
+    grid_->worldToGrid(goals[i][0], goals[i][1], goals[i][2], EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1], EnvROBARMCfg.EndEffGoals[i].xyz[2]);
+    grid_->worldToGrid(goals[i][0], goals[i][1], goals[i][2], EnvROBARMCfg.EndEffGoals[i].xyz_lr[0], EnvROBARMCfg.EndEffGoals[i].xyz_lr[1], EnvROBARMCfg.EndEffGoals[i].xyz_lr[2]);
 
     //TODO: Check if goal is on an invalid cell
   }
@@ -1204,18 +1199,9 @@ bool EnvironmentROBARM3D::precomputeHeuristics()
 {
   std::vector<short unsigned int> dij_goal(3,0);
 
-  if(prms_.use_lowres_cc_)
-  { 
-    dij_goal[0] = EnvROBARMCfg.EndEffGoals[0].xyz_lr[0];
-    dij_goal[1] = EnvROBARMCfg.EndEffGoals[0].xyz_lr[1];
-    dij_goal[2] = EnvROBARMCfg.EndEffGoals[0].xyz_lr[2];
-  }
-  else
-  {
-    dij_goal[0] = EnvROBARMCfg.EndEffGoals[0].xyz[0];
-    dij_goal[1] = EnvROBARMCfg.EndEffGoals[0].xyz[1];
-    dij_goal[2] = EnvROBARMCfg.EndEffGoals[0].xyz[2];
-  }
+  dij_goal[0] = EnvROBARMCfg.EndEffGoals[0].xyz[0];
+  dij_goal[1] = EnvROBARMCfg.EndEffGoals[0].xyz[1];
+  dij_goal[2] = EnvROBARMCfg.EndEffGoals[0].xyz[2];
 
   SBPL_DEBUG("[precomputeHeuristics] Dijkstra Goal: %d %d %d",dij_goal[0],dij_goal[1],dij_goal[2]); 
 
@@ -1292,7 +1278,7 @@ bool EnvironmentROBARM3D::precomputeElbowHeuristic()
   goal[1] = EnvROBARMCfg.EndEffGoals[0].pos[1];
   goal[2] = EnvROBARMCfg.EndEffGoals[0].pos[2];
 
-  grid_->worldToGrid(xyzrpy[0],xyzrpy[1],xyzrpy[2],grid_->isDualGrids(),shoulder[0],shoulder[1],shoulder[2]);
+  grid_->worldToGrid(xyzrpy[0],xyzrpy[1],xyzrpy[2],shoulder[0],shoulder[1],shoulder[2]);
   if(!getElbowCellsAtGoal(shoulder, goal, arm_->getLinkRadius(0), arm_->getLinkRadius(1), elbow_cells))
   {
     SBPL_WARN("[precomputeElbowHeuristic] No elbow cells returned. Exiting.\n");
@@ -1350,7 +1336,7 @@ void EnvironmentROBARM3D::clearStats()
   int xyz[3] = {(int)(EnvROBARMCfg.EndEffGoals[0].xyz[0]), 
                 (int)(EnvROBARMCfg.EndEffGoals[0].xyz[1]),
                 (int)(EnvROBARMCfg.EndEffGoals[0].xyz[2])};
-  EnvROBARMCfg.goal_to_obstacle_distance = grid_->getCell(xyz,false);
+  EnvROBARMCfg.goal_to_obstacle_distance = grid_->getCell(xyz);
 
 
   EnvROBARMCfg.solved_by_os = 0;
@@ -1443,10 +1429,7 @@ void EnvironmentROBARM3D::computeCostPerCell()
   double gridcell_size, eucl_dist, max_dist = 0;
   std::vector<double> pose(6,0), start_pose(6,0), angles(arm_->num_joints_,0), start_angles(arm_->num_joints_,0);
 
-  if(prms_.use_lowres_cc_)
-    gridcell_size = grid_->getResolution(true);
-  else
-    gridcell_size = grid_->getResolution(false);
+  gridcell_size = grid_->getResolution();
 
   //starting at zeroed angles, find end effector position after each action
   arm_->getPlanningJointPose(start_angles, start_pose);
@@ -1506,8 +1489,6 @@ double EnvironmentROBARM3D::getDistToClosestGoal(double *xyz, int* goal_num)
 int EnvironmentROBARM3D::getDijkstraDistToGoal(short unsigned int x, short unsigned int y, short unsigned int z) const
 {
   int endeff_cc[3] = {x, y, z};
-  if(prms_.use_lowres_cc_)
-    grid_->gridToGrid2(int(x),int(y),int(z),endeff_cc[0],endeff_cc[1],endeff_cc[2]);
 
   return int(dijkstra_->getDist(endeff_cc[0],endeff_cc[1],endeff_cc[2]));
 }
@@ -1626,20 +1607,10 @@ std::vector<std::vector<double> > EnvironmentROBARM3D::getShortestPath()
     start[1] = EnvROBARM.startHashEntry->xyz[1];
     start[2] = EnvROBARM.startHashEntry->xyz[2];
 
-    if(prms_.use_lowres_cc_)
-    {
-      //temporary hack
-      int temp[3];
-      grid_->gridToGrid2(int(start[0]),int(start[1]),int(start[2]),temp[0],temp[1],temp[2]);
-      start[0] = temp[0];
-      start[1] = temp[1];
-      start[2] = temp[2];
-    }
-
     dijkstra_->getShortestPath(start, path);
     for(int i=0; i < (int)path.size(); ++i)
     {
-      grid_->gridToWorld(path[i][0], path[i][1], path[i][2], prms_.use_lowres_cc_, waypoint[0], waypoint[1], waypoint[2]);
+      grid_->gridToWorld(path[i][0], path[i][1], path[i][2], waypoint[0], waypoint[1], waypoint[2]);
       dpath.push_back(waypoint);
     }
   }
@@ -1651,7 +1622,7 @@ std::vector<std::vector<double> > EnvironmentROBARM3D::getShortestPath()
 
   for(int i=0; i < int(path.size()); ++i)
   {
-    grid_->gridToWorld(path[i][0], path[i][1], path[i][2], prms_.use_lowres_cc_, waypoint[0], waypoint[1], waypoint[2]);
+    grid_->gridToWorld(path[i][0], path[i][1], path[i][2], waypoint[0], waypoint[1], waypoint[2]);
     dpath.push_back(waypoint);
   }
 
@@ -1690,7 +1661,7 @@ void EnvironmentROBARM3D::debugAdaptiveMotionPrims()
     std::vector<double> pose(6,0);
     if(arm_->computeFK(final_joint_config, 7, pose))
     {
-      grid_->worldToGrid(pose[0],pose[1],pose[2],grid_->isDualGrids(), x, y, z);
+      grid_->worldToGrid(pose[0],pose[1],pose[2], x, y, z);
       bool in_list = false;
       for(size_t i = 0; i < elbow_cells_.size(); i++)
       {
@@ -1752,7 +1723,7 @@ std::vector<double> EnvironmentROBARM3D::getPlanningStats()
   {
     if(arm_->computeFK(final_joint_config, 7, pose))
     {
-      grid_->worldToGrid(pose[0],pose[1],pose[2],grid_->isDualGrids(), x, y, z);
+      grid_->worldToGrid(pose[0],pose[1],pose[2],x,y,z);
       for(size_t i = 0; i < elbow_cells_.size(); i++)
       {
         if(elbow_cells_[i][0] == x && elbow_cells_[i][1] == y && elbow_cells_[i][2] ==z)
@@ -1804,7 +1775,7 @@ bool EnvironmentROBARM3D::getElbowCellsAtGoal(std::vector<int> &shoulder, std::v
   std::vector<double> angles(7,0);
   std::vector<std::vector<double> > points_vector;
   
-  grid_->worldToGrid(goal_m[0], goal_m[1], goal_m[2], prms_.use_lowres_cc_, cell[0], cell[1], cell[2]);
+  grid_->worldToGrid(goal_m[0], goal_m[1], goal_m[2], cell[0], cell[1], cell[2]);
  
   //get starting shoulder_pan angle
   coordToAngles(EnvROBARM.startHashEntry->coord, angles);
@@ -1824,7 +1795,7 @@ bool EnvironmentROBARM3D::getElbowCellsAtGoal(std::vector<int> &shoulder, std::v
   //convert to grid cells
   for(std::list<std::vector<double> >::iterator it = valid_points.begin(); it != valid_points.end(); ++it)
   {
-    grid_->worldToGrid((*it)[0], (*it)[1], (*it)[2], prms_.use_lowres_cc_, cell[0], cell[1], cell[2]);
+    grid_->worldToGrid((*it)[0], (*it)[1], (*it)[2], cell[0], cell[1], cell[2]);
     valid_cells.push_back(cell);
   }
 
@@ -1897,7 +1868,7 @@ int EnvironmentROBARM3D::getElbowHeuristic(int FromStateID, int ToStateID)
   coordToAngles(FromHashEntry->coord, angles);
   arm_->getJointPositions(angles, links, F);
   
-  grid_->worldToGrid(links[1][0],links[1][1],links[1][2],prms_.use_lowres_cc_, x, y, z);
+  grid_->worldToGrid(links[1][0],links[1][1],links[1][2],x,y,z);
 
   //get distance heuristic
   if(prms_.use_dijkstra_heuristic_)
@@ -1917,7 +1888,7 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID)
   int temp[3] = {FromHashEntry->xyz_cc[0], FromHashEntry->xyz_cc[1], FromHashEntry->xyz_cc[2]};
 
   //distance to closest goal in meters
-  grid_->gridToWorld(FromHashEntry->xyz[0],FromHashEntry->xyz[1],FromHashEntry->xyz[2],false,FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
+  grid_->gridToWorld(FromHashEntry->xyz[0],FromHashEntry->xyz[1],FromHashEntry->xyz[2],FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
   edist_to_goal_m = getDistToClosestGoal(FromEndEff_m, &closest_goal);
 
   //get distance heuristic

@@ -70,7 +70,7 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
   //check bounds
   for(int i = 0; i < arm_->num_links_; ++i)
   {
-    if(!grid_->isInBounds(jnts[i][0],jnts[i][1],jnts[i][2],grid_->isDualGrids()))
+    if(!grid_->isInBounds(jnts[i][0],jnts[i][1],jnts[i][2]))
     {
       if(verbose)
         SBPL_DEBUG("End of link %d is out of bounds. (%d %d %d)", i, jnts[i][0],jnts[i][1],jnts[i][2]);
@@ -185,7 +185,7 @@ bool SBPLCollisionSpace::getJointPosesInGrid(std::vector<double> angles, std::ve
   for(int i = 0; i < int(jnts.size()); ++i)
   {
     jnts[i].resize(3);
-    grid_->worldToGrid(jnts_m[i][0],jnts_m[i][1],jnts_m[i][2], grid_->isDualGrids(),jnts[i][0],jnts[i][1],jnts[i][2]);
+    grid_->worldToGrid(jnts_m[i][0],jnts_m[i][1],jnts_m[i][2],jnts[i][0],jnts[i][1],jnts[i][2]);
     if(jnts[i][0] < 0)
       SBPL_DEBUG("WTF: %0.2f %0.2f %0.2f --> %d %d %d", jnts_m[i][0], jnts_m[i][1], jnts_m[i][2], jnts[i][0],jnts[i][1],jnts[i][2]);
   }
@@ -206,10 +206,10 @@ unsigned char SBPLCollisionSpace::isValidLineSegment(const std::vector<int> a, c
   do {
     get_current_point3d(&params, &(nXYZ[0]), &(nXYZ[1]), &(nXYZ[2]));
 
-    if(!grid_->isInBounds(nXYZ[0],nXYZ[1],nXYZ[2],grid_->isDualGrids()))
+    if(!grid_->isInBounds(nXYZ[0],nXYZ[1],nXYZ[2]))
       return 0;
 
-    cell_val = grid_->getCell(nXYZ[0],nXYZ[1],nXYZ[2],grid_->isDualGrids());
+    cell_val = grid_->getCell(nXYZ[0],nXYZ[1],nXYZ[2]);
     if(cell_val <= radius)
     {
       if(pTestedCells == NULL)
@@ -371,7 +371,7 @@ bool SBPLCollisionSpace::getCollisionCylinders(const std::vector<double> &angles
     //write points to cylinder {x,y,z,radius} all in centimeters
     for(int j = 0; j < int(points.size()); ++j)
     {
-      grid_->gridToWorld(points[j][0],points[j][1],points[j][2],grid_->isDualGrids(),xyzr[0],xyzr[1],xyzr[2]); 
+      grid_->gridToWorld(points[j][0],points[j][1],points[j][2],xyzr[0],xyzr[1],xyzr[2]); 
       xyzr[3]=double(arm_->getLinkRadiusCells(i))*arm_->resolution_;
       cylinders.push_back(xyzr);
     }
@@ -468,7 +468,7 @@ void SBPLCollisionSpace::attachSphereToGripper(std::string frame, geometry_msgs:
   attached_object_frame_num_ = 12; //TODO: CHANGE THIS
   
   SBPL_INFO("[addSphereToGripper] Pose of Sphere: %0.3f %0.3f %0.3f radius: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius); 
-  attached_object_radius_ = radius / grid_->getResolution(grid_->isDualGrids());
+  attached_object_radius_ = radius / grid_->getResolution();
   
   object_points_.resize(1);
   tf::PoseMsgToKDL(pose, object_points_[0]);
@@ -485,7 +485,7 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   
   SBPL_INFO("[addCylinderToGripper] Cylinder: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius, length); 
 
-  attached_object_radius_ = radius / grid_->getResolution(grid_->isDualGrids());
+  attached_object_radius_ = radius / grid_->getResolution();
 
   if(attached_object_radius_ < 1)
     attached_object_radius_ = 1;
@@ -521,7 +521,7 @@ void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geom
   
   SBPL_INFO("[addMeshToGripper] Mesh: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, cyl.radius, cyl.length); 
 
-  attached_object_radius_ = cyl.radius / grid_->getResolution(grid_->isDualGrids());
+  attached_object_radius_ = cyl.radius / grid_->getResolution();
 
   if(attached_object_radius_ < 1)
     attached_object_radius_ = 1;
@@ -591,8 +591,8 @@ bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles
     p1 = f_base_obj * object_points_[i].p;
     p2 = f_base_obj * object_points_[i+1].p;
 
-    grid_->worldToGrid(p1.data[0],p1.data[1],p1.data[2], grid_->isDualGrids(),q1[0],q1[1],q1[2]);
-    grid_->worldToGrid(p2.data[0],p2.data[1],p2.data[2], grid_->isDualGrids(),q2[0],q2[1],q2[2]);
+    grid_->worldToGrid(p1.data[0],p1.data[1],p1.data[2],q1[0],q1[1],q1[2]);
+    grid_->worldToGrid(p2.data[0],p2.data[1],p2.data[2],q2[0],q2[1],q2[2]);
       
     //SBPL_INFO("(attached object)  (bottom)   position: %0.3f %0.3f %0.3f   cell: %2d %2d %2d",p1.data[0],p1.data[1],p1.data[2], q1[0], q1[1], q1[2]);
     //SBPL_INFO("(attached object)     (top)   position: %0.3f %0.3f %0.3f   cell: %2d %2d %2d",p2.data[0],p2.data[1],p2.data[2], q2[0], q2[1], q2[2]);
@@ -658,8 +658,8 @@ bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles
     p1 = f_base_obj * object_points_[i].p;
     p2 = f_base_obj * object_points_[i+1].p;
 
-    grid_->worldToGrid(p1.data[0],p1.data[1],p1.data[2], grid_->isDualGrids(),q1[0],q1[1],q1[2]);
-    grid_->worldToGrid(p2.data[0],p2.data[1],p2.data[2], grid_->isDualGrids(),q2[0],q2[1],q2[2]);
+    grid_->worldToGrid(p1.data[0],p1.data[1],p1.data[2],q1[0],q1[1],q1[2]);
+    grid_->worldToGrid(p2.data[0],p2.data[1],p2.data[2],q2[0],q2[1],q2[2]);
       
     //SBPL_INFO("(attached object)  (bottom)   position: %0.3f %0.3f %0.3f   cell: %2d %2d %2d",p1.data[0],p1.data[1],p1.data[2], q1[0], q1[1], q1[2]);
     //SBPL_INFO("(attached object)     (top)   position: %0.3f %0.3f %0.3f   cell: %2d %2d %2d",p2.data[0],p2.data[1],p2.data[2], q2[0], q2[1], q2[2]);
@@ -684,11 +684,11 @@ bool SBPLCollisionSpace::isValidPoint(double &x, double &y, double &z, short uns
 {
   int xyz_c[3]={0};
 
-  grid_->worldToGrid(x,y,z, grid_->isDualGrids(),xyz_c[0], xyz_c[1], xyz_c[2]);
+  grid_->worldToGrid(x,y,z,xyz_c[0], xyz_c[1], xyz_c[2]);
  
-  SBPL_DEBUG("world: %0.3f %0.3f %0.3f  grid: %d %d %d  dist: %u radius: %u",x, y, z, xyz_c[0], xyz_c[1], xyz_c[2], grid_->getCell(xyz_c[0],xyz_c[1],xyz_c[2],grid_->isDualGrids()), radius);
+  SBPL_DEBUG("world: %0.3f %0.3f %0.3f  grid: %d %d %d  dist: %u radius: %u",x, y, z, xyz_c[0], xyz_c[1], xyz_c[2], grid_->getCell(xyz_c[0],xyz_c[1],xyz_c[2]), radius);
 
-  if((dist = grid_->getCell(xyz_c[0],xyz_c[1],xyz_c[2],grid_->isDualGrids())) <= radius)
+  if((dist = grid_->getCell(xyz_c[0],xyz_c[1],xyz_c[2])) <= radius)
     return false;
 
   return true;
@@ -724,14 +724,14 @@ bool SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, st
     p1 = f_base_obj * object_points_[i].p;
     p2 = f_base_obj * object_points_[i+1].p;
 
-    grid_->worldToGrid(p1.data[0],p1.data[1],p1.data[2], grid_->isDualGrids(),q1[0],q1[1],q1[2]);
-    grid_->worldToGrid(p2.data[0],p2.data[1],p2.data[2], grid_->isDualGrids(),q2[0],q2[1],q2[2]);
+    grid_->worldToGrid(p1.data[0],p1.data[1],p1.data[2],q1[0],q1[1],q1[2]);
+    grid_->worldToGrid(p2.data[0],p2.data[1],p2.data[2],q2[0],q2[1],q2[2]);
 
     getLineSegment(q1, q2, cells);
     
     for(size_t j = 0; j < cells.size();j++)
     {
-      grid_->gridToWorld(cells[j][0],cells[j][1],cells[j][2],grid_->isDualGrids(),point[0],point[1],point[2]);
+      grid_->gridToWorld(cells[j][0],cells[j][1],cells[j][2],point[0],point[1],point[2]);
       xyz.push_back(point);
     }
   }
@@ -741,7 +741,7 @@ bool SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, st
 
 double SBPLCollisionSpace::getAttachedObjectRadius()
 {
-  return attached_object_radius_*grid_->getResolution(grid_->isDualGrids());   
+  return attached_object_radius_*grid_->getResolution();   
 }
 
 bool SBPLCollisionSpace::getBoundingCylinderOfMesh(std::string mesh_file, shapes::Shape *mesh, bodies::BoundingCylinder &cyl)

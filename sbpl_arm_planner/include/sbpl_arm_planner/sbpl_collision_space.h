@@ -74,7 +74,7 @@ class SBPLCollisionSpace
     bool checkCollision(const std::vector<double> &angles, bool verbose, bool check_mesh, unsigned char &dist);
 
     /** @brief check if the cell's distance to nearest obstacle > radius */
-    inline bool isValidCell(const int x, const int y, const int z, const int radius, bool grid2=false);
+    inline bool isValidCell(const int x, const int y, const int z, const int radius);
 
     void addArmCuboidsToGrid();
 
@@ -137,9 +137,9 @@ class SBPLCollisionSpace
 
 };
 
-inline bool SBPLCollisionSpace::isValidCell(const int x, const int y, const int z, const int radius, bool grid2)
+inline bool SBPLCollisionSpace::isValidCell(const int x, const int y, const int z, const int radius)
 {
-  if(grid_->getCell(x,y,z,grid_->isDualGrids()) <= radius)
+  if(grid_->getCell(x,y,z) <= radius)
     return false;
   return true;
 }

@@ -65,31 +65,28 @@ class OccupancyGrid{
     ~OccupancyGrid();
 
     /** @brief convert grid cell coords into world coords*/
-    inline void gridToWorld(int x, int y, int z, bool grid2, double &wx, double &wy, double &wz);
+    inline void gridToWorld(int x, int y, int z, double &wx, double &wy, double &wz);
     
     /** @brief convert world coords into grid cell coords*/
-    inline void worldToGrid(double wx, double wy, double wz, bool grid2, int &x, int &y, int &z); 
+    inline void worldToGrid(double wx, double wy, double wz, int &x, int &y, int &z); 
 
     /** @brief get the cell's distance to the nearest obstacle in cells*/
-    inline unsigned char getCell(int x, int y, int z, bool grid2=false);
+    inline unsigned char getCell(int x, int y, int z);
 
     /** @brief get the cell's distance to the nearest obstacle in meters*/
-    inline double getCell(int *xyz, bool grid2=false);
+    inline double getCell(int *xyz);
 
     /** @brief check if {x,y,z} is in bounds of the grid */
-    inline bool isInBounds(int x, int y, int z, bool grid2=false);
-
-    /** @brief convert coords from grid to corods in grid2*/
-    void gridToGrid2(int x, int y, int z, int &x2, int &y2, int &z2);
+    inline bool isInBounds(int x, int y, int z);
 
     /** @brief return a pointer to the distance field */
-    const distance_field::PropagationDistanceField* getDistanceFieldPtr(bool grid2);
+    const distance_field::PropagationDistanceField* getDistanceFieldPtr();
     
     /** @brief get the dimensions of the grid */
-    void getGridSize(int &width, int &depth, int &height, bool grid2=false);
+    void getGridSize(int &width, int &depth, int &height);
 
     /** @brief get the dimensions of the grid */
-    void getGridSize(short unsigned int *dims, bool grid2=false); //FILL IN THIS FUNCTION
+    void getGridSize(short unsigned int *dims); //FILL IN THIS FUNCTION
 
     /** @brief set the dimensions of the world (meters)*/
     void setWorldSize(double width, double depth, double height);
@@ -104,20 +101,14 @@ class OccupancyGrid{
     void getOrigin(double &wx, double &wy, double &wz);
 
     /** @brief set the resolution of the world (meters)*/
-    void setResolution(double resolution_m, bool grid2=false);
+    void setResolution(double resolution_m);
     
     /** @brief get the resolution of the world (meters)*/
-    double getResolution(bool grid2);
-
-    /** @brief enable a second grid for a lower resolution c.c */
-    void enableGrid2(double resolution);
-
-    /** @brief returns true if two grids are enabled */
-    bool isDualGrids();
+    double getResolution();
 
     /** @brief update the distance field from the collision_map */
     void updateFromCollisionMap(const mapping_msgs::CollisionMap &collision_map);
-
+    
     /** @brief display distance field visualizations to rviz */
     void visualize();
     
@@ -132,7 +123,7 @@ class OccupancyGrid{
     */
     void addCollisionCuboid(double origin_x, double origin_y, double origin_z, double size_x, double size_y, double size_z);
 
-    bool saveGridToBinaryFile(std::string filename, bool use_grid2);
+    bool saveGridToBinaryFile(std::string filename);
 
     void printGridFromBinaryFile(std::string filename);
 
@@ -144,70 +135,37 @@ class OccupancyGrid{
     double prop_distance_;
     int grid_size_[3];
 
-    bool grid2_enabled_;
-    double grid2_scale_;
-    double grid2_resolution_;
-    int grid2_size_[3];
-
     std::string reference_frame_;
-
     distance_field::PropagationDistanceField* grid_;
-    distance_field::PropagationDistanceField* grid2_;
 
     std::vector<btVector3> cuboid_points_;
 };
 
-inline void OccupancyGrid::gridToWorld(int x, int y, int z, bool grid2, double &wx, double &wy, double &wz)
+inline void OccupancyGrid::gridToWorld(int x, int y, int z, double &wx, double &wy, double &wz)
 {
-  if(grid2)
-    grid2_->gridToWorld(x, y, z, wx, wy, wz); 
-  else
-    grid_->gridToWorld(x, y, z, wx, wy, wz); 
+  grid_->gridToWorld(x, y, z, wx, wy, wz); 
 }
 
-inline void OccupancyGrid::worldToGrid(double wx, double wy, double wz, bool grid2, int &x, int &y, int &z)
+inline void OccupancyGrid::worldToGrid(double wx, double wy, double wz, int &x, int &y, int &z)
 {
-  if(grid2)
-    grid2_->worldToGrid (wx, wy, wz, x, y, z);
-  else
-    grid_->worldToGrid (wx, wy, wz, x, y, z);
+  grid_->worldToGrid (wx, wy, wz, x, y, z);
 }
 
-inline unsigned char OccupancyGrid::getCell(int x, int y, int z, bool grid2)
+inline unsigned char OccupancyGrid::getCell(int x, int y, int z)
 {
-  if(grid2)
-    return (unsigned char)(grid2_->getDistanceFromCell(x,y,z) / grid2_resolution_);
-  else
-    return (unsigned char)(grid_->getDistanceFromCell(x,y,z) / grid_resolution_);
+  return (unsigned char)(grid_->getDistanceFromCell(x,y,z) / grid_resolution_);
 }
 
-inline double OccupancyGrid::getCell(int *xyz, bool grid2)
+inline double OccupancyGrid::getCell(int *xyz)
 {
-  if(grid2)
-    return grid2_->getDistanceFromCell(xyz[0],xyz[1],xyz[2]);
-  else
-    return grid_->getDistanceFromCell(xyz[0],xyz[1],xyz[2]);
+  return grid_->getDistanceFromCell(xyz[0],xyz[1],xyz[2]);
 }
 
-inline void OccupancyGrid::gridToGrid2(int x, int y, int z, int &x2, int &y2, int &z2)
+inline bool OccupancyGrid::isInBounds(int x, int y, int z)
 {
-  x2 = x / grid2_scale_;
-  y2 = y / grid2_scale_;
-  z2 = z / grid2_scale_;
-}
-
-inline bool OccupancyGrid::isInBounds(int x, int y, int z, bool grid2)
-{
-  if(grid2)
-  {
-    if(x >= grid2_size_[0] || 0 > x || y >= grid2_size_[1] || 0 > y || z >= grid2_size_[2] || 0 > z)
-     return false;
-  }
-  else
-  {
-    if(x >= grid_size_[0] || 0 > x || y >= grid_size_[1] || 0 > y || z >= grid_size_[2] || 0 > z)
-     return false;
-  }
+  if(x >= grid_size_[0] || 0 > x || y >= grid_size_[1] || 0 > y || z >= grid_size_[2] || 0 > z)
+    return false;
+  
   return true;
 }
 

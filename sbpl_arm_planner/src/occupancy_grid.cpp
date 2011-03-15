@@ -51,14 +51,8 @@ OccupancyGrid::OccupancyGrid()
 
   prop_distance_ = 0.40;
 
-  grid2_enabled_ = false;
-  grid2_scale_ = 2;
-  grid2_resolution_ = grid2_scale_ * grid_resolution_;
-  grid2_size_[0] = world_size_[0] / grid2_resolution_;
-  grid2_size_[1] = world_size_[1] / grid2_resolution_;
-  grid2_size_[2] = world_size_[2] / grid2_resolution_;
-
   grid_ = new distance_field::PropagationDistanceField(world_size_[0], world_size_[1], world_size_[2], grid_resolution_, origin_[0], origin_[1], origin_[2], prop_distance_);
+
   grid_->reset();
   
   reference_frame_="base_link";
@@ -81,14 +75,7 @@ OccupancyGrid::OccupancyGrid(double dim_x, double dim_y, double dim_z, double re
   grid_size_[2] = world_size_[2] / grid_resolution_;
 
   prop_distance_ = 0.40;
-  
-  grid2_enabled_ = false;
-  grid2_scale_ = 2;
-  grid2_resolution_ = grid2_scale_ * grid_resolution_;
-  grid2_size_[0] = world_size_[0] / grid2_resolution_;
-  grid2_size_[1] = world_size_[1] / grid2_resolution_;
-  grid2_size_[2] = world_size_[2] / grid2_resolution_;
-
+ 
   grid_ = new distance_field::PropagationDistanceField(world_size_[0], world_size_[1], world_size_[2], grid_resolution_, origin_[0], origin_[1], origin_[2], prop_distance_);
   grid_->reset();
 
@@ -98,25 +85,13 @@ OccupancyGrid::OccupancyGrid(double dim_x, double dim_y, double dim_z, double re
 OccupancyGrid::~OccupancyGrid()
 {
   delete grid_;
-
-  if(grid2_enabled_)
-    delete grid2_;
 }
 
-void OccupancyGrid::getGridSize(int &width, int &depth, int &height, bool grid2)
+void OccupancyGrid::getGridSize(int &width, int &depth, int &height)
 {
-  if(grid2)
-  {
-    width = grid2_size_[0];
-    depth = grid2_size_[1];
-    height = grid2_size_[2];
-  }
-  else
-  {
-    width = grid_size_[0];
-    depth = grid_size_[1];
-    height = grid_size_[2];
-  }
+  width = grid_size_[0];
+  depth = grid_size_[1];
+  height = grid_size_[2];
 }
 
 void OccupancyGrid::setWorldSize(double width, double depth, double height)
@@ -149,39 +124,14 @@ void OccupancyGrid::getOrigin(double &wx, double &wy, double &wz)
   wz = grid_->getOrigin(distance_field::PropagationDistanceField::DIM_Z);
 }
 
-void OccupancyGrid::setResolution(double resolution_m, bool grid2)
+void OccupancyGrid::setResolution(double resolution_m)
 {
-  if(grid2)
-    grid2_resolution_ = resolution_m;
-  else
-    grid_resolution_ = resolution_m;
+  grid_resolution_ = resolution_m;
 }
 
-double OccupancyGrid::getResolution(bool grid2)
+double OccupancyGrid::getResolution()
 {
-  if(grid2)
-    return grid2_->getResolution(distance_field::PropagationDistanceField::DIM_X);
-  else
-    return grid_->getResolution(distance_field::PropagationDistanceField::DIM_X);
-}
-
-void OccupancyGrid::enableGrid2(double resolution)
-{
-  grid2_resolution_ = resolution;
-  grid2_scale_ = 
-  grid2_enabled_ = true;
-  grid2_scale_ = grid2_resolution_ / grid_resolution_;
-  grid2_size_[0] = world_size_[0] / grid2_resolution_;
-  grid2_size_[1] = world_size_[1] / grid2_resolution_;
-  grid2_size_[2] = world_size_[2] / grid2_resolution_;
-
-  grid2_ = new distance_field::PropagationDistanceField(world_size_[0], world_size_[1], world_size_[2], grid2_resolution_, origin_[0], origin_[1], origin_[2], prop_distance_);
-  grid2_->reset();
-}
-
-bool OccupancyGrid::isDualGrids()
-{
-  return grid2_enabled_;
+  return grid_->getResolution(distance_field::PropagationDistanceField::DIM_X);
 }
 
 void OccupancyGrid::updateFromCollisionMap(const mapping_msgs::CollisionMap &collision_map)
@@ -196,13 +146,6 @@ void OccupancyGrid::updateFromCollisionMap(const mapping_msgs::CollisionMap &col
   grid_->reset();
   grid_->addPointsToField(cuboid_points_);
   grid_->addCollisionMapToField(collision_map);
-
-  if(grid2_enabled_)
-  {
-    grid2_->reset();
-    grid2_->addPointsToField(cuboid_points_);
-    grid2_->addCollisionMapToField(collision_map);
-  }
 }
 
 void OccupancyGrid::addCollisionCuboid(double origin_x, double origin_y, double origin_z, double size_x, double size_y, double size_z)
@@ -223,29 +166,19 @@ void OccupancyGrid::addCollisionCuboid(double origin_x, double origin_y, double 
   }
  
   grid_->addPointsToField(cuboid_points_);
-  if(grid2_enabled_)
-    grid2_->addPointsToField(cuboid_points_);
 
   ROS_DEBUG("[addCollisionCuboid] Added %d points for collision cuboid (origin: %0.2f %0.2f %0.2f  size: %0.2f %0.2f %0.2f).", num_points, origin_x, origin_y, origin_z, size_x, size_y, size_z);
 }
 
 void OccupancyGrid::visualize()
 {
-  ROS_INFO("Not visualizing grid right now....");
-/*
- if(grid2_enabled_)
-   grid2_->visualize(0.01, 0.02, reference_frame_, ros::Time::now());
- else
-   grid_->visualize(0.01, 0.02, reference_frame_, ros::Time::now());
-*/
+  //grid_->visualize(0.01, 0.02, reference_frame_, ros::Time::now());
+  SBPL_INFO("[OccupancyGrid] Visualize function is currently disabled. It needs to be updated.");
 }
 
-const distance_field::PropagationDistanceField* OccupancyGrid::getDistanceFieldPtr(bool grid2)
+const distance_field::PropagationDistanceField* OccupancyGrid::getDistanceFieldPtr()
 {
-  if(grid2 && grid2_enabled_)
-    return grid2_;
-  else
-    return grid_;
+  return grid_;
 }
 
 void OccupancyGrid::printGridFromBinaryFile(std::string filename)
@@ -271,7 +204,6 @@ void OccupancyGrid::printGridFromBinaryFile(std::string filename)
         for(int z = 0; z < dimz; z++)
         {
           fin.read( (char*) &temp, sizeof(unsigned char));
-          //SBPL_PRINTF("%d ", int(temp));
         }
       }
     }
@@ -290,14 +222,14 @@ void OccupancyGrid::printGridFromBinaryFile(std::string filename)
   fin.close();
 }
 
-bool OccupancyGrid::saveGridToBinaryFile(std::string filename, bool use_grid2)
+bool OccupancyGrid::saveGridToBinaryFile(std::string filename)
 {
   ofstream fout;
   int dimx,dimy,dimz;
   unsigned char val = 0;
   struct stat file_stats;
 
-  getGridSize(dimx, dimy, dimz, use_grid2);
+  getGridSize(dimx, dimy, dimz);
 
   const char *name  = filename.c_str();
   fout.open(name, ios_base::out | ios_base::binary | ios_base::trunc);
@@ -314,7 +246,7 @@ bool OccupancyGrid::saveGridToBinaryFile(std::string filename, bool use_grid2)
       {
         for(int z = 0; z < dimz; z++)
         {
-          val = getCell(x,y,z,use_grid2);
+          val = getCell(x,y,z);
           fout.write( (char *) &val, sizeof(unsigned char));
         }
       }
