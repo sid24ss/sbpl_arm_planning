@@ -528,6 +528,8 @@ void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geom
 
   //get pose of cylinder in gripper frame
   object_points_.resize(2);
+  ROS_INFO("Object Pose-  Position: %0.3f %0.3f %0.3f  Orientation: %0.3f %0.3f %0.3f %0.3f",pose.position.x,pose.position.y,pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+
   tf::PoseMsgToKDL(pose, object_points_[0]);
   tf::PoseMsgToKDL(pose, object_points_[1]);
 
@@ -540,8 +542,8 @@ void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geom
   SBPL_INFO("[addMeshToGripper] Added bounding cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), cyl.radius, attached_object_radius_);
  
   tf::TransformTFToKDL(cyl.pose, cyl_pose); 
-  object_points_[0] = cyl_pose*object_points_[0];
-  object_points_[1] = cyl_pose*object_points_[1];
+//  object_points_[0] = object_points_[0]*cyl_pose;
+//  object_points_[1] = object_points_[1]*cyl_pose;
 
   object_points_[0].p.data[2] -= cyl.length/2.0;
   object_points_[1].p.data[2] += cyl.length/2.0;
