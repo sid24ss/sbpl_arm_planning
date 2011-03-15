@@ -33,7 +33,7 @@
 #define DEG2RAD(d) ((d)*(M_PI/180.0))
 #define RAD2DEG(r) ((r)*(180.0/M_PI))
 
-#define DEBUG_SEARCH 0
+#define DEBUG_SEARCH 1
 #define DEBUG_HEURISTIC 0
 
 #if DEBUG_SEARCH
@@ -392,7 +392,7 @@ if(prms_.verbose_)
     short unsigned int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
     //check if this state meets the goal criteria
-    if(isGoalPosition(endeff_short,EnvROBARMCfg.EndEffGoals[0], angles, final_mp_cost))
+    if(isGoalPosition(pose,EnvROBARMCfg.EndEffGoals[0], angles, final_mp_cost))
     {
       bSuccisGoal = true;
 
@@ -419,7 +419,7 @@ if(prms_.verbose_)
 
 #if DEBUG_SEARCH
   if(prms_.verbose_)
-      SBPL_DEBUG("search", "%5i: action: %2d dist: %2d edge_distance_cost: %5d edge_smoothing_cost: %2d heur: %2d endeff: %3d %3d %3d", OutHashEntry->stateID, i, int(OutHashEntry->dist), cost(HashEntry,OutHashEntry,bSuccisGoal), prms_.smoothing_cost_[HashEntry->action][OutHashEntry->action], GetFromToHeuristic(OutHashEntry->stateID, EnvROBARM.goalHashEntry->stateID), OutHashEntry->xyz[0],OutHashEntry->xyz[1],OutHashEntry->xyz[2]);
+      SBPL_DEBUG_NAMED("search", "%5i: action: %2d dist: %2d edge_distance_cost: %5d edge_smoothing_cost: %2d heur: %2d endeff: %3d %3d %3d", OutHashEntry->stateID, i, int(OutHashEntry->dist), cost(HashEntry,OutHashEntry,bSuccisGoal), prms_.smoothing_cost_[HashEntry->action][OutHashEntry->action], GetFromToHeuristic(OutHashEntry->stateID, EnvROBARM.goalHashEntry->stateID), OutHashEntry->xyz[0],OutHashEntry->xyz[1],OutHashEntry->xyz[2]);
 #endif
     }
 
@@ -859,21 +859,21 @@ void EnvironmentROBARM3D::readConfiguration(FILE* fCfg)
   }
 }
 
-bool EnvironmentROBARM3D::isGoalPosition(const short unsigned int endeff[3], const GoalPos &goal, std::vector<double> jnt_angles, int &cost)
+bool EnvironmentROBARM3D::isGoalPosition(const std::vector<double> &pose, const GoalPos &goal, std::vector<double> jnt_angles, int &cost)
 {
     if(goal.is_6dof_goal)
     {
       //check if position constraint is satisfied  
-      if(abs(endeff[0]-goal.xyz[0]) <= goal.xyz_tolerance && 
-          abs(endeff[1]-goal.xyz[1]) <= goal.xyz_tolerance && 
-          abs(endeff[2]-goal.xyz[2]) <= goal.xyz_tolerance)
+      if(fabs(pose[0]-goal.pos[0]) <= goal.pos_tolerance[0] && 
+          fabs(pose[1]-goal.pos[1]) <= goal.pos_tolerance[1] && 
+          fabs(pose[2]-goal.pos[2]) <= goal.pos_tolerance[2])
       {
         //log the amount of time required for the search to get close to the goal
         if(!near_goal)
         {
           time_to_goal_region = (clock() - starttime) / (double)CLOCKS_PER_SEC;
           near_goal = true;
-          SBPL_DEBUG("Search is at %d %d %d, within %d cells of the goal (%d %d %d) after %.4f sec. (after %d expansions)", endeff[0],endeff[1],endeff[2],goal.xyz_tolerance, goal.xyz[0], goal.xyz[1], goal.xyz[2], time_to_goal_region,(int)expanded_states.size());
+          SBPL_INFO("Search is at %0.2f %0.2f %0.2f, within %0.3fm of the goal (%0.2f %0.2f %0.2f) after %.4f sec. (after %d expansions)", pose[0],pose[1],pose[2],goal.pos_tolerance[0], goal.pos[0], goal.pos[1], goal.pos[2], time_to_goal_region,(int)expanded_states.size());
           EnvROBARMCfg.num_expands_to_position_constraint = expanded_states.size();
         }
         
@@ -894,7 +894,7 @@ bool EnvironmentROBARM3D::isGoalPosition(const short unsigned int endeff[3], con
       if(prms_.use_ik_)
       {
         //try to reach orientation constraint with IK
-        if(isGoalStateWithIK(endeff,goal,jnt_angles))
+        if(isGoalStateWithIK(pose,goal,jnt_angles))
         {
           EnvROBARMCfg.solved_by_ik++;
 
@@ -907,42 +907,44 @@ bool EnvironmentROBARM3D::isGoalPosition(const short unsigned int endeff[3], con
     else
     {
       //check if position constraint is satisfied  
-      if(abs(endeff[0]-goal.xyz[0]) <= goal.xyz_tolerance && 
-          abs(endeff[1]-goal.xyz[1]) <= goal.xyz_tolerance && 
-          abs(endeff[2]-goal.xyz[2]) <= goal.xyz_tolerance)
+      if(fabs(pose[0]-goal.pos[0]) <= goal.pos_tolerance[0] && 
+         fabs(pose[1]-goal.pos[1]) <= goal.pos_tolerance[1] && 
+         fabs(pose[2]-goal.pos[2]) <= goal.pos_tolerance[2])
         return true;
     }
 
   return false;
 }
 
-bool EnvironmentROBARM3D::isGoalStateWithIK(const short unsigned int endeff[3], const GoalPos &goal, std::vector<double> jnt_angles)
+bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, const GoalPos &goal, std::vector<double> jnt_angles)
 {
   //check distance to goal, if within range then run IK
   if(prms_.use_dijkstra_heuristic_)
   {
-    int endeff_cc[3] = {endeff[0],endeff[1],endeff[2]};
-    
-    if(dijkstra_->getDist(endeff_cc[0],endeff_cc[1],endeff_cc[2]) > prms_.solve_for_ik_thresh_)
+    int endeff[3];
+    grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
+    short unsigned int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
+
+    if(dijkstra_->getDist(endeff_short[0],endeff_short[1],endeff_short[2]) > prms_.solve_for_ik_thresh_)
       return false;
   }
 
   EnvROBARMCfg.ik_solution=jnt_angles;
 
-  std::vector<double> pose(6,0);
+  std::vector<double> goal_pose(6,0);
   unsigned char dist = 0;
 
-  pose[0] = goal.pos[0];
-  pose[1] = goal.pos[1];
-  pose[2] = goal.pos[2];
-  pose[3] = goal.rpy[0];
-  pose[4] = goal.rpy[1];
-  pose[5] = goal.rpy[2];
+  goal_pose[0] = goal.pos[0];
+  goal_pose[1] = goal.pos[1];
+  goal_pose[2] = goal.pos[2];
+  goal_pose[3] = goal.rpy[0];
+  goal_pose[4] = goal.rpy[1];
+  goal_pose[5] = goal.rpy[2];
 
   EnvROBARMCfg.num_calls_to_ik++;
 
   //generate an IK solution
-  if(!arm_->computeIK(pose, jnt_angles, EnvROBARMCfg.ik_solution))
+  if(!arm_->computeIK(goal_pose, jnt_angles, EnvROBARMCfg.ik_solution))
   {
     EnvROBARMCfg.num_no_ik_solutions++;
     return false;
@@ -1124,7 +1126,14 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     EnvROBARMCfg.EndEffGoals[i].rpy[2] = goals[i][5];
 
     EnvROBARMCfg.EndEffGoals[i].xyz_tolerance = tolerances[i][0] / grid_->getResolution();
-    EnvROBARMCfg.EndEffGoals[i].roll_tolerance = tolerances[i][1];
+    
+    EnvROBARMCfg.EndEffGoals[i].pos_tolerance[0] = tolerances[i][0];
+    EnvROBARMCfg.EndEffGoals[i].pos_tolerance[1] = tolerances[i][1];
+    EnvROBARMCfg.EndEffGoals[i].pos_tolerance[2] = tolerances[i][2];
+    
+    EnvROBARMCfg.EndEffGoals[i].rpy_tolerance[0] = tolerances[i][3];
+    EnvROBARMCfg.EndEffGoals[i].rpy_tolerance[1] = tolerances[i][4];
+    EnvROBARMCfg.EndEffGoals[i].rpy_tolerance[2] = tolerances[i][5];
 
     EnvROBARMCfg.EndEffGoals[i].is_6dof_goal = goals[i][6];
     prms_.use_6d_pose_goal_ = goals[i][6];

@@ -64,13 +64,11 @@ typedef struct
   bool is_6dof_goal;
   int type;
   int xyz[3];
-  //int xyz_lr[3];
   double pos[3];
   double rpy[3];
   short unsigned int xyz_tolerance;
-  double roll_tolerance;
-  double pitch_tolerance;
-  double yaw_tolerance;
+  double pos_tolerance[3];
+  double rpy_tolerance[3];
 } GoalPos;
 
 /** @brief A hash entry that contains all state information */
@@ -79,7 +77,6 @@ typedef struct
   unsigned char dist;											//distance to closest obstacle
   short unsigned int action;              //successor action number
   short unsigned int xyz[3];              //end eff pos (xyz)
-  //short unsigned int xyz_cc[3];
   int stateID;                            //hash entry ID number
   int heur;
   std::vector<short unsigned int> coord;
@@ -415,8 +412,8 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     void anglesToCoord(const std::vector<double> &angle, std::vector<short unsigned int> &coord);
 
     /** planning */
-    bool isGoalPosition(const short unsigned int endeff[3], const GoalPos &goal, std::vector<double> jnt_angles, int &cost);
-    bool isGoalStateWithIK(const short unsigned int endeff[3], const GoalPos &goal, std::vector<double> jnt_angles);
+    bool isGoalPosition(const std::vector<double> &pose, const GoalPos &goal, std::vector<double> jnt_angles, int &cost);
+    bool isGoalStateWithIK(const std::vector<double> &pose, const GoalPos &goal, std::vector<double> jnt_angles);
     bool isGoalStateWithOrientationSolver(const GoalPos &goal, std::vector<double> jnt_angles);
     bool precomputeHeuristics();
     bool precomputeElbowHeuristic();
