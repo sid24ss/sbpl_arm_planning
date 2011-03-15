@@ -138,7 +138,6 @@ bool EnvironmentROBARM3D::InitializeEnv(const char* sEnvFile)
     return false;
   }
 
-//  prms_.initFromParamServer();
   SBPL_DEBUG("[InitializeEnv] Using param file: %s", params_filename_.c_str());
   prms_.initFromParamFile(fCfg);
   SBPL_FCLOSE(fCfg);
@@ -292,7 +291,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
 {
   int i, a, final_mp_cost = 0;
   unsigned char dist=0;
-  int endeff[3]={0}, xyz_cc[3]={0};
+  int endeff[3]={0};
   std::vector<short unsigned int> succcoord(arm_->num_joints_,0);
   std::vector<double> pose(6,0), angles(arm_->num_joints_,0), source_angles(arm_->num_joints_,0);
 
@@ -326,7 +325,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
     {
       if(!using_short_mprims_)
       {
-        SBPL_DEBUG("[GetSuccs] Switching to short distance motion prims after %d expansions. (SourceState with ID, #%d, is %0.3fm from goal)", int(expanded_states.size()), SourceStateID, double(dist_to_goal)/double(prms_.cost_per_cell_)*prms_.resolution_cc_);
+        SBPL_DEBUG("[GetSuccs] Switching to short distance motion prims after %d expansions. (SourceState with ID, #%d, is %0.3fm from goal)", int(expanded_states.size()), SourceStateID, double(dist_to_goal)/double(prms_.cost_per_cell_)*prms_.resolution_);
         using_short_mprims_ = true;
       }
       actions_i_min = prms_.num_long_dist_mprims_;
@@ -389,7 +388,6 @@ if(prms_.verbose_)
 
     //get grid coordinates of endeff
     grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
-    grid_->worldToGrid(pose[0],pose[1],pose[2],xyz_cc[0],xyz_cc[1],xyz_cc[2]);
 
     short unsigned int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
@@ -417,9 +415,6 @@ if(prms_.verbose_)
       OutHashEntry->rpy[0] = pose[3];
       OutHashEntry->rpy[1] = pose[4];
       OutHashEntry->rpy[2] = pose[5];
-      OutHashEntry->xyz_cc[0] = xyz_cc[0];
-      OutHashEntry->xyz_cc[1] = xyz_cc[1];
-      OutHashEntry->xyz_cc[2] = xyz_cc[2];
       OutHashEntry->dist = dist;
 
 #if DEBUG_SEARCH
@@ -627,9 +622,9 @@ int EnvironmentROBARM3D::cost(EnvROBARM3DHashEntry_t* HashEntry1, EnvROBARM3DHas
   {
     // Max's suggestion is to just put a high cost on being close to
     // obstacles but don't provide some sort of gradient 
-    if(int(HashEntry2->dist) < 6) //in cells of resolution_cc_
+    if(int(HashEntry2->dist) < 6) //in cells of resolution_
       return prms_.cost_multiplier_ * 11;
-    else if(int(HashEntry2->dist) < 9) //in cells of resolution_cc_
+    else if(int(HashEntry2->dist) < 9) //in cells of resolution_
       return prms_.cost_multiplier_ * 5;
     else
       return prms_.cost_multiplier_;
@@ -670,7 +665,7 @@ bool EnvironmentROBARM3D::initArmModel(FILE* aCfg, const std::string robot_descr
 {
   arm_ = new SBPLArmModel(aCfg);
 
-  arm_->setResolution(prms_.resolution_cc_);
+  arm_->setResolution(prms_.resolution_);
 
   if(robot_description.compare("ROS_PARAM") == 0)
   {
@@ -1078,11 +1073,6 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
   EnvROBARM.startHashEntry->xyz[1] = (short unsigned int)y;
   EnvROBARM.startHashEntry->xyz[2] = (short unsigned int)z;
 
-  grid_->worldToGrid(pose[0],pose[1],pose[2],x,y,z);
-  EnvROBARM.startHashEntry->xyz_cc[0] = (short unsigned int)x;
-  EnvROBARM.startHashEntry->xyz_cc[1] = (short unsigned int)y;
-  EnvROBARM.startHashEntry->xyz_cc[2] = (short unsigned int)z;
-
   EnvROBARM.startHashEntry->rpy[0] = pose[3];
   EnvROBARM.startHashEntry->rpy[1] = pose[4];
   EnvROBARM.startHashEntry->rpy[2] = pose[5];
@@ -1144,7 +1134,6 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
 
     //convert goal position from meters to cells
     grid_->worldToGrid(goals[i][0], goals[i][1], goals[i][2], EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1], EnvROBARMCfg.EndEffGoals[i].xyz[2]);
-    grid_->worldToGrid(goals[i][0], goals[i][1], goals[i][2], EnvROBARMCfg.EndEffGoals[i].xyz_lr[0], EnvROBARMCfg.EndEffGoals[i].xyz_lr[1], EnvROBARMCfg.EndEffGoals[i].xyz_lr[2]);
 
     //TODO: Check if goal is on an invalid cell
   }
@@ -1153,9 +1142,6 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
   EnvROBARM.goalHashEntry->xyz[0] = EnvROBARMCfg.EndEffGoals[0].xyz[0];
   EnvROBARM.goalHashEntry->xyz[1] = EnvROBARMCfg.EndEffGoals[0].xyz[1];
   EnvROBARM.goalHashEntry->xyz[2] = EnvROBARMCfg.EndEffGoals[0].xyz[2];
-  EnvROBARM.goalHashEntry->xyz_cc[0] = EnvROBARMCfg.EndEffGoals[0].xyz_lr[0];
-  EnvROBARM.goalHashEntry->xyz_cc[1] = EnvROBARMCfg.EndEffGoals[0].xyz_lr[1];
-  EnvROBARM.goalHashEntry->xyz_cc[2] = EnvROBARMCfg.EndEffGoals[0].xyz_lr[2];
   EnvROBARM.goalHashEntry->action = 0;
   EnvROBARM.goalHashEntry->rpy[0] = EnvROBARMCfg.EndEffGoals[0].rpy[0];
   EnvROBARM.goalHashEntry->rpy[1] = EnvROBARMCfg.EndEffGoals[0].rpy[1];
@@ -1885,7 +1871,7 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID)
 
   //get X, Y, Z for the state
   EnvROBARM3DHashEntry_t* FromHashEntry = EnvROBARM.StateID2CoordTable[FromStateID];
-  int temp[3] = {FromHashEntry->xyz_cc[0], FromHashEntry->xyz_cc[1], FromHashEntry->xyz_cc[2]};
+  int temp[3] = {FromHashEntry->xyz[0], FromHashEntry->xyz[1], FromHashEntry->xyz[2]};
 
   //distance to closest goal in meters
   grid_->gridToWorld(FromHashEntry->xyz[0],FromHashEntry->xyz[1],FromHashEntry->xyz[2],FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);

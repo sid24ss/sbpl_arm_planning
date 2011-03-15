@@ -972,7 +972,7 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
   FILE* aCfg = fopen(armFile, "r");
 
   arm_ = new SBPLArmModel(aCfg);
-  arm_->setResolution(prms_.resolution_cc_);
+  arm_->setResolution(prms_.resolution_);
   if(!arm_->initKDLChainFromParamServer())
   {
     ROS_ERROR("[visualizeCollisionModel] Unable to initialize KDL Chain from param server");
@@ -984,9 +984,6 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
   
   //create the occupancy grid
   grid_ = new OccupancyGrid(prms_.sizeX_,prms_.sizeY_,prms_.sizeZ_, prms_.resolution_,prms_.originX_,prms_.originY_,prms_.originZ_);
-
-  if(prms_.use_lowres_cc_)
-    grid_->enableGrid2(prms_.resolution_cc_);
 
   //create the collision space
   cspace_ = new SBPLCollisionSpace(arm_, grid_);

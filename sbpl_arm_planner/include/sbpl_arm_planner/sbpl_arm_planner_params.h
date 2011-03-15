@@ -94,9 +94,6 @@ class SBPLArmPlannerParams
      * suboptimality of the solution of a weighted A* type search)*/
     double epsilon_;
 
-    /** \brief enable low-resolution collision checking */
-    bool use_lowres_cc_; 
-
     /** \brief enable multi-resolution motion primitives */
     bool use_multires_mprims_;
 
@@ -186,7 +183,6 @@ class SBPLArmPlannerParams
 
     /** \brief resolution of collision space */
     double resolution_;
-    double resolution_cc_;
 
     /** \brief origin of collision space */
     double originX_;

@@ -33,7 +33,6 @@
 SBPLArmPlannerParams::SBPLArmPlannerParams()
 {
   epsilon_ = 10;
-  use_lowres_cc_ = true;
   use_multires_mprims_ = true;
   use_dijkstra_heuristic_ = true;
   use_smoothing_ = true;
@@ -88,9 +87,7 @@ void SBPLArmPlannerParams::initFromParamServer()
   nh.param("planner/research/short_distance_mprims_threshold",short_dist_mprims_thresh_m_, 0.2);
 
   /* occupancy grid */
-  nh.param("collision_space/lowres_cc",use_lowres_cc_,true);
   nh.param("collision_space/resolution",resolution_,0.01);
-  nh.param("collision_space/collision_checking_resolution",resolution_cc_,0.02);
 
   nh.param("collision_space/occupancy_grid/origin_x",originX_,-0.6);
   nh.param("collision_space/occupancy_grid/origin_y",originY_,-1.15);
@@ -242,12 +239,6 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
         SBPL_PRINTF("Parsed string has length < 1.\n");
       resolution_ = atof(sTemp);
     }
-    else if(strcmp(sTemp, "collision_checking_resolution(meters):") == 0)
-    {
-      if(fscanf(fCfg,"%s",sTemp) < 1)
-        SBPL_PRINTF("Parsed string has length < 1.\n");
-      resolution_cc_ = atof(sTemp);
-    }
     else if(strcmp(sTemp, "use_dijkstra_heuristic:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
@@ -295,12 +286,6 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
       if(fscanf(fCfg,"%s",sTemp) < 1) 
         SBPL_PRINTF("Parsed string has length < 1.\n");
       epsilon_ = atof(sTemp);
-    }
-    else if(strcmp(sTemp,"use_low_resolution_collision_checking:") == 0)
-    {
-      if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
-      use_lowres_cc_ = atoi(sTemp);
     }
     else if(strcmp(sTemp,"use_multiresolution_motion_primitives:") == 0)
     {
@@ -411,9 +396,9 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
   }
 
 
-  short_dist_mprims_thresh_c_ = short_dist_mprims_thresh_m_ / resolution_cc_;
+  short_dist_mprims_thresh_c_ = short_dist_mprims_thresh_m_ / resolution_;
 
-  solve_for_ik_thresh_ = (solve_for_ik_thresh_m_ /resolution_cc_) * cost_per_cell_;
+  solve_for_ik_thresh_ = (solve_for_ik_thresh_m_ /resolution_) * cost_per_cell_;
 
   max_mprim_offset_ = getLargestMotionPrimOffset(); 
     
@@ -424,8 +409,8 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
 void SBPLArmPlannerParams::setCellCost(int cost_per_cell)
 {
   cost_per_cell_ = cost_per_cell;
-  solve_for_ik_thresh_ = (solve_for_ik_thresh_m_ / resolution_cc_) * cost_per_cell_;
-  short_dist_mprims_thresh_c_ = short_dist_mprims_thresh_m_/resolution_cc_ * cost_per_cell;
+  solve_for_ik_thresh_ = (solve_for_ik_thresh_m_ / resolution_) * cost_per_cell_;
+  short_dist_mprims_thresh_c_ = short_dist_mprims_thresh_m_/resolution_ * cost_per_cell;
 }
 
 void SBPLArmPlannerParams::addMotionPrim(std::vector<double> mprim, bool add_converse, bool short_dist_mprim)
@@ -504,7 +489,6 @@ void SBPLArmPlannerParams::printParams(FILE* fOut)
   SBPL_FPRINTF(fOut,"%40s: %d\n", "# short distance motion primitives", num_short_dist_mprims_);
   SBPL_FPRINTF(fOut,"%40s: %d\n", "# long distance motion primitives", num_long_dist_mprims_);
   SBPL_FPRINTF(fOut,"%40s: %.2f\n", "epsilon",epsilon_);
-  SBPL_FPRINTF(fOut,"%40s: %s\n", "use low-resolution collision checking", use_lowres_cc_ ? "yes" : "no");
   SBPL_FPRINTF(fOut,"%40s: %s\n", "use multi-resolution motion primitives", use_multires_mprims_ ? "yes" : "no");
   SBPL_FPRINTF(fOut,"%40s: %s\n", "use dijkstra heuristic", use_dijkstra_heuristic_ ? "yes" : "no");
   SBPL_FPRINTF(fOut,"%40s: %s\n", "use research heuristic", use_research_heuristic_ ? "yes" : "no");

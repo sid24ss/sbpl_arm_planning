@@ -64,7 +64,7 @@ typedef struct
   bool is_6dof_goal;
   int type;
   int xyz[3];
-  int xyz_lr[3];
+  //int xyz_lr[3];
   double pos[3];
   double rpy[3];
   short unsigned int xyz_tolerance;
@@ -79,7 +79,7 @@ typedef struct
   unsigned char dist;											//distance to closest obstacle
   short unsigned int action;              //successor action number
   short unsigned int xyz[3];              //end eff pos (xyz)
-  short unsigned int xyz_cc[3];
+  //short unsigned int xyz_cc[3];
   int stateID;                            //hash entry ID number
   int heur;
   std::vector<short unsigned int> coord;
