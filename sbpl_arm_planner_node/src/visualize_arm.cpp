@@ -52,66 +52,80 @@ void HSVtoRGB( double *r, double *g, double *b, double h, double s, double v )
 	}
 }
 
-VisualizeArm::VisualizeArm() : ph_("~")
+VisualizeArm::VisualizeArm(std::string arm_name) : ph_("~"), arm_name_(arm_name)
 {
-  joint_names_.push_back("r_shoulder_pan_joint");
-  joint_names_.push_back("r_shoulder_lift_joint");
-  joint_names_.push_back("r_upper_arm_roll_joint");
-  joint_names_.push_back("r_elbow_flex_joint");
-  joint_names_.push_back("r_forearm_roll_joint");
-  joint_names_.push_back("r_wrist_flex_joint");
-  joint_names_.push_back("r_wrist_roll_joint");
+  num_joints_ = 7;
+  reference_frame_ = "torso_lift_link";
+  chain_root_name_ = "torso_lift_link";
+  chain_tip_name_ = "_gripper_r_finger_tip_link";
 
-  srand ( time(NULL) );
+  srand (time(NULL));
 
-  //right arm
-/*
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_yaw.mesh");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_lift.mesh");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/upper_arm.mesh");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/elbow_flex.mesh");  
-  //pr2_arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/forearm_roll.mesh");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/forearm.mesh");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_flex.mesh");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_roll.mesh");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/gripper_v0/gripper_palm.stl");
-*/
+  joint_names_.push_back("_shoulder_pan_joint");
+  joint_names_.push_back("_shoulder_lift_joint");
+  joint_names_.push_back("_upper_arm_roll_joint");
+  joint_names_.push_back("_elbow_flex_joint");
+  joint_names_.push_back("_forearm_roll_joint");
+  joint_names_.push_back("_wrist_flex_joint");
+  joint_names_.push_back("_wrist_roll_joint");
 
+  link_names_.push_back("_shoulder_pan_link");
+  link_names_.push_back("_shoulder_lift_link");
+  link_names_.push_back("_upper_arm_roll_link");
+  link_names_.push_back("_elbow_flex_link");
+  link_names_.push_back("_forearm_roll_link");
+  link_names_.push_back("_wrist_flex_link");
+  link_names_.push_back("_wrist_roll_link");
+
+  if(arm_name == "left_arm")
+  {
+    side_ = "l";
+    side_full_ = "left";
+  }
+  else
+  {
+    side_ = "r";
+    side_full_ = "right";
+  }
+
+  for(size_t i = 0; i < joint_names_.size(); ++i)
+    joint_names_[i] = side_ + joint_names_[i];
+
+  for(size_t i = 0; i < link_names_.size(); ++i)
+    link_names_[i] = side_ + link_names_[i];
+
+  fk_service_name_ = "pr2_" + side_full_ + "_arm_kinematics/get_fk";
+  ik_service_name_ = "pr2_" + side_full_ + "_arm_kinematics/get_ik";
+  chain_tip_name_ = side_ + chain_tip_name_;
+
+  // arm meshes
   pr2_arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_yaw.stl");
   pr2_arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_lift.stl");
   pr2_arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/upper_arm.stl");
   pr2_arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/elbow_flex.stl");
   //pr2_arm_meshes_.push_back("package://pr2_description/meshes/upper_arm_v0/forearm_roll.mesh");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/forearm.stl");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_flex.stl");  
-  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_roll.stl");  
+  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/forearm.stl");
+  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_flex.stl");
+  pr2_arm_meshes_.push_back("package://pr2_description/meshes/forearm_v0/wrist_roll.stl");
   pr2_arm_meshes_.push_back("package://pr2_description/meshes/gripper_v0/gripper_palm.stl");
 
-  //right gripper
+  // gripper meshes
   pr2_gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_r.stl");
   pr2_gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_r.stl");
   pr2_gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/upper_finger_l.stl");
   pr2_gripper_meshes_.push_back("package://pr2_description/meshes/gripper_v0/finger_tip_l.stl");
-
-  reference_frame_ = "torso_lift_link";
-  chain_root_name_ = "torso_lift_link";
-  chain_tip_name_ = "r_gripper_r_finger_tip_link";
-
-  num_joints_ = 7;
 
   initKDLChain();
 
   // tell the action client that we want to spin a thread by default
   traj_client_ = new TrajClient("r_arm_controller/joint_trajectory_action", true);
 
-/*
   // wait for action server to come up
   while(!traj_client_->waitForServer(ros::Duration(5.0)))
     ROS_INFO("Waiting for the joint_trajectory_action server");
-*/
 
-  marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 200);
-  marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 200);
+  marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 500);
+  marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 500);
   display_trajectory_publisher_ = nh_.advertise<motion_planning_msgs::DisplayTrajectory>("arm_viz", 200);
 }
 
@@ -208,15 +222,12 @@ bool VisualizeArm::parseCSVFile(std::string filename, int num_cols, std::vector<
     raw_data.resize(raw_data.size()+1);
     raw_data[++row].resize(num_cols);
     raw_data[row][0] = atof(line);
-    //printf("%0.3f ",raw_data[row][0]);
 
     for(col = 1; col < num_cols; col++)
     {
       input_file.getline(line, 256, ',');
       raw_data[row][col] = atof(line);
-      //printf("%0.3f ", raw_data[row][col]);
     }
-    //printf("\n");
   }
 
   std::vector<double> zero_line(num_cols,0);
@@ -375,18 +386,14 @@ bool VisualizeArm::computeFKforVisualization(const std::vector<double> &jnt_pos,
 
   ROS_DEBUG("%d joints, %d positions",int(request.robot_state.joint_state.name.size()),int(request.robot_state.joint_state.position.size()));
 
-  request.fk_link_names.push_back("r_shoulder_pan_link");
-  request.fk_link_names.push_back("r_shoulder_lift_link");
-  request.fk_link_names.push_back("r_upper_arm_link");
-  request.fk_link_names.push_back("r_elbow_flex_link");
-  request.fk_link_names.push_back("r_forearm_link");
-  request.fk_link_names.push_back("r_wrist_flex_link");
-  request.fk_link_names.push_back("r_wrist_roll_link");
-  request.fk_link_names.push_back("r_wrist_roll_link");
-  //request.fk_link_names.push_back("r_wrist_roll_link");
-  //request.fk_link_names.push_back("r_wrist_roll_link");
-  //request.fk_link_names.push_back("r_wrist_roll_link");
-  //request.fk_link_names.push_back("r_wrist_roll_link");
+  request.fk_link_names.push_back(link_names_[0]);
+  request.fk_link_names.push_back(link_names_[1]);
+  request.fk_link_names.push_back(link_names_[2]);
+  request.fk_link_names.push_back(link_names_[3]);
+  request.fk_link_names.push_back(link_names_[4]);
+  request.fk_link_names.push_back(link_names_[5]);
+  request.fk_link_names.push_back(link_names_[6]);
+  request.fk_link_names.push_back(link_names_[6]);
 
   ros::service::waitForService("pr2_right_arm_kinematics/get_fk");
   ros::ServiceClient client = nh_.serviceClient<kinematics_msgs::GetPositionFK>("pr2_right_arm_kinematics/get_fk");
@@ -527,7 +534,7 @@ void VisualizeArm::visualizeObstacles(const std::vector<std::vector<double> > &o
   marker_array_.markers.clear();
   marker_array_.markers.resize(obstacles.size());
 
-  ROS_INFO("%d obstacles", (int)obstacles.size());
+  ROS_INFO("Displaying %d obstaclesin the %s frame", (int)obstacles.size(), reference_frame_.c_str());
 
   std::string ns = "obstacles"+boost::lexical_cast<std::string>(rand());
 
@@ -539,20 +546,21 @@ void VisualizeArm::visualizeObstacles(const std::vector<std::vector<double> > &o
       continue;
     }
 
+    //TODO: Change this to use a CUBE_LIST
     marker_array_.markers[i].header.stamp = ros::Time::now();
-    marker_array_.markers[i].header.frame_id = "base_link"; //reference_frame_;
+    marker_array_.markers[i].header.frame_id = reference_frame_;
     marker_array_.markers[i].ns = ns;
     marker_array_.markers[i].id = rand();
     marker_array_.markers[i].type = visualization_msgs::Marker::CUBE;
     marker_array_.markers[i].action = visualization_msgs::Marker::ADD;
-    marker_array_.markers[i].pose.position.x = obstacles[i][0];//+obstacles[i][3]/2;
-    marker_array_.markers[i].pose.position.y = obstacles[i][1];//+obstacles[i][4]/2;
-    marker_array_.markers[i].pose.position.z = obstacles[i][2];//+obstacles[i][5]/2;
+    marker_array_.markers[i].pose.position.x = obstacles[i][0];
+    marker_array_.markers[i].pose.position.y = obstacles[i][1];
+    marker_array_.markers[i].pose.position.z = obstacles[i][2];
     marker_array_.markers[i].scale.x = obstacles[i][3];
     marker_array_.markers[i].scale.y = obstacles[i][4];
     marker_array_.markers[i].scale.z = obstacles[i][5];
     marker_array_.markers[i].color.r = 0.0;
-    marker_array_.markers[i].color.g = 0.;
+    marker_array_.markers[i].color.g = 0.0;
     marker_array_.markers[i].color.b = 0.5;
     marker_array_.markers[i].color.a = 0.9;
     marker_array_.markers[i].lifetime = ros::Duration(180.0);
@@ -645,7 +653,7 @@ void VisualizeArm::visualizePoses(const std::vector<std::vector<double> > &poses
     mind++;
     marker_array_.markers[mind].header.stamp = time;
     marker_array_.markers[mind].header.frame_id = reference_frame_;
-    marker_array_.markers[mind].ns = "goal_pose_arrows";
+    marker_array_.markers[mind].ns = "pose_arrows";
     marker_array_.markers[mind].type = visualization_msgs::Marker::ARROW;
     marker_array_.markers[mind].id = i;
     marker_array_.markers[mind].action = visualization_msgs::Marker::ADD;
@@ -665,7 +673,7 @@ void VisualizeArm::visualizePoses(const std::vector<std::vector<double> > &poses
     mind++;
     marker_array_.markers[mind].header.stamp = time;
     marker_array_.markers[mind].header.frame_id = reference_frame_;
-    marker_array_.markers[mind].ns = "goal_pose_spheres";
+    marker_array_.markers[mind].ns = "pose_spheres";
     marker_array_.markers[mind].id = i;
     marker_array_.markers[mind].type = visualization_msgs::Marker::SPHERE;
     marker_array_.markers[mind].action = visualization_msgs::Marker::ADD;
@@ -685,7 +693,7 @@ void VisualizeArm::visualizePoses(const std::vector<std::vector<double> > &poses
     mind++;
     marker_array_.markers[mind].header.stamp = time;
     marker_array_.markers[mind].header.frame_id = reference_frame_;
-    marker_array_.markers[mind].ns = "goal_pose_numbers";
+    marker_array_.markers[mind].ns = "pose_text_blocks";
     marker_array_.markers[mind].id = i;
     marker_array_.markers[mind].type = visualization_msgs::Marker::TEXT_VIEW_FACING;
     marker_array_.markers[mind].action = visualization_msgs::Marker::ADD;
@@ -796,8 +804,8 @@ void VisualizeArm::visualizeSphere(std::vector<double> pose, int color, std::str
   HSVtoRGB(&r, &g, &b, color, 1.0, 1.0);
 
   marker.header.stamp = ros::Time::now();
-  marker.header.frame_id = "base_link"; //reference_frame_;
-  marker.ns = "sphere-" + text;
+  marker.header.frame_id = reference_frame_;
+  marker.ns = text + "-sphere";
   marker.id = 1;
   marker.type = visualization_msgs::Marker::SPHERE;
   marker.action = visualization_msgs::Marker::ADD;
@@ -828,9 +836,9 @@ void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pos
   marker.ns = "sphere-" + text;
   marker.type = visualization_msgs::Marker::SPHERE_LIST;
   marker.action = visualization_msgs::Marker::ADD;
-  marker.scale.x = radius*4.0;
-  marker.scale.y = radius*4.0;
-  marker.scale.z = radius*4.0;
+  marker.scale.x = radius*2;
+  marker.scale.y = radius*2;
+  marker.scale.z = radius*2;
   marker.color.r = r;
   marker.color.g = g;
   marker.color.b = b;
@@ -861,7 +869,7 @@ void VisualizeArm::visualizeArmMeshes(double color_num, std::vector<geometry_msg
   for(int i = 0; i < (int)marker_array_.markers.size(); ++i)
   {
     marker_array_.markers[i].header.stamp = time;
-    marker_array_.markers[i].header.frame_id = reference_frame_;
+    marker_array_.markers[i].header.frame_id = chain_root_name_;
     marker_array_.markers[i].ns = "arm_mesh_" + boost::lexical_cast<std::string>(color_num);
     marker_array_.markers[i].type = visualization_msgs::Marker::MESH_RESOURCE;
     marker_array_.markers[i].id = i;
@@ -914,7 +922,7 @@ void VisualizeArm::visualizeGripperMeshes(double color_num, std::vector<geometry
   for(int i = 0; i < (int)marker_array_.markers.size(); ++i)
   {
     marker_array_.markers[i].header.stamp = ros::Time::now();
-    marker_array_.markers[i].header.frame_id = "torso_lift_link";
+    marker_array_.markers[i].header.frame_id = chain_root_name_;
     marker_array_.markers[i].ns = "gripper_mesh_" + boost::lexical_cast<std::string>(color_num);
     marker_array_.markers[i].type = visualization_msgs::Marker::MESH_RESOURCE;
     marker_array_.markers[i].id = i;
@@ -946,53 +954,15 @@ void VisualizeArm::visualizeArmConfiguration(double color_num, const std::vector
   visualizeGripperConfiguration(color_num,jnt_pos);
 }
 
-void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double> > &path)
+void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace)
 {
   std::vector<std::vector<double> > cylinders;
   visualization_msgs::MarkerArray marker_array;
 
-  ROS_INFO("[visualizeCollisionModel] Hard-coded path assumes this is being run from within the sbpl_arm_planner");
-
-  SBPLArmModel *arm_;
-  OccupancyGrid *grid_;
-  SBPLCollisionSpace *cspace_;
-
-  //initialize the arm planner params class
-  SBPLArmPlannerParams prms_;
-  char parFile[] = "/home/bcohen/penn_sandbox/gokul/sbpl_arm_planner/config/params.cfg";
-  FILE* fCfg = fopen(parFile, "r");
-  if(fCfg == NULL)
-    printf("ERROR: unable to open %s.....using defaults.\n", parFile);
-
-  prms_.initFromParamFile(fCfg);
-  fclose(fCfg);
-
-  //initialize the arm model
-  char armFile[] = "/home/bcohen/penn_sandbox/gokul/sbpl_arm_planner/config/pr2_right_arm.cfg";
-  FILE* aCfg = fopen(armFile, "r");
-
-  arm_ = new SBPLArmModel(aCfg);
-  arm_->setResolution(prms_.resolution_);
-  if(!arm_->initKDLChainFromParamServer())
-  {
-    ROS_ERROR("[visualizeCollisionModel] Unable to initialize KDL Chain from param server");
-    return;
-  }
-  fclose(aCfg);
-
-  arm_->printArmDescription(stdout);
-  
-  //create the occupancy grid
-  grid_ = new OccupancyGrid(prms_.sizeX_,prms_.sizeY_,prms_.sizeZ_, prms_.resolution_,prms_.originX_,prms_.originY_,prms_.originZ_);
-
-  //create the collision space
-  cspace_ = new SBPLCollisionSpace(arm_, grid_);
-
-  //visualize the cylinders
   for(int i = 0; i < int(path.size()); ++i)
   {
     cylinders.resize(0);
-    if(!cspace_->getCollisionCylinders(path[i], cylinders))
+    if(!cspace.getCollisionCylinders(path[i], cylinders))
       ROS_WARN("[visualizeCollisionModel] Cannot display arm collision model.");
 
     ROS_DEBUG("[visualizeCollisionModel] waypoint #%d contains %d cylinders.", i, (int)cylinders.size());
@@ -1023,17 +993,13 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
 
       ROS_DEBUG("[visualizeCollisionModel]           center: %0.3f %0.3f %0.3f radius: %0.3fm", cylinders[j][0], cylinders[j][1], cylinders[j][2],cylinders[j][3]);
     }
-    //publish
+    
     if(cylinders.size() > 0)
       marker_array_publisher_.publish(marker_array);
   }
-
-  delete grid_;
-  delete arm_;
-  delete cspace_;
 }
 
-void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg)
+void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace)
 {
   std::vector<std::vector<double> > traj;
 
@@ -1053,7 +1019,7 @@ void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs
 
   ROS_INFO("[visualizeCollisionModelFromJointTrajectoryMsg] Visualizing collision model of trajectory with length %d ",int(traj.size()));
 
-  visualizeCollisionModel(traj);
+  visualizeCollisionModel(traj, cspace);
 }
 
 void VisualizeArm::visualize3DPath(std::vector<std::vector<double> > &dpath)
@@ -1067,10 +1033,10 @@ void VisualizeArm::visualize3DPath(std::vector<std::vector<double> > &dpath)
     ROS_INFO("[visualizeShortestPath] There are %i waypoints in the shortest path.",int(dpath.size()));
 
   visualization_msgs::Marker obs_marker;
-  obs_marker.header.frame_id = "base_link";
+  obs_marker.header.frame_id = reference_frame_;
   obs_marker.header.stamp = ros::Time();
   obs_marker.header.seq = 0;
-  obs_marker.ns = "shortest_path";
+  obs_marker.ns = "path";
   obs_marker.id = 0;
   obs_marker.type = visualization_msgs::Marker::SPHERE_LIST;
   obs_marker.action = 0;
@@ -1081,7 +1047,7 @@ void VisualizeArm::visualize3DPath(std::vector<std::vector<double> > &dpath)
   obs_marker.color.g = 0.3;
   obs_marker.color.b = 0.4;
   obs_marker.color.a = 0.8;
-  obs_marker.lifetime = ros::Duration(200.0);
+  obs_marker.lifetime = ros::Duration(180.0);
 
   obs_marker.points.resize(dpath.size());
 
@@ -1112,7 +1078,7 @@ void VisualizeArm::visualizeBasicStates(const std::vector<std::vector<double> > 
 
   //if there are too many states, rviz will crash and burn when drawing
   if(states.size() > 50000)
-    inc = 2; //5 
+    inc = 4;
   else if(states.size() > 10000)
     inc = 2;
   else
@@ -1224,6 +1190,7 @@ void VisualizeArm::visualizeDetailedStates(const std::vector<std::vector<double>
   marker_array_publisher_.publish(marker_array);
 }
 
+/*
 void VisualizeArm::clearAllVisualizations()
 {
   int num_arm_meshes = 250;
@@ -1257,4 +1224,4 @@ void VisualizeArm::clearAllVisualizations()
     marker_array_publisher_.publish(marker_array_);
   }
 }
-
+*/

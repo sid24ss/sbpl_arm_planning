@@ -6,8 +6,6 @@
 #include <ros/ros.h>
 #include <math.h>
 #include <actionlib/client/simple_action_client.h>
-#include <geometry_msgs/Quaternion.h>
-#include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
 
@@ -40,7 +38,7 @@ class VisualizeArm
 {
   public:
     
-    VisualizeArm();
+    VisualizeArm(std::string arm_name);
 
     ~VisualizeArm();
 
@@ -102,34 +100,42 @@ class VisualizeArm
     /* \brief parse an environment file - currently not very robust at all */
     bool parseEnvironmentFile(std::string filename);
 
-    /* \brief visualize in rviz each a throttled set of arm configurations in a trajectory
+    /* \brief display a throttled set of arm configurations in a trajectory
      * by default throttle = 5 */
     void visualizeArmConfigurations(const std::vector<std::vector<double> > &traj, int throttle);
 
+    /* \brief display a throttled set of arm configurations in a trajectory msg */
+    void visualizeJointTrajectoryMsg(trajectory_msgs::JointTrajectory traj_msg, int throttle);
+    
     /* \brief print out the information that was parsed from the env file */
     void printEnvironmentInfo(FILE *fid);
 
-    /* \brief display the cylindrical collision model of each waypoint in a path */
-    void visualizeCollisionModel(const std::vector<std::vector<double> > &path);
+    /* \brief display the spherical collision model of each waypoint in a path */
+    void visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace);
 
+    /* \brief display the spherical collision model of each waypoint in a joint trajectory msg */
+    void visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace);
+   
+    /* \brief display a gripper given the arm's joint angles */
     void visualizeGripperConfiguration(double color_num, const std::vector<double> &jnt_pos);
 
+    /* \brief display the gripper meshes (called by visualizeGripperConfiguration) */
     void visualizeGripperMeshes(double color_num, std::vector<geometry_msgs::PoseStamped> &poses);
 
+    /* \brief display a list of states (xyz coordinates) (intended for use with sbpl) */
     void visualizeBasicStates(const std::vector<std::vector<double> > &states, const std::vector<double> &color, std::string name, double size);
-
-    void visualizeSphere(std::vector<double> pose, int color, std::string text, double radius);
-
-    void visualizeJointTrajectoryMsg(trajectory_msgs::JointTrajectory traj_msg, int throttle);
-
-    void visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg);
-
+    
+    /* \brief display a list of states (xyz coordinates with rpy arrows) (intended for use with sbpl) */
     void visualizeDetailedStates(const std::vector<std::vector<double> > &states, const std::vector<std::vector<double> >&color, std::string name, double size);
 
-    /* \brief DOESN'T WORK */
-    void clearAllVisualizations();
-
+    /* \brief display a sphere */
+    void visualizeSphere(std::vector<double> pose, int color, std::string text, double radius);
+    
+    /* \brief display a list of spheres of the same radius and color */
     void visualizeSpheres(const std::vector<std::vector<double> > &pose, int color, std::string text, double radius);
+
+    /* DOESN'T WORK */
+    //void clearAllVisualizations();
 
   private:
 
@@ -151,10 +157,9 @@ class VisualizeArm
     visualization_msgs::Marker marker_;
 
     std::vector<std::string> joint_names_;
-
+    std::vector<std::string> link_names_;
     std::vector<std::string> pr2_arm_meshes_;
     std::vector<std::string> pr2_gripper_meshes_;
-
     std::vector<geometry_msgs::Vector3> pr2_arm_meshes_scale_;
 
     KDL::JntArray jnt_pos_in_;
@@ -167,6 +172,12 @@ class VisualizeArm
     KDL::ChainFkSolverPos_recursive *gripper_l_fk_solver_;
     KDL::Tree kdl_tree_;
 
+    std::string arm_name_;
+    std::string arm_config_file_;
+    std::string side_;
+    std::string side_full_;
+    std::string fk_service_name_;
+    std::string ik_service_name_;
     std::string chain_root_name_;
     std::string chain_tip_name_;
 

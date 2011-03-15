@@ -178,7 +178,7 @@ bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
     return false;
   }
 
-  aviz_ = new VisualizeArm();
+  aviz_ = new VisualizeArm(arm_name_);
   aviz_->setReferenceFrame(reference_frame_);
 
   ROS_INFO("Initialized sbpl planning environment.");
@@ -561,8 +561,8 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
         if(visualize_expanded_states_)
           displayARAStarStates();
 
-        //if(visualize_heuristic_)
-        //  displayShortestPath();
+        if(visualize_heuristic_)
+          displayShortestPath();
 
         if(visualize_trajectory_)
         {
@@ -574,8 +574,8 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
           visualizeAttachedObject(res.trajectory.joint_trajectory, throttle_);
         }
 
-        //if(visualize_collision_model_trajectory_)
-        //  aviz_->visualizeCollisionModelFromJointTrajectoryMsg(cspace_, res.trajectory.joint_trajectory);
+        if(visualize_collision_model_trajectory_)
+          aviz_->visualizeCollisionModelFromJointTrajectoryMsg(res.trajectory.joint_trajectory, *cspace_);
 
         if(use_research_heuristic_)
           visualizeElbowPoses();
