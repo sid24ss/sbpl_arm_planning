@@ -119,11 +119,11 @@ VisualizeArm::VisualizeArm(std::string arm_name) : ph_("~"), arm_name_(arm_name)
 
   // tell the action client that we want to spin a thread by default
   traj_client_ = new TrajClient("r_arm_controller/joint_trajectory_action", true);
-
+/*
   // wait for action server to come up
   while(!traj_client_->waitForServer(ros::Duration(5.0)))
     ROS_INFO("Waiting for the joint_trajectory_action server");
-
+*/
   marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 500);
   marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 500);
   display_trajectory_publisher_ = nh_.advertise<motion_planning_msgs::DisplayTrajectory>("arm_viz", 200);
@@ -141,6 +141,7 @@ void VisualizeArm::setReferenceFrame(std::string &frame)
 
 void VisualizeArm::sendArmToConfiguration(const std::vector<double> &angles)
 {
+/*
   pr2_controllers_msgs::JointTrajectoryGoal goal;
 
   goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
@@ -158,6 +159,7 @@ void VisualizeArm::sendArmToConfiguration(const std::vector<double> &angles)
   goal.trajectory.points[0].time_from_start = ros::Duration(2.0);
 
   traj_client_->sendGoal(goal);
+*/
 }  
 
 bool VisualizeArm::parsePoseFile(std::string filename, std::vector<std::vector<double> > &poses)
@@ -831,14 +833,14 @@ void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pos
 
   HSVtoRGB(&r, &g, &b, color, 1.0, 1.0);
 
-  marker.header.stamp = ros::Time();
+  marker.header.stamp = ros::Time::now();
   marker.header.frame_id = reference_frame_;
-  marker.ns = "sphere-" + text;
+  marker.ns = "spheres-" + text;
   marker.type = visualization_msgs::Marker::SPHERE_LIST;
   marker.action = visualization_msgs::Marker::ADD;
-  marker.scale.x = radius*2;
-  marker.scale.y = radius*2;
-  marker.scale.z = radius*2;
+  marker.scale.x = radius*2.0;
+  marker.scale.y = radius*2.0;
+  marker.scale.z = radius*2.0;
   marker.color.r = r;
   marker.color.g = g;
   marker.color.b = b;
@@ -869,7 +871,7 @@ void VisualizeArm::visualizeArmMeshes(double color_num, std::vector<geometry_msg
   for(int i = 0; i < (int)marker_array_.markers.size(); ++i)
   {
     marker_array_.markers[i].header.stamp = time;
-    marker_array_.markers[i].header.frame_id = chain_root_name_;
+    marker_array_.markers[i].header.frame_id = reference_frame_;
     marker_array_.markers[i].ns = "arm_mesh_" + boost::lexical_cast<std::string>(color_num);
     marker_array_.markers[i].type = visualization_msgs::Marker::MESH_RESOURCE;
     marker_array_.markers[i].id = i;

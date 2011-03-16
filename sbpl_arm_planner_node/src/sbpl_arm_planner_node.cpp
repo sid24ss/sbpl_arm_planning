@@ -39,6 +39,11 @@ using namespace sbpl_arm_planner;
 SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subscriber_(root_handle_,"collision_map_occ",1)
 {
   planner_initialized_ = false;
+  attached_object_ = false;
+  forward_search_ = true;
+  planning_joint_ = "r_wrist_roll_link";
+  allocated_time_ = 10.0;
+  env_resolution_ = 0.02;
 }
 
 SBPLArmPlannerNode::~SBPLArmPlannerNode()
@@ -53,16 +58,14 @@ bool SBPLArmPlannerNode::init()
 
   //planner
   node_handle_.param ("planner/search_mode", search_mode_, true); //true: stop after first solution
-  node_handle_.param ("planner/allocated_time", allocated_time_, 10.0);
-  node_handle_.param ("planner/forward_search", forward_search_, true);
+  node_handle_.param ("planner/use_research_heuristic", use_research_heuristic_, false);
+  node_handle_.param<std::string>("planner/arm_description_file", arm_description_filename_, "");
+  node_handle_.param<std::string>("planner/motion_primitive_file", mprims_filename_, "");
   node_handle_.param ("debug/print_out_path", print_path_, true);
   node_handle_.param ("seconds_per_waypoint", waypoint_time_, 0.35);
   node_handle_.param<std::string>("reference_frame", reference_frame_, std::string("base_link"));
-  node_handle_.param ("planner/use_research_heuristic", use_research_heuristic_, false);
   node_handle_.param<std::string>("fk_service_name", fk_service_name_, "pr2_right_arm_kinematics/get_fk");
   node_handle_.param<std::string>("ik_service_name", ik_service_name_, "pr2_right_arm_kinematics/get_ik");
-  node_handle_.param<std::string>("planner/arm_description_file", arm_description_filename_, " ");
-  node_handle_.param<std::string>("planner/motion_primitive_file", mprims_filename_, " ");
 
   //robot description
   node_handle_.param<std::string>("robot/arm_name", arm_name_, "right_arm");
@@ -73,7 +76,6 @@ bool SBPLArmPlannerNode::init()
     return false;
   }
   node_handle_.param<std::string>(robot_urdf_param, robot_description_, "robot_description");
-  node_handle_.param<std::string>("robot/planning_joint", planning_joint_, "r_wrist_roll_link");
   node_handle_.param ("robot/num_joints", num_joints_, 7);
   
   joint_names_.resize(num_joints_);
@@ -103,14 +105,15 @@ bool SBPLArmPlannerNode::init()
   //visualizations
   node_handle_.param ("visualizations/goal", visualize_goal_, true);
   node_handle_.param ("visualizations/expanded_states",visualize_expanded_states_,true);
-  node_handle_.param ("visualizations/heuristic", visualize_heuristic_, false);
-  node_handle_.param ("visualizations/voxel_size", env_resolution_, 0.01);
+  node_handle_.param ("visualizations/heuristic", visualize_heuristic_, true);
+  node_handle_.param ("visualizations/voxel_size", env_resolution_, 0.02);
   node_handle_.param ("visualizations/trajectory", visualize_trajectory_, false);
   node_handle_.param ("visualizations/collision_model_trajectory", visualize_collision_model_trajectory_, false);
   node_handle_.param ("visualizations/trajectory_throttle", throttle_, 4);
 
+  map_frame_ = "base_link";
+
   //initialize planner
-  planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
   if(!initializePlannerAndEnvironment())
     return false;
 
@@ -201,7 +204,7 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
     if(collision_map->header.frame_id.compare(reference_frame_) != 0)
     {
       ROS_WARN("collision_map_occ is in %s not in %s", collision_map->header.frame_id.c_str(), reference_frame_.c_str());
-      ROS_DEBUG("the map has %i cubic obstacles", int(collision_map->boxes.size()));
+      ROS_DEBUG("the collision map has %i cubic obstacles", int(collision_map->boxes.size()));
     }
 
     // add collision map msg
@@ -209,7 +212,10 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
 
     // add self collision blocks
     //cspace_->addArmCuboidsToGrid();
-    
+   
+    map_frame_ = collision_map->header.frame_id; 
+    setArmToMapTransform(map_frame_);
+
     colmap_mutex_.unlock();
     ROS_DEBUG("[updateMapFromCollisionMap] released colmap_mutex_ mutex.");
 
@@ -247,6 +253,7 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
     {
       ROS_INFO("Removing all attached objects.");
       object_map_.clear();
+      attached_object_ = false;
       //TODO: Clear objects in collision space
     }
 
@@ -255,6 +262,7 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
         attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
     {
       object_map_[attached_object->link_name] = attached_object->object;
+      attached_object_ = true;
 
       ROS_INFO("Received a message with %d attached objects.", int(attached_object->object.shapes.size()));
 
@@ -285,6 +293,7 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
     else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE ||
         attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
     {
+      attached_object_ = false;
       ROS_INFO("Removing object: %s", attached_object->link_name.c_str());
       object_map_.erase(attached_object->link_name);
     }
@@ -396,7 +405,7 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
   sbpl_tolerance[0][4] = goals.orientation_constraints[0].absolute_pitch_tolerance;
   sbpl_tolerance[0][5] = goals.orientation_constraints[0].absolute_yaw_tolerance;
 
-  ROS_INFO("goal xyz: %.2f %.2f %.2f (tol: %.3fm) rpy: %.2f %.2f %.2f (tol: %.3frad) in the %s frame", sbpl_goal[0][0],sbpl_goal[0][1],sbpl_goal[0][2],sbpl_tolerance[0][0],sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5], sbpl_tolerance[0][1], reference_frame_.c_str());
+  ROS_INFO("goal xyz(%s): %.2f %.2f %.2f (tol: %.3fm) rpy: %.2f %.2f %.2f (tol: %.3frad)", map_frame_.c_str(),sbpl_goal[0][0],sbpl_goal[0][1],sbpl_goal[0][2],sbpl_tolerance[0][0],sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5], sbpl_tolerance[0][1]);
 
   //set sbpl environment goal
   if(!sbpl_arm_env_.setGoalPosition(sbpl_goal, sbpl_tolerance))
@@ -421,7 +430,7 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
   int nind = 0;
   std::vector<trajectory_msgs::JointTrajectoryPoint> arm_path;
   sensor_msgs::JointState start;
-  tf::Stamped<tf::Pose> pose_stamped;
+  //tf::Stamped<tf::Pose> pose_stamped;
 
   starttime = clock();
 
@@ -463,22 +472,21 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
     }
 
     ROS_DEBUG("[planToPosition] position constraint %d: xyz: %0.3f %0.3f %0.3f in %s", i, req.motion_plan_request.goal_constraints.position_constraints[i].position.x, req.motion_plan_request.goal_constraints.position_constraints[i].position.y, req.motion_plan_request.goal_constraints.position_constraints[i].position.z, req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id.c_str());
-
-    try
-    {
-      tf_.lookupTransform(reference_frame_, req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id, ros::Time(0), transform_);
-
-      ROS_DEBUG("Received transform from %s to %s (translation: %f %f %f)",reference_frame_.c_str(),req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id.c_str(), transform_.getOrigin().x(),transform_.getOrigin().y(),transform_.getOrigin().z());
-    }
-    catch (tf::TransformException ex)
-    {
-      ROS_ERROR("%s",ex.what());
-      return false;
-    }
-
-    // cache transform for later
-    setTransform();
     
+    geometry_msgs::PoseStamped pose_in, pose_out;
+    pose_in.header = req.motion_plan_request.goal_constraints.position_constraints[i].header;
+    pose_in.pose.position = req.motion_plan_request.goal_constraints.position_constraints[i].position;
+    pose_in.pose.orientation = req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation;
+ 
+    tf_.transformPose(map_frame_,pose_in,pose_out);
+    
+    req.motion_plan_request.goal_constraints.position_constraints[i].position = pose_out.pose.position;
+    req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation = pose_out.pose.orientation;
+
+    ROS_DEBUG("goal pose(%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id.c_str(),pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z);
+    ROS_DEBUG("goal pose(%s): %0.3f %0.3f %0.3f", map_frame_.c_str(), pose_out.pose.position.x,pose_out.pose.position.y,pose_out.pose.position.z);
+
+  /*
     // use transform to transform goal into reference frame (should switch to tf_.transformPose() in future)
     geometry_msgs::PoseStamped goal_pose;
     KDL::Frame goal_frame;
@@ -490,6 +498,7 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
     tf::PoseKDLToMsg(goal_frame, goal_pose.pose);
     req.motion_plan_request.goal_constraints.position_constraints[i].position = goal_pose.pose.position;
     req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation = goal_pose.pose.orientation;
+  */
   }
 
   // get the initial state of the planning joints
@@ -569,9 +578,8 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
           ROS_INFO("[plan] Visualizing the trajectory (throttle = %d)", throttle_);
           aviz_->visualizeJointTrajectoryMsg(res.trajectory.joint_trajectory, throttle_);
 
-          ROS_INFO("[plan] Visualizing the attached object (throttle = %d)", throttle_);
-          //TODO: add in check to see if we have an attached object...
-          visualizeAttachedObject(res.trajectory.joint_trajectory, throttle_);
+          if(attached_object_) 
+            visualizeAttachedObject(res.trajectory.joint_trajectory, throttle_);
         }
 
         if(visualize_collision_model_trajectory_)
@@ -644,9 +652,6 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   //check if an empty plan was received.
   if(b_ret && solution_state_ids_v.size() <= 0)
     b_ret = false;
-
-  if(visualize_heuristic_ && b_ret)
-    displayShortestPath();
 
   //outputs debug information about the adaptive mprims
   sbpl_arm_env_.debugAdaptiveMotionPrims();
@@ -817,10 +822,28 @@ bool SBPLArmPlannerNode::initChain(std::string robot_description)
   return true;
 }
 
-void SBPLArmPlannerNode::setTransform()
+void SBPLArmPlannerNode::setArmToMapTransform(std::string &map_frame)
 {
+  std::string fk_root_frame;
+
+  // frame that the sbpl_arm_model is working in
+  sbpl_arm_env_.getArmChainRootLinkName(fk_root_frame);
+
+  // get transform to frame that collision map is in
+  try
+  {
+    tf_.lookupTransform(map_frame, fk_root_frame, ros::Time(0), transform_);
+
+    ROS_DEBUG("Received transform from %s to %s (translation: %f %f %f)",fk_root_frame.c_str(),map_frame.c_str(), transform_.getOrigin().x(),transform_.getOrigin().y(),transform_.getOrigin().z());
+  }
+  catch (tf::TransformException ex)
+  {
+    ROS_ERROR("%s",ex.what());
+  }
+
+  // convert transform to a KDL object
   tf::TransformTFToKDL(transform_,kdl_transform_);
-  sbpl_arm_env_.setReferenceFrameTransform(kdl_transform_);
+  sbpl_arm_env_.setReferenceFrameTransform(kdl_transform_, map_frame);
 }
 
 /* Visualizations ------------------------------------------------------------*/
@@ -897,7 +920,8 @@ void SBPLArmPlannerNode::visualizeAttachedObject(trajectory_msgs::JointTrajector
     aviz_->visualizeSpheres(xyz, 10*(i+1), "sbpl_attached_object_" + boost::lexical_cast<std::string>(i), cspace_->getAttachedObjectRadius());
   }
 
-  ROS_INFO("IGNORING THROTTLE");
+  //TODO: Throttle this
+  ROS_DEBUG("IGNORING THROTTLE");
 }
 
 void SBPLArmPlannerNode::displayShortestPath()
@@ -907,13 +931,13 @@ void SBPLArmPlannerNode::displayShortestPath()
   //check if the list is empty
   if(dpath_.empty())
   {
-    ROS_DEBUG("The heuristic path has a length of 0");
+    ROS_INFO("The heuristic path has a length of 0");
     return;
   }
   else
     ROS_DEBUG("Visualizing heuristic path from start to goal with %d waypoints.",int(dpath_.size()));
  
-  aviz_->visualizeSpheres(dpath_, 80, "heuristic", env_resolution_);
+  aviz_->visualizeSpheres(dpath_, 45, "heuristic_path", 0.04);
 }
 
 void SBPLArmPlannerNode::printPath(const std::vector<trajectory_msgs::JointTrajectoryPoint> &arm_path)

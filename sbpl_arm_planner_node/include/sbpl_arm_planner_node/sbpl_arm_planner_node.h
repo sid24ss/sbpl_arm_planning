@@ -121,6 +121,7 @@ namespace sbpl_arm_planner
       bool visualize_collision_model_trajectory_;
       bool use_research_heuristic_;
       bool use_first_solution_;
+      bool attached_object_;
       int throttle_;
       int num_joints_;
 
@@ -128,6 +129,7 @@ namespace sbpl_arm_planner
       std::string robot_description_;
       std::string node_name_;
       std::string reference_frame_;
+      std::string map_frame_;
       std::string planning_joint_;
       std::string arm_name_;
       std::string trajectory_type_;
@@ -214,7 +216,7 @@ namespace sbpl_arm_planner
       void printPath(const std::vector<trajectory_msgs::JointTrajectoryPoint> &arm_path);
 
       /** \brief Set the transform in the environment class (remove this)*/
-      void setTransform();
+      void setArmToMapTransform(std::string &map_frame);
 
       /** \brief Display states expanded by ARA* search */
       void displayARAStarStates();
