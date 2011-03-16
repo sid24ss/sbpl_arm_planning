@@ -3,7 +3,7 @@
 #include <sbpl_arm_planner/pr2/pr2_workspace.h>
 
 double lower_corner_x = -0.6;
-double lower_corner_y = -1.5;
+double lower_corner_y = -1.25;
 double lower_corner_z = -0.05;
 double grid_size_x = 1.6;
 double grid_size_y = 1.6;

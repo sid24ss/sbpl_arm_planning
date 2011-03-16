@@ -40,7 +40,8 @@ SBPLArmModel::SBPLArmModel(FILE* arm_file)
   chain_root_name_ = "base_link";
   chain_tip_name_ = "r_wrist_roll_link";
   planning_joint_name_ = "r_wrist_roll_link";
-
+  reference_frame_ = "base_link";
+    
   joints_.resize(num_joints_);
   links_.resize(num_links_);
 
@@ -280,6 +281,7 @@ bool SBPLArmModel::initKDLChain(const std::string &fKDL)
     return false;
   }
 
+  printArmDescription(stdout); 
   return true;
 }
 
@@ -338,16 +340,21 @@ bool SBPLArmModel::computeFK(const std::vector<double> angles, int frame_num, KD
     return false;
   }
 
-  //temp
   *frame_out = fk_frame_out;
-  
-  KDL::Frame f = transform_ * fk_frame_out;
-  
+
+/*
+  //temp 
+  KDL::Frame f;
+  f.p = transform_ * fk_frame_out.p;
+
   //NOTE: HACK HACK HACK HACK HACK
   frame_out->p.x(frame_out->p.x() - 0.05);
   frame_out->p.z(frame_out->p.z() + 0.743);
-  
-  printf("x: %0.5f | %0.5f  y: %0.5f | %0.5f  z: %0.5f | %0.5f ",f.p.x(),frame_out->p.x(),f.p.y(),frame_out->p.y(),f.p.z(),frame_out->p.z());
+*/
+
+  frame_out->p = transform_ * fk_frame_out.p;
+
+  //printf("x: %0.5f | %0.5f  y: %0.5f | %0.5f  z: %0.5f | %0.5f\n",f.p.x(),frame_out->p.x(),f.p.y(),frame_out->p.y(),f.p.z(),frame_out->p.z());
 
   return true;
 }
@@ -432,20 +439,25 @@ bool SBPLArmModel::computeIK(const std::vector<double> pose, const std::vector<d
   frame_des.M = KDL::Rotation::RPY(pose[3],pose[4],pose[5]);
 
   //transform from reference link to "torso lift link"
-  //  frame_des = transform_inverse_ * frame_des;
+  frame_des.p = transform_inverse_ * frame_des.p;
+
+/*
+  ROS_INFO("---");
+  ROS_INFO("[computeIK] (%s) xyz: %0.5f %0.5f %0.5f", reference_frame_.c_str(),pose[0],pose[1],pose[2]);
+  ROS_INFO("[computeIK] (torso_lift_link) xyz: %0.5f %0.5f %0.5f", frame_des.p.x(),frame_des.p.y(),frame_des.p.z());
+  
+  KDL::Frame f = frame_des;
+  f.p = transform_inverse_ * frame_des.p;
   frame_des.p.x(frame_des.p.x() + 0.05);
   frame_des.p.z(frame_des.p.z() - 0.743);
+  ROS_DEBUG("x: %0.5f | %0.5f  y: %0.5f | %0.5f  z: %0.5f | %0.5f\n",f.p.x(),frame_des.p.x(),f.p.y(),frame_des.p.y(),f.p.z(),frame_des.p.z());
+*/
 
   //fill the start configuration (to be used as a seed)
   for(unsigned int i = 0; i < start.size(); i++)
-  {
-    ik_jnt_pos_in_(i) = angles::normalize_angle(start[i]); // must be normalized (6/29/2010)
-    //SBPL_PRINTF("%0.2f -> %0.2f, ",start[i],angles::normalize_angle(start[i]));
-  }
-  //SBPL_PRINTF("\n");
+    ik_jnt_pos_in_(i) = angles::normalize_angle(start[i]); // must be normalized for CartToJntSearch
 
   //call IK solver
-  //if(pr2_arm_ik_solver_->CartToJnt(ik_jnt_pos_in_, frame_des, ik_jnt_pos_out_) < 0)
   if(pr2_arm_ik_solver_->CartToJntSearch(ik_jnt_pos_in_, frame_des, ik_jnt_pos_out_, 0.3) < 0)
     return false;
 
@@ -525,7 +537,6 @@ bool SBPLArmModel::getJointPositions(const std::vector<double> angles, const dou
     if(joint_indeces_[i] == planning_joint_)
       *axis_angle = frameToAxisAngle(f_link_tip, R_target);
   }
-
   return true;
 }
 
@@ -746,10 +757,19 @@ void SBPLArmModel::getJointLimits(int joint_num, double* min, double *max)
   *max = joints_[joint_num].max;
 }
 
-void SBPLArmModel::setRefFrameTransform(KDL::Frame f)
+void SBPLArmModel::setRefFrameTransform(KDL::Frame f, std::string &name)
 {
-  transform_ = f;
+  reference_frame_ = name;
 
+  transform_ = f;
   transform_inverse_ = transform_.Inverse();
+
+  ROS_DEBUG("Transform  %s to torso: x: %0.4f y: %0.4f z: %0.4f", name.c_str(),transform_.p.x(),transform_.p.y(),transform_.p.z()); 
+  ROS_DEBUG("Inverse Transform torso to %s: x: %0.4f y: %0.4f z: %0.4f", name.c_str(),transform_inverse_.p.x(),transform_inverse_.p.y(),transform_inverse_.p.z()); 
+}
+
+void SBPLArmModel::getArmChainRootLinkName(std::string &name)
+{
+  name = chain_root_name_;
 }
 

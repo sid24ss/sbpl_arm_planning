@@ -35,7 +35,7 @@ SBPLArmPlannerParams::SBPLArmPlannerParams()
   epsilon_ = 10;
   use_multires_mprims_ = true;
   use_dijkstra_heuristic_ = true;
-  use_smoothing_ = true;
+  use_smoothing_ = false;
   use_6d_pose_goal_ = true;
   sum_heuristics_ = false;
   use_uniform_cost_ = true;
@@ -77,18 +77,13 @@ void SBPLArmPlannerParams::initFromParamServer()
   nh.param("planner/use_uniform_obstacle_cost", use_uniform_cost_,false);
   nh.param("planner/verbose",verbose_,false);
 
-  /* outdated planner params - should be removed */ 
-  nh.param("planner/use_smoothing",use_smoothing_,false);
-  nh.param("planner/plan_to_full_6d_pose_goal",use_6d_pose_goal_,true);
-  
   /* research params of the planner */
   nh.param("planner/research/solve_with_ik_threshold",solve_for_ik_thresh_m_,0.15);
   nh.param("planner/research/sum_heuristics",sum_heuristics_,false);
   nh.param("planner/research/short_distance_mprims_threshold",short_dist_mprims_thresh_m_, 0.2);
 
   /* occupancy grid */
-  nh.param("collision_space/resolution",resolution_,0.01);
-
+  nh.param("collision_space/resolution",resolution_,0.02);
   nh.param("collision_space/occupancy_grid/origin_x",originX_,-0.6);
   nh.param("collision_space/occupancy_grid/origin_y",originY_,-1.15);
   nh.param("collision_space/occupancy_grid/origin_z",originZ_,-0.05);  
@@ -256,12 +251,6 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
       if(fscanf(fCfg,"%s",sTemp) < 1) 
         SBPL_PRINTF("Parsed string has length < 1.\n");
       use_ik_ = atoi(sTemp);
-    }
-    else if(strcmp(sTemp, "use_smoothing:") == 0)
-    {
-      if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
-      use_smoothing_ = atoi(sTemp);
     }
     else if(strcmp(sTemp, "sum_heuristics:") == 0)
     {
@@ -492,7 +481,6 @@ void SBPLArmPlannerParams::printParams(FILE* fOut)
   SBPL_FPRINTF(fOut,"%40s: %s\n", "use multi-resolution motion primitives", use_multires_mprims_ ? "yes" : "no");
   SBPL_FPRINTF(fOut,"%40s: %s\n", "use dijkstra heuristic", use_dijkstra_heuristic_ ? "yes" : "no");
   SBPL_FPRINTF(fOut,"%40s: %s\n", "use research heuristic", use_research_heuristic_ ? "yes" : "no");
-  SBPL_FPRINTF(fOut,"%40s: %s\n", "use smoothing penalty", use_smoothing_ ? "yes" : "no");
   SBPL_FPRINTF(fOut,"%40s: %s\n", "h = h_elbow + h_endeff", sum_heuristics_ ? "yes" : "no"); 
   SBPL_FPRINTF(fOut,"%40s: %s\n", "use a uniform cost",use_uniform_cost_ ? "yes" : "no");
   SBPL_FPRINTF(fOut,"%40s: %d\n", "cost per cell", cost_per_cell_);

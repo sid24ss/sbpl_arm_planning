@@ -170,7 +170,9 @@ class SBPLArmModel{
     /** \brief set the transform from the torso frame to the base frame
      * (really supposed to be a transform from the frame that the kinematics
      * is done to the world frame that the planning is done) */
-    void setRefFrameTransform(KDL::Frame f);
+    void setRefFrameTransform(KDL::Frame f, std::string &name);
+
+    void getArmChainRootLinkName(std::string &name);
 
     /** \brief get the self collision cuboids that the robot occupies */
     std::vector<std::vector<double> >  getCollisionCuboids();
@@ -191,6 +193,9 @@ class SBPLArmModel{
 
     /** \brief the name of the tip frame in the KDL chain */
     std::string chain_tip_name_;
+
+    /** \brief frame that the planning is done in */
+    std::string reference_frame_;
 
     /** \brief the robot model used by the KDL */
     urdf::Model robot_model_;

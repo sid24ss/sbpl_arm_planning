@@ -1244,6 +1244,7 @@ bool EnvironmentROBARM3D::precomputeHeuristics()
     heuristic_mutex_.unlock();
   }
 
+  SBPL_DEBUG("Completed heuristic pre-computation");
   return true;
 }
 
@@ -1598,7 +1599,12 @@ std::vector<std::vector<double> > EnvironmentROBARM3D::getShortestPath()
     start[1] = EnvROBARM.startHashEntry->xyz[1];
     start[2] = EnvROBARM.startHashEntry->xyz[2];
 
-    dijkstra_->getShortestPath(start, path);
+    if(!dijkstra_->getShortestPath(start, path))
+    {
+      ROS_WARN("Unable to retrieve shortest path.");
+      return dpath;
+    }
+
     for(int i=0; i < (int)path.size(); ++i)
     {
       grid_->gridToWorld(path[i][0], path[i][1], path[i][2], waypoint[0], waypoint[1], waypoint[2]);
@@ -1677,9 +1683,14 @@ void EnvironmentROBARM3D::visualizeOccupancyGrid()
   grid_->visualize();
 }
 
-void EnvironmentROBARM3D::setReferenceFrameTransform(KDL::Frame f)
+void EnvironmentROBARM3D::setReferenceFrameTransform(KDL::Frame f, std::string &name)
 {
-  arm_->setRefFrameTransform(f);
+  arm_->setRefFrameTransform(f, name);
+}
+
+void EnvironmentROBARM3D::getArmChainRootLinkName(std::string &name)
+{
+  arm_->getArmChainRootLinkName(name);
 }
 
 std::vector<double> EnvironmentROBARM3D::getPlanningStats()

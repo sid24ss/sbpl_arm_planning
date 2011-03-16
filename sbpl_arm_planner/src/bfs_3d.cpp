@@ -236,7 +236,7 @@ void BFS3D::search3DwithQueue(State3D*** statespace)
       }
     }
   }
-
+  
   //initialization - throw starting states on queue with g cost = 0
   for(unsigned int i = 0; i < goal_.size(); ++i)
   {
@@ -253,11 +253,11 @@ void BFS3D::search3DwithQueue(State3D*** statespace)
     Queue.pop();
 
     //it may be that the state is already closed
-    //if(ExpState->iterationclosed == 1)
-    //  continue;
+    if(ExpState->iterationclosed == 1)
+      continue;
 
     //close it
-    //ExpState->iterationclosed = 1;
+    ExpState->iterationclosed = 1;
 
     //set the corresponding distances to the goal
     dist_[xyzToIndex(ExpState->x, ExpState->y, ExpState->z)] = ExpState->g;
@@ -269,20 +269,15 @@ void BFS3D::search3DwithQueue(State3D*** statespace)
       newy = ExpState->y + dy[d];
       newz = ExpState->z + dz[d];
 
-      //if(!isValidCell(newx,newy,newz))
-      //  continue;
-      
       //make sure it is inside the map and has no obstacle
       if(0 > newx || newx >= dimX_ || 0 > newy || newy >= dimY_ || 0 > newz || newz >= dimZ_)
         continue;
 
+      if(!isValidCell(newx,newy,newz))
+        continue;
+ 
       if(statespace[newx][newy][newz].iterationclosed == 0)
       {
-        ExpState->iterationclosed = 1;
-
-        if(!isValidCell(newx,newy,newz))
-          continue;
-  
        //insert into the stack
         Queue.push(&statespace[newx][newy][newz]);
 
@@ -298,7 +293,6 @@ void BFS3D::search3DwithQueue(State3D*** statespace)
 
         if(statespace[newx][newy][newz].g > g_temp)
           statespace[newx][newy][newz].g = g_temp;
-        // SBPL_PRINTF("%i: %u,%u,%u, g-cost: %i\n",d,newx,newy,newz,statespace[newx][newy][newz].g);
       }
     }
   }

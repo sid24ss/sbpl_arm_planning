@@ -333,7 +333,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     */
     void visualizeOccupancyGrid();
 
-    void setReferenceFrameTransform(KDL::Frame f);
+    void setReferenceFrameTransform(KDL::Frame f, std::string &name);
 
     SBPLCollisionSpace* getCollisionSpace() const;
     
@@ -362,6 +362,8 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     bool getElbowCellsAtGoal(std::vector<int> &shoulder, std::vector<double> &goal_m, double rad1, double rad2, std::vector<std::vector<int> > &cells);
 
     void getElbowPoints(std::vector<std::vector<double> > &elbow_points);
+
+    void getArmChainRootLinkName(std::string &name);
 
   private:
 

@@ -481,7 +481,7 @@ SET_ANGLES_AGAIN: //GoTO label, temporary, do not continue use of this
 
 void RPYSolver::printStats()
 {
-  SBPL_DEBUG("Calls to OS: %d   OS Predicts Impossible:  %d    Solutions In Collision: %d    Invalid Paths to Solutions: %d", num_calls_, num_invalid_predictions_, num_invalid_solution_, num_invalid_path_to_solution_); 
+  SBPL_INFO("Calls to OS: %d   OS Predicts Impossible:  %d    Solutions In Collision: %d    Invalid Paths to Solutions: %d", num_calls_, num_invalid_predictions_, num_invalid_solution_, num_invalid_path_to_solution_); 
 }
 
 }

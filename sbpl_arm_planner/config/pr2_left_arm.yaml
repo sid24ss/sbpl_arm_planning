@@ -11,7 +11,7 @@ planner:
     short_distance_mprims_threshold: 0.2
   
 robot:
-  arm_name: right_arm
+  arm_name: left_arm
   num_joints: 7
   
 debug:
@@ -39,7 +39,6 @@ collision_space:
     size_z: 1.4
 
 reference_frame: base_footprint
-FK_service_name: pr2_right_arm_kinematics/get_fk
-IK_service_name: pr2_right_arm_kinematics/get_ik
-
+FK_service_name: pr2_left_arm_kinematics/get_fk
+IK_service_name: pr2_left_arm_kinematics/get_ik
 
