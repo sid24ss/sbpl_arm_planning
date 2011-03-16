@@ -1,5 +1,6 @@
 /*
  * Written by Gokul Subramanian, MSE in Robotics & CIS 2011
+ * (Maintained by Benjamin Cohen)
  * Advised by Professor Maxim Likhachev
  * University of Pennsylvania
  * 4/14/2010
@@ -37,9 +38,14 @@ class RPYSolver
     */
     void orientationSolver(double*, double, double, double, double, double, double, double, double, double, int);
 
+    /** \brief check if a certain end effector orientation is feasible */
     bool isOrientationFeasible(const double* rpy, std::vector<double> &start, std::vector<double> &prefinal, std::vector<double> &final);
 
+    /** \brief print stats to stdout */
     void printStats();
+
+    /** \brief get a list of stats (number of calls etc.) */
+    void getStats(std::vector<double> &stats);
 
   private:
 

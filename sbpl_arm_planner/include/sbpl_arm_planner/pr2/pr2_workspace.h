@@ -12,8 +12,6 @@
 #include <sbpl_arm_planner/pr2/sbpl_math.h>
 using namespace std;
 
-//#define PI 3.14159
-
 //Function prototypes
 void grid2world(long, long, long, double&, double&, double&);
 void world2grid(double, double, double, long&, long&, long&);

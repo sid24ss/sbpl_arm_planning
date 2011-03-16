@@ -41,8 +41,8 @@
 #include <algorithm>
 
 #include <angles/angles.h>
-#include <sbpl_arm_planner/bfs_3d.h>
 #include <sbpl/headers.h>
+#include <sbpl_arm_planner/bfs_3d.h>
 #include <sbpl_arm_planner/sbpl_collision_space.h>
 #include <sbpl_arm_planner/sbpl_arm_planner_params.h>
 #include <sbpl_arm_planner/pr2/sbpl_math.h>

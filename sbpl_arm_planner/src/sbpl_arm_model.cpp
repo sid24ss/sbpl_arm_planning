@@ -206,6 +206,7 @@ void SBPLArmModel::setResolution(double resolution)
 {
   resolution_ = resolution;
 
+  //store discretized link radii
   for(int i = 0; i < num_links_; i++)
   {
     links_[i].radius_c = (links_[i].radius / resolution_) + 0.5;
@@ -221,8 +222,15 @@ bool SBPLArmModel::initKDLChainFromParamServer()
   ros::NodeHandle nh("~");
   std::string robot_description;
   std::string robot_param;
+
   nh.searchParam("robot_description",robot_param);
-  nh.param<std::string>(robot_param,robot_description,"robot_description");
+  nh.param<std::string>(robot_param,robot_description,"");
+
+  if(robot_description.empty())
+  {
+    SBPL_ERROR("[SBPLArmModel] Unable to get robot_description from rosparam server.");
+    return false;
+  }
 
   return initKDLChain(robot_description);
 }
@@ -321,8 +329,7 @@ void SBPLArmModel::parseKDLTree()
 bool SBPLArmModel::computeFK(const std::vector<double> angles, int frame_num, KDL::Frame *frame_out)
 {
   for(int i = 0; i < num_joints_; ++i)
-    //jnt_pos_in_(i) = angles[i]; // i+1 as not to include the base link....how to make this work?
-    jnt_pos_in_(i) = angles::normalize_angle(angles[i]); // i+1 as not to include the base link....how to make this work?
+    jnt_pos_in_(i) = angles::normalize_angle(angles[i]);
 
   KDL::Frame fk_frame_out;
   if(fk_solver_->JntToCart(jnt_pos_in_, fk_frame_out, frame_num) < 0)
@@ -333,12 +340,15 @@ bool SBPLArmModel::computeFK(const std::vector<double> angles, int frame_num, KD
 
   //temp
   *frame_out = fk_frame_out;
-  //*frame_out = transform_ * fk_frame_out;
-
+  
+  KDL::Frame f = transform_ * fk_frame_out;
+  
   //NOTE: HACK HACK HACK HACK HACK
   frame_out->p.x(frame_out->p.x() - 0.05);
   frame_out->p.z(frame_out->p.z() + 0.743);
   
+  printf("x: %0.5f | %0.5f  y: %0.5f | %0.5f  z: %0.5f | %0.5f ",f.p.x(),frame_out->p.x(),f.p.y(),frame_out->p.y(),f.p.z(),frame_out->p.z());
+
   return true;
 }
 

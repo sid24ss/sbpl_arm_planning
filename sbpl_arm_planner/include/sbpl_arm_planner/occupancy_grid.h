@@ -28,14 +28,13 @@
  */
 
 #include <sys/stat.h>
+#include <vector>
 #include <fstream>
+#include <ros/ros.h>
 #include <sbpl/config.h>
 #include <distance_field/distance_field.h>
 #include <distance_field/voxel_grid.h>
 #include <distance_field/propagation_distance_field.h>
-#include <boost/thread/mutex.hpp>
-#include <ros/ros.h>
-#include <vector>
 
 using namespace std;
 

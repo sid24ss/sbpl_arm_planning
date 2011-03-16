@@ -29,7 +29,7 @@
 
 #include <ros/ros.h>
 #include <vector>
-#include <sbpl/config.h>
+//#include <sbpl/config.h>
 #include <resource_retriever/retriever.h>
 #include <sbpl_arm_planner/bresenham.h>
 #include <sbpl_arm_planner/sbpl_arm_model.h>

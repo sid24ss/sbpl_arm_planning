@@ -40,11 +40,10 @@
 #include <kdl/chainiksolver.hpp>
 #include <kdl/chainiksolverpos_nr.hpp>
 #include <kdl/chainiksolvervel_pinv_givens.hpp>
+#include <kdl/treefksolverpos_recursive.hpp>
 #include <urdf/model.h>
 #include <ros/ros.h>
 #include <pr2_arm_kinematics/pr2_arm_ik_solver.h>
-
-#include <kdl/treefksolverpos_recursive.hpp>
 
 using namespace std;
 

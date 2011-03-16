@@ -324,6 +324,9 @@ bool BFS3D::getShortestPath(std::vector<short unsigned int> start, std::vector<s
   std::vector<int> next_state(3,0);
   int newx,newy,newz;
 
+  //make sure the while loop eventually stops
+  int max_path_length = dimX_*dimY_;
+
   int dx[DIRECTIONS3D] = { 1,  1,  1,  0,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0,  0, -1, -1, -1};
   int dy[DIRECTIONS3D] = { 1,  0, -1,  1,  0, -1, -1,  0,  1,    1,  0, -1,  1, -1, -1,  0,  1,    1,  0, -1,  1,  0, -1, -1,  0,  1};
   int dz[DIRECTIONS3D] = {-1, -1, -1, -1, -1, -1, -1, -1, -1,    0,  0,  0,  0,  0,  0,  0,  0,    1,  1,  1,  1,  1,  1,  1,  1,  1};
@@ -333,7 +336,7 @@ bool BFS3D::getShortestPath(std::vector<short unsigned int> start, std::vector<s
   next_state[1] = start[1];
   next_state[2] = start[2];
 
-  while(!isGoal(next_state) || cntr >= dimX_*dimY_)
+  while(!isGoal(next_state) || cntr > max_path_length)
   {
     state = next_state;
     min_val = INFINITE_COST;
@@ -373,16 +376,17 @@ bool BFS3D::getShortestPath(std::vector<short unsigned int> start, std::vector<s
     }
     path.push_back(next_state);
 
-    //make sure that we aren't looping forever...
     cntr++;
   }
 
-/*  
-  SBPL_PRINTF("path:\n");
-  for(unsigned int i = 0; i < path.size(); ++i)
-    SBPL_PRINTF("%d: %d %d %d\n", i, path[i][0],path[i][1],path[i][2]);
-  SBPL_PRINTF("------------\n");
-*/
+  //unable to find path
+  if(cntr > max_path_length)
+  {
+    SBPL_WARN("[BFS3D] Unable to find path to goal. Exiting.");
+    path.clear();
+    return false;
+  }
+
   return true;
 }
 
@@ -412,9 +416,9 @@ bool BFS3D::isValidCell(const int x, const int y, const int z)
 
 void BFS3D::printConfig(FILE* fOut)
 {
-  SBPL_FPRINTF(fOut,"BFS_3D Configuration:\n");
+  SBPL_FPRINTF(fOut,"BFS3D Configuration:\n");
   SBPL_FPRINTF(fOut,"dimX: %d   dimY: %d   dimZ: %d\n",dimX_,dimY_,dimZ_);
-  SBPL_FPRINTF(fOut,"radius: %d   radius(meters): %0.3f\n",radius_,radius_m_);
+  SBPL_FPRINTF(fOut,"robot radius(cells): %d   robot radius(meters): %0.3f\n",radius_,radius_m_);
 }
 
 void BFS3D::printGrid()
@@ -446,5 +450,4 @@ void BFS3D::printCostToGoal()
     }
   }
 }
-
 

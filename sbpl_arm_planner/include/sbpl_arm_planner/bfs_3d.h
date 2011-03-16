@@ -48,7 +48,7 @@ using namespace std;
 #define SMALL_NUM  0.00000001  
 #define INFINITE_COST 1000000000 
  
-#define DEBUG_TIME 1 
+#define DEBUG_TIME 0 
 #define DIRECTIONS3D 26 
 #define GOAL_TOLERANCE 0 
 
@@ -66,16 +66,18 @@ class BFS3D
 {
   public:
 
-    /**  \brief Constructor
+    /**  \brief constructor
      * @param dim_x dim_x in cells
      * @param dim_y dim_y of grid in cells
      * @param dim_z dim_z of grid in cells
      * @param radius radius in cells of the point robot
      * @param cost_per_cell cost of traversing one cell in the grid*/
     BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell);
+
+    /** \brief destructor */
     ~BFS3D();
 
-    /** \brief Initialize the occupancy grid (required if not using
+    /** \brief initialize the occupancy grid (required if not using
      * a distance field to describe the environment). */
     void init();
     
@@ -109,9 +111,14 @@ class BFS3D
      * @return true if it was a success and false otherwise */
     bool getShortestPath(std::vector<short unsigned int> start, std::vector<std::vector<int> > &path);
 
+    /** \brief configure the distance field object that will be used as the
+     * occupancy grid.
+     * @param enable enable or disable the distance field
+     * @param df pointer to distance field to use
+    */
     void configDistanceField(bool enable, const distance_field::PropagationDistanceField* df);
 
-    /** \brief Output configuration values for debugging */
+    /** \brief output configuration values for debugging */
     void printConfig(FILE* fOut);
 
   private:
@@ -154,7 +161,7 @@ inline int BFS3D::xyzToIndex(int x, int y, int z)
     return ret;
   else
   {
-    SBPL_PRINTF("[BFS3D] out of bounds (%d %d %d) (index: %d  size: %d)\n", x,y,z,ret,dist_length_);
+    SBPL_WARN("[BFS3D] out of bounds (%d %d %d) (index: %d  size: %d)\n", x,y,z,ret,dist_length_);
     return 0;
   }
 }
@@ -163,5 +170,6 @@ inline int BFS3D::getDist(int x, int y, int z)
 {
   return dist_[xyzToIndex(x,y,z)];
 }
+
 #endif
 
