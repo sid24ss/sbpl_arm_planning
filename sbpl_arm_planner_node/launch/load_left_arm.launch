@@ -1,9 +1,0 @@
-<launch>
-
-  <!-- load common nodes for motion planning tests -->
-  <include file="$(find arm_navigation_tests)/tests/motion_planners/common/motion_planning_common_left_arm.launch"/>
-
-  <!-- load planning -->
-<!--  <include file="$(find sbpl_arm_planner)/launch/sbpl_planning_right_arm.launch"/> -->
-
-</launch>
