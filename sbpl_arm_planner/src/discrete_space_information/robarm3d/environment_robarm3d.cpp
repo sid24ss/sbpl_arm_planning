@@ -65,8 +65,9 @@ static bool xyzCompare (vector<int> i, vector<int> j)
 
 namespace sbpl_arm_planner{
 
-  EnvironmentROBARM3D::EnvironmentROBARM3D()
+  EnvironmentROBARM3D::EnvironmentROBARM3D() : grid_(NULL),dijkstra_(NULL),elbow_dijkstra_(NULL),arm_(NULL),rpysolver_(NULL),cspace_(NULL)
   {
+    EnvROBARM.Coord2StateIDHashTable = NULL;
     EnvROBARMCfg.bInitialized = false;
     EnvROBARMCfg.ik_solution_is_valid = false;
     EnvROBARMCfg.solved_by_ik = 0;
@@ -90,10 +91,31 @@ namespace sbpl_arm_planner{
 
   EnvironmentROBARM3D::~EnvironmentROBARM3D()
   {
-    delete cspace_;
-    delete arm_;
-    delete dijkstra_;
-    delete grid_;
+    if(rpysolver_ != NULL)
+      delete rpysolver_;
+    if(cspace_ != NULL)
+      delete cspace_;
+    if(arm_ != NULL)
+      delete arm_;
+    if(dijkstra_ != NULL)
+      delete dijkstra_;
+    if(elbow_dijkstra_ != NULL)
+      delete elbow_dijkstra_;
+    if(grid_ != NULL)
+      delete grid_;
+
+    for(size_t i = 0; i < EnvROBARM.StateID2CoordTable.size(); i++)
+    {
+      delete EnvROBARM.StateID2CoordTable.at(i);
+      EnvROBARM.StateID2CoordTable.at(i) = NULL;
+    }
+    EnvROBARM.StateID2CoordTable.clear();
+
+    if(EnvROBARM.Coord2StateIDHashTable != NULL)
+    {
+      delete [] EnvROBARM.Coord2StateIDHashTable;
+      EnvROBARM.Coord2StateIDHashTable = NULL;
+    }
 
 #if DEBUG_SEARCH
     SBPL_FCLOSE(fSucc);
@@ -103,9 +125,6 @@ namespace sbpl_arm_planner{
     SBPL_FCLOSE(fHeur);
 #endif
 
-    for(unsigned int x = 0; x < EnvROBARM.StateID2CoordTable.size(); x++)
-      delete EnvROBARM.StateID2CoordTable[x];
-    SBPL_DEBUG("[DESTRUCTOR] Deleted the StateID2CoordTable.\n");
   }
 
 /////////////////////////////////////////////////////////////////////////////

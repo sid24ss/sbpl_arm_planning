@@ -146,8 +146,6 @@ namespace sbpl_arm_planner
       SBPLCollisionSpace* cspace_;
       OccupancyGrid* grid_;
       VisualizeArm* aviz_;
-      FILE *arm_description_fp_;
-      FILE *mprims_fp_;
       
       boost::mutex colmap_mutex_;
       boost::mutex object_mutex_;

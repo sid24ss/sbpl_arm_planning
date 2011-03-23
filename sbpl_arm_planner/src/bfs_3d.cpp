@@ -37,6 +37,9 @@ BFS3D::BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell)
   if(dim_x < 0 || dim_y < 0 || dim_z < 0)
     SBPL_ERROR("Dimensions must have positive values. Fix this.\n");
 
+  grid3D_ = NULL;
+  df_ = NULL;
+
   dimX_ = dim_x;
   dimY_ = dim_y;
   dimZ_ = dim_z;
@@ -97,7 +100,7 @@ bool BFS3D::setGoal(std::vector<short unsigned int> goal)
 
   if(goal_.empty())
   { 
-    SBPL_ERROR("[bfs3d] Error: No valid goals were received.\n");
+    SBPL_ERROR("[bfs3d] Error: No valid goals were received.");
     return false;
   }
   return true;
@@ -107,7 +110,7 @@ bool BFS3D::setGoals(std::vector<std::vector<short unsigned int> > goals)
 {
   if(goals.size() <= 0)
   {
-    SBPL_ERROR("[bfs3d] No goal cell received. Exiting.\n");
+    SBPL_DEBUG("[bfs3d] No goal cell received. Exiting.");
     return false;
   }
 
@@ -122,12 +125,12 @@ bool BFS3D::setGoals(std::vector<std::vector<short unsigned int> > goals)
     if(goals[i][0] < dimX_ && goals[i][1] < dimY_ && goals[i][2] < dimZ_)
       goal_.push_back(goals[i]);
     else
-      SBPL_DEBUG("Goal: %u %u %u is invalid.\n",goals[i][0],goals[i][1],goals[i][2]);
+      SBPL_DEBUG("Goal: %u %u %u is invalid.",goals[i][0],goals[i][1],goals[i][2]);
   }
 
   if(goal_.empty())
   {
-    SBPL_ERROR("Error: No valid goals were received.\n");
+    SBPL_DEBUG("Error: No valid goals were received.\n");
     return false;
   }
   return true;
@@ -171,14 +174,18 @@ void BFS3D::delete3DStateSpace(State3D**** statespace3D)
 {
   short unsigned int x,y;
 
-  for (x = 0; x < dimX_; x++)
+  if((*statespace3D) != NULL)
   {
-    for (y = 0; y < dimY_; y++)
-      delete [] (*statespace3D)[x][y];
+    for (x = 0; x < dimX_; x++)
+    {
+      for (y = 0; y < dimY_; y++)
+        delete [] (*statespace3D)[x][y];
 
-    delete [] (*statespace3D)[x];
+      delete [] (*statespace3D)[x];
+    }
+    delete [] (*statespace3D);
+    (*statespace3D) = NULL;
   }
-  delete *statespace3D;
 }
 
 bool BFS3D::runBFS()
@@ -392,6 +399,7 @@ void BFS3D::configDistanceField(bool enable, const distance_field::PropagationDi
   radius_m_ = double(radius_ * df_->getResolution(distance_field::PropagationDistanceField::DIM_X));
 }
 
+
 bool BFS3D::isValidCell(const int x, const int y, const int z)
 {
   if(enable_df_)
@@ -404,7 +412,6 @@ bool BFS3D::isValidCell(const int x, const int y, const int z)
     if(grid3D_[x][y][z] <= radius_)
       return false;
   }
-
   return true;
 }
 

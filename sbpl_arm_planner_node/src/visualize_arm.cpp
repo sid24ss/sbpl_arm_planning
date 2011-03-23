@@ -1,3 +1,5 @@
+/* \author Ben Cohen */
+
 #include <sbpl_arm_planner_node/visualize_arm.h>
 #include <time.h>
 
@@ -132,6 +134,8 @@ VisualizeArm::VisualizeArm(std::string arm_name) : ph_("~"), arm_name_(arm_name)
 VisualizeArm::~VisualizeArm()
 {
   delete traj_client_;
+  delete fk_solver_;
+  delete gripper_l_fk_solver_;
 }
 
 void VisualizeArm::setReferenceFrame(std::string &frame)

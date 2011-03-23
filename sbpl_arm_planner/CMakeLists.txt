@@ -1,4 +1,4 @@
-	cmake_minimum_required(VERSION 2.4.6)
+cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 #Set the build type.  Options are:
@@ -34,13 +34,13 @@ rosbuild_add_library(sbpl_arm_planner
 			src/sbpl_arm_planner_params.cpp
 			src/pr2/sbpl_math.cpp
       src/pr2/pr2_workspace.cpp
-			src/pr2/orientation_solver.cpp
-      src/add_objects_to_map.cpp)
-
-rosbuild_add_executable(addObjects src/add_objects_to_map.cpp)
+			src/pr2/orientation_solver.cpp)
 
 rosbuild_add_executable(planPath src/test/plan_path.cpp)
 rosbuild_add_executable(planPathTest src/test/plan_path_test.cpp)
 
 target_link_libraries(planPath sbpl_arm_planner)
 target_link_libraries(planPathTest sbpl_arm_planner)
+
+#rosbuild_add_executable(testBFS src/test/run_bfs_3d.cpp src/bfs_3d.cpp)
+

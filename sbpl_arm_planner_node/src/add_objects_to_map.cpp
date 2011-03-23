@@ -1,4 +1,4 @@
-#include <sbpl_arm_planner/add_objects_to_map.h>
+#include <sbpl_arm_planner_node/add_objects_to_map.h>
 
 
 AddObjectsToMap::AddObjectsToMap()

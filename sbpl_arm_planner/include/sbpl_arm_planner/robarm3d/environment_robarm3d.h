@@ -135,8 +135,6 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     std::vector<int> expanded_states;
     bool save_expanded_states;
 
-    FILE* fGokul_;
-
     /**
      * @brief Default constructor
     */

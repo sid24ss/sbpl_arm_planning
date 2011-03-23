@@ -172,8 +172,9 @@ void OccupancyGrid::addCollisionCuboid(double origin_x, double origin_y, double 
 
 void OccupancyGrid::visualize()
 {
-  //grid_->visualize(0.01, 0.02, reference_frame_, ros::Time::now());
-  SBPL_DEBUG("[OccupancyGrid] Visualize function is currently disabled. It needs to be updated.");
+  btTransform::btTransform trans; 
+  trans.setIdentity();
+  grid_->visualize(0.01, 0.02, reference_frame_, trans, ros::Time::now());
 }
 
 const distance_field::PropagationDistanceField* OccupancyGrid::getDistanceFieldPtr()

@@ -36,7 +36,7 @@ using namespace std;
 using namespace sbpl_arm_planner;
 
 /** Initializers -------------------------------------------------------------*/
-SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subscriber_(root_handle_,"collision_map_occ",1)
+SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subscriber_(root_handle_,"collision_map_occ",1), collision_map_filter_(NULL),jnt_to_pose_solver_(NULL),grid_(NULL),aviz_(NULL)
 {
   planner_initialized_ = false;
   attached_object_ = false;
@@ -48,14 +48,18 @@ SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subsc
 
 SBPLArmPlannerNode::~SBPLArmPlannerNode()
 {
-  delete aviz_;
-  delete planner_;
+  if(aviz_ != NULL)
+    delete aviz_;
+  if(collision_map_filter_ != NULL)
+    delete collision_map_filter_;
+  if(jnt_to_pose_solver_ != NULL)
+    delete jnt_to_pose_solver_;
+  if(planner_ != NULL)
+    delete planner_;
 }
 
 bool SBPLArmPlannerNode::init()
 {
-  sleep(2);
-
   //planner
   node_handle_.param ("planner/search_mode", search_mode_, true); //true: stop after first solution
   node_handle_.param ("planner/use_research_heuristic", use_research_heuristic_, false);
@@ -121,10 +125,11 @@ bool SBPLArmPlannerNode::init()
   collision_map_filter_->registerCallback(boost::bind(&SBPLArmPlannerNode::collisionMapCallback, this, _1));
 
   collision_object_subscriber_ = root_handle_.subscribe("collision_object", 1, &SBPLArmPlannerNode::collisionObjectCallback, this);
+  object_subscriber_ = root_handle_.subscribe("attached_collision_object", 1, &SBPLArmPlannerNode::attachedObjectCallback,this);
 
   // main planning service
   planning_service_ = root_handle_.advertiseService("/sbpl_planning/plan_path", &SBPLArmPlannerNode::planKinematicPath,this);
-  object_subscriber_ = root_handle_.subscribe("attached_collision_object", 1, &SBPLArmPlannerNode::attachedObjectCallback,this);
+  
   planner_initialized_ = true;
 
   ROS_INFO("The SBPL arm planner node initialized succesfully.");

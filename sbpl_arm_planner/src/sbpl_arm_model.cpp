@@ -33,7 +33,7 @@
 
 using namespace std;
 
-SBPLArmModel::SBPLArmModel(FILE* arm_file)
+SBPLArmModel::SBPLArmModel(FILE* arm_file) : fk_solver_(NULL), ik_fk_solver_(NULL), ik_solver_(NULL), ik_solver_vel_(NULL), pr2_arm_ik_solver_(NULL)
 {
   num_joints_ = 7;
   num_links_ = 3;
@@ -59,11 +59,16 @@ SBPLArmModel::SBPLArmModel(FILE* arm_file)
 
 SBPLArmModel::~SBPLArmModel()
 {
-  delete fk_solver_;
-  delete ik_fk_solver_;
-  delete ik_solver_;
-  delete ik_solver_vel_;
-  delete pr2_arm_ik_solver_;
+  if(fk_solver_ != NULL)
+    delete fk_solver_;
+  if(ik_fk_solver_ != NULL)
+    delete ik_fk_solver_;
+  if(ik_solver_ != NULL)
+    delete ik_solver_;
+  if(ik_solver_vel_ != NULL)
+    delete ik_solver_vel_;
+  if(pr2_arm_ik_solver_ != NULL)
+    delete pr2_arm_ik_solver_;
 }
 
 void SBPLArmModel::setDebugFile(FILE* file)
