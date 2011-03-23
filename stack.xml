@@ -1,33 +1,21 @@
 <stack>
-  <description brief="arm_planning">arm_planning</description>
-
-  The new home of the sbpl_arm_planner
-
-  <author>Maintained by Benjamin Cohen</author>
+  <description brief="sbpl_arm_planning">sbpl_arm_planning</description>
+  <author>by Benjamin Cohen</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/sbpl_arm_planning</url>
 
-  <depend stack="ros" />
-
-  <!-- from sbpl_arm_planner --> 
-  
-  <depend stack="motion_planners" /> <!-- sbpl, chomp_motion_planner -->
-  <depend stack="geometry" /> <!-- angles, kdl, bullet, tf -->
-  <depend stack="robot_model" /> <!-- kdl_parser, urdf -->
-  <depend stack="motion_planning_common" /> <!-- distance_field,
-  mapping_msgs, motion_planning_msgs, geometric_shapes,
-  planning_environment, planning_environment_msgs, planning_models -->
-  <depend stack="pr2_kinematics" /> <!-- pr2_arm_kinematics -->
+  <depend stack="arm_navigation" /> <!-- move_arm_msgs -->
+  <depend stack="common" /> <!-- actionlib -->
+  <depend stack="common_msgs" /> <!-- geometry_msgs, sensor_msgs, visualization_msgs -->
+  <depend stack="geometry" /> <!-- kdl, tf, bullet, angles -->
   <depend stack="kinematics" /> <!-- kinematics_msgs -->
-  <depend stack="visualization_common" /> <!-- visualization_msgs -->
-  <depend stack="ros_comm" /> <!-- message_filters -->
-  
-  <!-- sbpl_arm_planner_node -->
-
+  <depend stack="motion_planners" /> <!-- sbpl -->
+  <depend stack="motion_planning_common" /> <!-- motion_planning_msgs, planning_environment, planning_models, distance_field, mapping_msgs, geometric_shapes -->
   <depend stack="pr2_controllers" /> <!-- pr2_controllers_msgs -->
-  <depend stack="actionlib" /> <!-- actionlib -->
-  <depend stack="arm_navigation" /> <!-- move_arm_msgs-->
-  <depend stack="common_msgs" /> <!-- sensor_msgs, geometry_msgs -->
-  
+  <depend stack="pr2_kinematics" /> <!-- pr2_arm_kinematics -->
+  <depend stack="robot_model" /> <!-- urdf, kdl_parser, resource_retriever -->
+  <depend stack="ros" />
+  <depend stack="ros_comm" /> <!-- rospy, roscpp, message_filters -->
+
 </stack>
