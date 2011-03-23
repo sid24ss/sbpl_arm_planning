@@ -21,7 +21,7 @@
   <depend stack="pr2_kinematics" /> <!-- pr2_arm_kinematics -->
   <depend stack="kinematics" /> <!-- kinematics_msgs -->
   <depend stack="visualization_common" /> <!-- visualization_msgs -->
-  <depend stack="sensor_msgs" /> <!-- common_msgs -->
+  <depend stack="common_msgs" /> <!-- sensor_msgs -->
   <depend stack="ros_comm" /> <!-- message_filters -->
   
   <!-- sbpl_arm_planner_node -->
