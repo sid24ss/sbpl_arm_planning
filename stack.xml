@@ -1,10 +1,10 @@
 <stack>
-  <description brief="sbpl_arm_planning">sbpl_arm_planning</description>
+  <description brief="sbpl_arm_planning">Search Based Motion Planner for
+    Manipulation (PR2 Only)</description>
   <author>by Benjamin Cohen</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/sbpl_arm_planning</url>
-
+  <url>http://ros.org/wiki/trunk</url>
   <depend stack="arm_navigation" /> <!-- move_arm_msgs -->
   <depend stack="common" /> <!-- actionlib -->
   <depend stack="common_msgs" /> <!-- geometry_msgs, sensor_msgs, visualization_msgs -->
