@@ -825,7 +825,7 @@ void VisualizeArm::visualizeSphere(std::vector<double> pose, int color, std::str
   marker.color.g = g;
   marker.color.b = b;
   marker.color.a = 0.6;
-  marker.lifetime = ros::Duration(180.0);
+  marker.lifetime = ros::Duration(120.0);
 
   marker_publisher_.publish(marker);
 }
@@ -849,7 +849,7 @@ void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pos
   marker.color.g = g;
   marker.color.b = b;
   marker.color.a = 0.6;
-  marker.lifetime = ros::Duration(180.0);
+  marker.lifetime = ros::Duration(120.0);
   marker.id = 1;
 
   marker.points.resize(pose.size());
@@ -889,7 +889,7 @@ void VisualizeArm::visualizeArmMeshes(double color_num, std::vector<geometry_msg
     marker_array_.markers[i].color.g = g;
     marker_array_.markers[i].color.b = b;
     marker_array_.markers[i].color.a = 0.4;
-    marker_array_.markers[i].lifetime = ros::Duration(180.0);
+    marker_array_.markers[i].lifetime = ros::Duration(120.0);
     marker_array_.markers[i].mesh_resource = pr2_arm_meshes_[i];
   }
 
@@ -942,7 +942,7 @@ void VisualizeArm::visualizeGripperMeshes(double color_num, std::vector<geometry
     marker_array_.markers[i].color.g = g;
     marker_array_.markers[i].color.b = b;
     marker_array_.markers[i].color.a = 0.4;
-    marker_array_.markers[i].lifetime = ros::Duration(180.0);
+    marker_array_.markers[i].lifetime = ros::Duration(120.0);
     marker_array_.markers[i].mesh_resource = pr2_gripper_meshes_[i];
   }
 
@@ -960,13 +960,19 @@ void VisualizeArm::visualizeArmConfiguration(double color_num, const std::vector
   visualizeGripperConfiguration(color_num,jnt_pos);
 }
 
-void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace)
+void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle)
 {
   std::vector<std::vector<double> > cylinders;
   visualization_msgs::MarkerArray marker_array;
-
+  
   for(int i = 0; i < int(path.size()); ++i)
   {
+    if(i % throttle != 0)
+    {
+      if(i != 0 && i != path.size()-1)
+        continue;
+    }
+  
     cylinders.resize(0);
     if(!cspace.getCollisionCylinders(path[i], cylinders))
       ROS_WARN("[visualizeCollisionModel] Cannot display arm collision model.");
@@ -990,8 +996,8 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
       marker_array.markers[j].color.r = 0.6;
       marker_array.markers[j].color.g = 0.6;
       marker_array.markers[j].color.b = 0.0;
-      marker_array.markers[j].color.a = 0.4;
-      marker_array.markers[j].lifetime = ros::Duration(200.0);
+      marker_array.markers[j].color.a = 0.3;
+      marker_array.markers[j].lifetime = ros::Duration(120.0);
 
       marker_array.markers[j].pose.position.x = cylinders[j][0];
       marker_array.markers[j].pose.position.y = cylinders[j][1];
@@ -1005,7 +1011,7 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
   }
 }
 
-void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace)
+void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle)
 {
   std::vector<std::vector<double> > traj;
 
@@ -1025,7 +1031,7 @@ void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs
 
   ROS_INFO("[visualizeCollisionModelFromJointTrajectoryMsg] Visualizing collision model of trajectory with length %d ",int(traj.size()));
 
-  visualizeCollisionModel(traj, cspace);
+  visualizeCollisionModel(traj, cspace, throttle);
 }
 
 void VisualizeArm::visualize3DPath(std::vector<std::vector<double> > &dpath)
@@ -1053,7 +1059,7 @@ void VisualizeArm::visualize3DPath(std::vector<std::vector<double> > &dpath)
   obs_marker.color.g = 0.3;
   obs_marker.color.b = 0.4;
   obs_marker.color.a = 0.8;
-  obs_marker.lifetime = ros::Duration(180.0);
+  obs_marker.lifetime = ros::Duration(120.0);
 
   obs_marker.points.resize(dpath.size());
 
@@ -1107,7 +1113,7 @@ void VisualizeArm::visualizeBasicStates(const std::vector<std::vector<double> > 
   marker.color.g = color[1];
   marker.color.b = color[2];
   marker.color.a = color[3];
-  marker.lifetime = ros::Duration(180.0);
+  marker.lifetime = ros::Duration(120.0);
 
   unsigned int m_ind = 0;
   for(unsigned int i = 0; i < states.size(); i=i+inc)

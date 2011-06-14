@@ -111,10 +111,10 @@ class VisualizeArm
     void printEnvironmentInfo(FILE *fid);
 
     /* \brief display the spherical collision model of each waypoint in a path */
-    void visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace);
+    void visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle);
 
     /* \brief display the spherical collision model of each waypoint in a joint trajectory msg */
-    void visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace);
+    void visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle);
    
     /* \brief display a gripper given the arm's joint angles */
     void visualizeGripperConfiguration(double color_num, const std::vector<double> &jnt_pos);
@@ -133,6 +133,9 @@ class VisualizeArm
     
     /* \brief display a list of spheres of the same radius and color */
     void visualizeSpheres(const std::vector<std::vector<double> > &pose, int color, std::string text, double radius);
+
+
+    void visualizeAttachedObject(const std::vector<double> angles);
 
     /* DOESN'T WORK */
     //void clearAllVisualizations();

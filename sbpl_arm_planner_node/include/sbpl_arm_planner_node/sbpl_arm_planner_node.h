@@ -135,6 +135,7 @@ namespace sbpl_arm_planner
       std::string trajectory_type_;
       std::string arm_description_filename_;
       std::string mprims_filename_;
+      std::string attached_object_frame_;
       std::vector<std::string> joint_names_;
       std::vector<std::vector<double> > dpath_;
       std::map<std::string, mapping_msgs::CollisionObject> object_map_;
@@ -176,11 +177,16 @@ namespace sbpl_arm_planner
 
       void attachedObjectCallback(const mapping_msgs::AttachedCollisionObjectConstPtr &attached_object);
 
+      void attachObject(const mapping_msgs::CollisionObject &obj);
+
       /** \brief Plan a path to a cartesian goal(s) */
       bool planToPosition(motion_planning_msgs::GetMotionPlan::Request &req, motion_planning_msgs::GetMotionPlan::Response &res);
 
       /** \brief Retrieve plan from sbpl */
       bool plan(std::vector<trajectory_msgs::JointTrajectoryPoint> &arm_path);
+
+      /** \brief Check if path satisfies goal constraints */
+      bool isGoalConstraintSatisfied(const std::vector<double> &angles, const motion_planning_msgs::Constraints &goal);
 
       /** \brief Compute IK using pr2_ik service */
       bool computeIK(const geometry_msgs::Pose &pose_stamped_msg, std::vector<double> jnt_pos, std::vector<double> &solution);
@@ -219,7 +225,14 @@ namespace sbpl_arm_planner
       /** \brief Display states expanded by ARA* search */
       void displayARAStarStates();
 
+      /* \brief Visualize the collision model of the attached object */
       void visualizeAttachedObject(trajectory_msgs::JointTrajectory &traj_msg, int throttle);
+
+      /* \brief Visualize the collision model of the attached object */
+      void visualizeAttachedObject(const std::vector<double> &angles);
+
+      /** \brief Visualize voxels occupying known collision objects */
+      void visualizeCollisionObjects();
   };
 }
 

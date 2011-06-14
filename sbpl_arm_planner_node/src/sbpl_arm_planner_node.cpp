@@ -29,6 +29,8 @@
 /** \author Benjamin Cohen */
 
 #include <sbpl_arm_planner_node/sbpl_arm_planner_node.h>
+#include <algorithm>
+#include <math.h>
 
 clock_t starttime;
 
@@ -42,6 +44,7 @@ SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subsc
   attached_object_ = false;
   forward_search_ = true;
   planning_joint_ = "r_wrist_roll_link";
+  attached_object_frame_ = "r_gripper_r_finger_tip_link";
   allocated_time_ = 10.0;
   env_resolution_ = 0.02;
 }
@@ -87,11 +90,13 @@ bool SBPLArmPlannerNode::init()
   {
     side_ = "l";
     planning_joint_ = "l_wrist_roll_link";
+    attached_object_frame_ = "l_gripper_r_finger_tip_link";
   }
   else
   {
     side_ = "r";
     planning_joint_ = "r_wrist_roll_link";
+    attached_object_frame_ = "r_gripper_r_finger_tip_link";
   }
 
   //pr2 specific
@@ -217,12 +222,16 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
 
     // add self collision blocks
     //cspace_->addArmCuboidsToGrid();
-   
+  
+    cspace_->putCollisionObjectsInGrid();
+
     map_frame_ = collision_map->header.frame_id; 
     setArmToMapTransform(map_frame_);
 
     colmap_mutex_.unlock();
     ROS_DEBUG("[updateMapFromCollisionMap] released colmap_mutex_ mutex.");
+
+    visualizeCollisionObjects();
 
     grid_->visualize();
     return;
@@ -236,13 +245,15 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
 
 void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedCollisionObjectConstPtr &attached_object)
 {
+/*
   bool gripper_object = false;
 
-  // is one of the objects attached to the gripper of the arm we are planning for
+  // is the object attached to the gripper of the arm we are planning for
   for(size_t i=0; i <attached_object->touch_links.size(); i++)
   {
     if(attached_object->touch_links[i].find(side_ + "_gripper") != string::npos)
       gripper_object = true;
+    ROS_INFO("[attachedObjectCallback] allowed touch links: %s", attached_object->touch_links[i].c_str());
   }
 
   if (!gripper_object)
@@ -250,57 +261,49 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
     ROS_WARN("AttachedCollisionObjects that don't describe objects in the gripper are currently not supported.");
     return;
   }
+*/
 
   if(object_mutex_.try_lock())
   {
     // remove all objects
-    if(attached_object->link_name.compare(mapping_msgs::AttachedCollisionObject::REMOVE_ALL_ATTACHED_OBJECTS) == 0)
+    if(attached_object->link_name.compare(mapping_msgs::AttachedCollisionObject::REMOVE_ALL_ATTACHED_OBJECTS) == 0 &&
+        attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
     {
-      ROS_INFO("Removing all attached objects.");
-      object_map_.clear();
+      ROS_INFO("[attachedObjectCallback] Removing all attached objects.");
       attached_object_ = false;
-      //TODO: Clear objects in collision space
+      cspace_->removeAttachedObject();
     }
-
     // add object
-    if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD ||
-        attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
+    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
     {
-      object_map_[attached_object->link_name] = attached_object->object;
-      attached_object_ = true;
-
-      ROS_INFO("Received a message with %d attached objects.", int(attached_object->object.shapes.size()));
-
-      for(size_t i = 0; i < attached_object->object.shapes.size(); i++)
+      ROS_INFO("[attachedObjectCallback] Received a message to ADD an object (%s) with %d shapes.", attached_object->object.id.c_str(), int(attached_object->object.shapes.size()));
+      attachObject(attached_object->object);
+    }
+    // attach object and remove it from collision space
+    else if( attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
+    {
+      ROS_INFO("[attachedObjectCallback] Received a message with ATTACH_AND_REMOVE_AS_OBJECT an object with %d shapes.", int(attached_object->object.shapes.size()));
+      
+      // have we seen this collision object before?
+      if(object_map_.find(attached_object->object.id) != object_map_.end())
       {
-        if(attached_object->object.shapes[i].type == geometric_shapes_msgs::Shape::SPHERE)
-        {
-          ROS_INFO("Attaching a sphere with radius: %0.3fm", attached_object->object.shapes[i].dimensions[0]);
-          cspace_->attachSphereToGripper(attached_object->object.header.frame_id, attached_object->object.poses[i], attached_object->object.shapes[i].dimensions[0]);
-        }
-        else if(attached_object->object.shapes[i].type == geometric_shapes_msgs::Shape::CYLINDER)
-        {
-          ROS_INFO("Attaching a cylinder with radius: %0.3fm & length %0.3fm", attached_object->object.shapes[i].dimensions[0], attached_object->object.shapes[i].dimensions[1]);
-
-          cspace_->attachCylinderToGripper(attached_object->object.header.frame_id, attached_object->object.poses[i], attached_object->object.shapes[i].dimensions[0], attached_object->object.shapes[i].dimensions[1]);
-        }
-        else if(attached_object->object.shapes[i].type == geometric_shapes_msgs::Shape::MESH)
-        {
-          ROS_INFO("Attaching a mesh with %d triangles  & %d vertices.", int(attached_object->object.shapes[i].triangles.size()/3), int(attached_object->object.shapes[i].vertices.size()));
-
-          cspace_->attachMeshToGripper(attached_object->object.header.frame_id, attached_object->object.poses[i], attached_object->object.shapes[i].triangles,attached_object->object.shapes[i].vertices);
-        }
-
+        ROS_INFO("[attachedObjectCallback] We have seen this object (%s) before.", attached_object->object.id.c_str());
+        attachObject(object_map_.find(attached_object->object.id)->second);
+      }
+      else
+      {
+        ROS_INFO("[attachedObjectCallback] We have NOT seen this object (%s) before.", attached_object->object.id.c_str());
+        object_map_[attached_object->object.id] = attached_object->object;
+        attachObject(attached_object->object);
       }
     }
-
     // remove object
     else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE ||
         attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
     {
       attached_object_ = false;
-      ROS_INFO("Removing object: %s", attached_object->link_name.c_str());
-      object_map_.erase(attached_object->link_name);
+      ROS_INFO("[attachedObjectCallback] Removing object (%s) from gripper.", attached_object->object.id.c_str());
+      cspace_->removeAttachedObject();
     }
     else
       ROS_WARN("Received a collision object with an unknown operation");
@@ -311,37 +314,66 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
 
 void SBPLArmPlannerNode::collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object)
 {
-  std::vector<double> cube(6,0);
-
-  if(collision_object->header.frame_id != reference_frame_)
-    ROS_WARN("collision object is in %s, only %s supported right now.",collision_object->header.frame_id.c_str(),reference_frame_.c_str());
-
-  if(collision_object->operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
+  if(object_mutex_.try_lock())
   {
-    for(size_t i = 0; i < collision_object->shapes.size(); i++)
-    {
-      //only support cubes right now
-      if(collision_object->shapes[i].type == geometric_shapes_msgs::Shape::BOX)
-      {
-        cube[0] = collision_object->poses[i].position.x;
-        cube[1] = collision_object->poses[i].position.y;
-        cube[2] = collision_object->poses[i].position.z;
-        cube[3] = collision_object->shapes[i].dimensions[0];
-        cube[4] = collision_object->shapes[i].dimensions[1];
-        cube[5] = collision_object->shapes[i].dimensions[2];
-
-        //only support orientation of {0,0,0,1}
-        if(collision_object->poses[i].orientation.x != 0 || collision_object->poses[i].orientation.y != 0 ||
-          collision_object->poses[i].orientation.z != 0 || collision_object->poses[i].orientation.w != 1)
-        {
-          ROS_WARN("[collisionObjectCallback] Warning: collision object does not have an orientation of {0,0,0,1}");
-        }
-      }
-      col_objects_.push_back(cube);
-    }
+    // debug: have we seen this collision object before?
+    if(object_map_.find(collision_object->id) != object_map_.end())
+      ROS_DEBUG("[collisionObjectCallback] We have seen this object ('%s')  before.", collision_object->id.c_str());
+    else
+      ROS_DEBUG("[collisionObjectCallback] We have NOT seen this object ('%s') before.", collision_object->id.c_str());
+    object_map_[collision_object->id] = (*collision_object);
+    object_mutex_.unlock();
   }
 
-  ROS_INFO("%s with %d shapes has been added to the occupancy grid.",collision_object->id.c_str(), int(collision_object->shapes.size()));
+  cspace_->processCollisionObjectMsg((*collision_object));
+}
+
+void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj)
+{
+  geometry_msgs::PoseStamped pose_in, pose_out;
+  mapping_msgs::CollisionObject object(obj);
+
+  attached_object_ = true;
+
+  ROS_INFO("Received a collision object message with %d shapes.", int(object.shapes.size()));
+
+  for(size_t i = 0; i < object.shapes.size(); i++)
+  {
+    pose_in.header = object.header;
+    pose_in.header.stamp = ros::Time();
+    pose_in.pose = object.poses[i];
+    tf_.transformPose(attached_object_frame_, pose_in, pose_out);
+    object.poses[i] = pose_out.pose;
+    ROS_INFO("[attachObject] Converted shape from %s (%0.2f %0.2f %0.2f) to %s (%0.3f %0.3f %0.3f)", pose_in.header.frame_id.c_str(), pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z, attached_object_frame_.c_str(), pose_out.pose.position.x, pose_out.pose.position.y, pose_out.pose.position.z);
+
+    if(object.shapes[i].type == geometric_shapes_msgs::Shape::SPHERE)
+    {
+      ROS_INFO("Attaching a sphere with radius: %0.3fm", object.shapes[i].dimensions[0]);
+      cspace_->attachSphereToGripper(object.header.frame_id, object.poses[i], object.shapes[i].dimensions[0]);
+    }
+    else if(object.shapes[i].type == geometric_shapes_msgs::Shape::CYLINDER)
+    {
+      ROS_INFO("Attaching a cylinder with radius: %0.3fm & length %0.3fm", object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
+
+      cspace_->attachCylinderToGripper(object.header.frame_id, object.poses[i], object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
+    }
+    else if(object.shapes[i].type == geometric_shapes_msgs::Shape::MESH)
+    {
+      ROS_INFO("Attaching a mesh with %d triangles  & %d vertices.", int(object.shapes[i].triangles.size()/3), int(object.shapes[i].vertices.size()));
+
+      cspace_->attachMeshToGripper(object.header.frame_id, object.poses[i], object.shapes[i].triangles, object.shapes[i].vertices);
+    }
+    else if(object.shapes[i].type == geometric_shapes_msgs::Shape::BOX)
+    {
+      std::vector<double> dims(object.shapes[i].dimensions);
+      sort(dims.begin(),dims.end());
+      ROS_WARN("Attaching a box isn't completely supported, so adding cylinder instead.");
+      ROS_INFO("Attaching a box as a cylinder with length: %0.3fm   radius: %0.3fm", dims[2], dims[1]);
+      cspace_->attachCylinderToGripper(object.header.frame_id, object.poses[i], dims[1], dims[2]);
+    }
+    else
+      ROS_WARN("Currently attaching objects of type '%d' aren't supported.", object.shapes[i].type);
+  }
 }
 
 /** Planner Interface  -------------------------------------------------------*/
@@ -353,8 +385,6 @@ bool SBPLArmPlannerNode::setStart(const sensor_msgs::JointState &start_state)
     sbpl_start[i] = (double)(start_state.position[i]);
 
   std::vector<std::vector<double> > xyz;
-  cspace_->getAttachedObject(sbpl_start, xyz);
-  aviz_->visualizeSpheres(xyz, 189, "sbpl_attached_object_start", cspace_->getAttachedObjectRadius());
 
   ROS_INFO("start: %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f", sbpl_start[0],sbpl_start[1],sbpl_start[2],sbpl_start[3],sbpl_start[4],sbpl_start[5],sbpl_start[6]);
 
@@ -370,6 +400,9 @@ bool SBPLArmPlannerNode::setStart(const sensor_msgs::JointState &start_state)
     return false;
   }
 
+  if(attached_object_)
+    visualizeAttachedObject(sbpl_start);
+
   return true;
 }
 
@@ -378,7 +411,7 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
   double roll,pitch,yaw;
   geometry_msgs::Pose pose_msg;
   tf::Pose tf_pose;
-  std::vector <std::vector <double> > sbpl_goal(1, std::vector<double> (7,0));
+  std::vector <std::vector <double> > sbpl_goal(1, std::vector<double> (11,0));  //Changed to include Quaternion
   std::vector <std::vector <double> > sbpl_tolerance(1, std::vector<double> (12,0));
 
   if(goals.position_constraints.size() != goals.orientation_constraints.size())
@@ -393,6 +426,9 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
   pose_msg.position = goals.position_constraints[0].position;
   pose_msg.orientation = goals.orientation_constraints[0].orientation;
 
+  ROS_INFO("Perturbing quaternion angle");
+  pose_msg.orientation.w += 0.005;
+
   tf::poseMsgToTF(pose_msg, tf_pose);
   tf_pose.getBasis().getRPY(roll,pitch,yaw);
   sbpl_goal[0][3] = roll;
@@ -401,6 +437,12 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
 
   //6dof goal: true, 3dof: false 
   sbpl_goal[0][6] = true;
+ 
+  //orientation constraint as a quaternion 
+  sbpl_goal[0][7] = goals.orientation_constraints[0].orientation.x;
+  sbpl_goal[0][8] = goals.orientation_constraints[0].orientation.y;
+  sbpl_goal[0][9] = goals.orientation_constraints[0].orientation.z;
+  sbpl_goal[0][10] = goals.orientation_constraints[0].orientation.w;
 
   //allowable tolerance from goal
   sbpl_tolerance[0][0] = goals.position_constraints[0].constraint_region_shape.dimensions[0] / 2.0;
@@ -410,7 +452,9 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
   sbpl_tolerance[0][4] = goals.orientation_constraints[0].absolute_pitch_tolerance;
   sbpl_tolerance[0][5] = goals.orientation_constraints[0].absolute_yaw_tolerance;
 
-  ROS_INFO("goal xyz(%s): %.2f %.2f %.2f (tol: %.3fm) rpy: %.2f %.2f %.2f (tol: %.3frad)", map_frame_.c_str(),sbpl_goal[0][0],sbpl_goal[0][1],sbpl_goal[0][2],sbpl_tolerance[0][0],sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5], sbpl_tolerance[0][1]);
+  ROS_INFO("goal quat from move_arm: %0.3f %0.3f %0.3f %0.3f", goals.orientation_constraints[0].orientation.x, goals.orientation_constraints[0].orientation.y, goals.orientation_constraints[0].orientation.z, goals.orientation_constraints[0].orientation.w);
+
+  ROS_INFO("goal xyz(%s): %.3f %.3f %.3f (tol: %.3fm) rpy: %.3f %.3f %.3f (tol: %.3frad)", map_frame_.c_str(),sbpl_goal[0][0],sbpl_goal[0][1],sbpl_goal[0][2],sbpl_tolerance[0][0],sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5], sbpl_tolerance[0][1]);
 
   //set sbpl environment goal
   if(!sbpl_arm_env_.setGoalPosition(sbpl_goal, sbpl_tolerance))
@@ -426,6 +470,35 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
     return false;
   }
 
+  /*
+  double x,y,z,w;
+  KDL::Frame frame_des;
+  frame_des.p.x(sbpl_goal[0][0]);
+  frame_des.p.y(sbpl_goal[0][1]);
+  frame_des.p.z(sbpl_goal[0][2]);
+  frame_des.M = KDL::Rotation::RPY(sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5]);
+  frame_des.M.GetQuaternion(x,y,z,w);
+  */
+
+  tf::Quaternion q;
+  q.setRPY(roll,pitch,yaw);
+
+  ROS_INFO("Quat from MoveArm: %0.3f %0.3f %0.3f %0.3f", goals.orientation_constraints[0].orientation.x, goals.orientation_constraints[0].orientation.y, goals.orientation_constraints[0].orientation.z, goals.orientation_constraints[0].orientation.w);
+  ROS_INFO("      RPY with TF: %0.3f %0.3f %0.3f", roll,pitch,yaw);
+  ROS_INFO("     Quat with TF: %0.3f %0.3f %0.3f %0.3f", q.x(), q.y(), q.z(), q.w());
+
+/*
+  pose_msg.orientation.x = x;
+  pose_msg.orientation.y = y;
+  pose_msg.orientation.z = z;
+  pose_msg.orientation.w = w;
+
+  tf::poseMsgToTF(pose_msg, tf_pose);
+  tf_pose.getBasis().getRPY(roll,pitch,yaw);
+  
+  ROS_INFO("GOAL QUATERNION FROM KDL: %0.3f %0.3f %0.3f %0.3f --> Converted back to RPY: %0.3f %0.3f %0.3f", x,y,z,w, roll,pitch,yaw);
+*/
+
   return true;
 }
 
@@ -435,7 +508,6 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
   int nind = 0;
   std::vector<trajectory_msgs::JointTrajectoryPoint> arm_path;
   sensor_msgs::JointState start;
-  //tf::Stamped<tf::Pose> pose_stamped;
 
   starttime = clock();
 
@@ -454,63 +526,47 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
     return false;
   }
 
-  // add collision objects to occupancy grid 9/2/2010
-  for(size_t i = 0; i < col_objects_.size(); i++)
+  //check if there is more than one goal constraint
+  if(req.motion_plan_request.goal_constraints.position_constraints.size() > 1 || 
+      req.motion_plan_request.goal_constraints.orientation_constraints.size() > 1)
+    ROS_WARN("The planning request message contains %d position and %d orientation constraints. Currently the planner only supports one position & orientation constraint pair at a time. Planning to the first goal may not satisfy move_arm.", int(req.motion_plan_request.goal_constraints.position_constraints.size()), int(req.motion_plan_request.goal_constraints.orientation_constraints.size()));
+
+  // add collision objects to occupancy grid
+  cspace_->putCollisionObjectsInGrid();
+
+  //check if planning for wrist (only link supported for now)
+  planning_joint_ = req.motion_plan_request.goal_constraints.position_constraints[0].link_name;
+
+  if(planning_joint_ != "r_wrist_roll_link" && arm_name_ == "right_arm")
   {
-    grid_->addCollisionCuboid(col_objects_[i][0],col_objects_[i][1],col_objects_[i][2],col_objects_[i][3],col_objects_[i][4],col_objects_[i][5]);
+    ROS_ERROR("Planner is configured to plan for the right arm. It has only been tested with pose constraints for r_wrist_roll_link. Other links may be supported in the future.");
+    return false;
+  }
+  else if(planning_joint_ != "l_wrist_roll_link" && arm_name_ == "left_arm")
+  {
+    ROS_ERROR("Planner is configured to plan for the left arm. It has only been tested with pose constraints for l_wrist_roll_link. Other links may be supported in the future.");
+    return false;
   }
 
   //transform goal pose into reference_frame_
-  for(i = 0; i < req.motion_plan_request.goal_constraints.position_constraints.size(); i++)
-  {
-    planning_joint_ = req.motion_plan_request.goal_constraints.position_constraints[i].link_name;
+  geometry_msgs::PoseStamped pose_in, pose_out;
+  pose_in.header = req.motion_plan_request.goal_constraints.position_constraints[0].header;
+  pose_in.header.stamp = ros::Time();
+  pose_in.pose.position = req.motion_plan_request.goal_constraints.position_constraints[0].position;
+  pose_in.pose.orientation = req.motion_plan_request.goal_constraints.orientation_constraints[0].orientation;
 
-    if(planning_joint_ != "r_wrist_roll_link" && arm_name_ == "right_arm")
-    {
-      ROS_ERROR("Planner is configured to plan for the right arm. It has only been tested with pose constraints for r_wrist_roll_link");
-      return false;
-    }
-    else if(planning_joint_ != "l_wrist_roll_link" && arm_name_ == "left_arm")
-    {
-      ROS_ERROR("Planner is configured to plan for the left arm. It has only been tested with pose constraints for l_wrist_roll_link. Exiting");
-      return false;
-    }
+  // TODO: catch the exception
+  tf_.transformPose(map_frame_,pose_in,pose_out);
 
-    ROS_DEBUG("[planToPosition] position constraint %d: xyz: %0.3f %0.3f %0.3f in %s", i, req.motion_plan_request.goal_constraints.position_constraints[i].position.x, req.motion_plan_request.goal_constraints.position_constraints[i].position.y, req.motion_plan_request.goal_constraints.position_constraints[i].position.z, req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id.c_str());
-    
-    geometry_msgs::PoseStamped pose_in, pose_out;
-    pose_in.header = req.motion_plan_request.goal_constraints.position_constraints[i].header;
-    pose_in.pose.position = req.motion_plan_request.goal_constraints.position_constraints[i].position;
-    pose_in.pose.orientation = req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation;
- 
-    tf_.transformPose(map_frame_,pose_in,pose_out);
-    
-    req.motion_plan_request.goal_constraints.position_constraints[i].position = pose_out.pose.position;
-    req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation = pose_out.pose.orientation;
+  req.motion_plan_request.goal_constraints.position_constraints[0].position = pose_out.pose.position;
+  req.motion_plan_request.goal_constraints.orientation_constraints[0].orientation = pose_out.pose.orientation;
 
-    ROS_DEBUG("goal pose(%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id.c_str(),pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z);
-    ROS_DEBUG("goal pose(%s): %0.3f %0.3f %0.3f", map_frame_.c_str(), pose_out.pose.position.x,pose_out.pose.position.y,pose_out.pose.position.z);
+  ROS_DEBUG("[planToPosition] Transformed goal from (%s): %0.3f %0.3f %0.3f to (%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[0].header.frame_id.c_str(),pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z, map_frame_.c_str(), pose_out.pose.position.x,pose_out.pose.position.y,pose_out.pose.position.z);
 
-  /*
-    // use transform to transform goal into reference frame (should switch to tf_.transformPose() in future)
-    geometry_msgs::PoseStamped goal_pose;
-    KDL::Frame goal_frame;
-    goal_pose.header = req.motion_plan_request.goal_constraints.position_constraints[i].header;
-    goal_pose.pose.position = req.motion_plan_request.goal_constraints.position_constraints[i].position;
-    goal_pose.pose.orientation = req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation;
-    tf::PoseMsgToKDL(goal_pose.pose,goal_frame);
-    goal_frame  = kdl_transform_ * goal_frame;
-    tf::PoseKDLToMsg(goal_frame, goal_pose.pose);
-    req.motion_plan_request.goal_constraints.position_constraints[i].position = goal_pose.pose.position;
-    req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation = goal_pose.pose.orientation;
-  */
-  }
-
-  // get the initial state of the planning joints
+  //get the initial state of the planning joints
   start.position.resize(num_joints_);
   for(i = 0; i < req.motion_plan_request.start_state.joint_state.position.size(); i++)
   {
-    ROS_DEBUG("%s: %.3f",req.motion_plan_request.start_state.joint_state.name[i].c_str(),req.motion_plan_request.start_state.joint_state.position[i]);
     if(joint_names_[nind].compare(req.motion_plan_request.start_state.joint_state.name[i]) == 0)
     {
       start.position[nind] = req.motion_plan_request.start_state.joint_state.position[i];
@@ -520,7 +576,7 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
       break;
   }
   if(nind != num_joints_)
-    ROS_WARN("Not all of the joints in the arm were assigned a starting position.");
+    ROS_WARN("Not all of the expected joints in the arm were assigned a starting position.");
 
   allocated_time_ = req.motion_plan_request.allowed_planning_time.toSec();
 
@@ -530,15 +586,13 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
   ROS_DEBUG("[planToPosition] About to set start configuration");
   if(setStart(start))
   {
-    ROS_DEBUG("[planToPosition] successfully set starting configuration");
+    ROS_DEBUG("[planToPosition] Successfully set starting configuration");
 
     if(visualize_goal_)
       visualizeGoalPosition(req.motion_plan_request.goal_constraints);
 
     if(setGoalPosition(req.motion_plan_request.goal_constraints))
     {
-      ROS_DEBUG("Calling planner");
-
       if(plan(arm_path))
       {
         colmap_mutex_.unlock();
@@ -559,7 +613,6 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
           res.trajectory.joint_trajectory.header.frame_id = req.motion_plan_request.start_state.joint_state.header.frame_id;
         else
           res.trajectory.joint_trajectory.header.frame_id = reference_frame_;
-        ROS_DEBUG("path frame is %s",res.trajectory.joint_trajectory.header.frame_id.c_str());
 
         // fill in the joint names 
         res.trajectory.joint_trajectory.joint_names.resize(num_joints_);
@@ -571,6 +624,10 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
         if(print_path_)
           printPath(res.trajectory.joint_trajectory.points);
 
+        // compute distance to goal
+        if(!isGoalConstraintSatisfied(res.trajectory.joint_trajectory.points[res.trajectory.joint_trajectory.points.size()-1].positions, req.motion_plan_request.goal_constraints))
+          ROS_WARN("Uh Oh. Goal constraint isn't satisfied.");
+        
         // visualizations
         if(visualize_expanded_states_)
           displayARAStarStates();
@@ -579,16 +636,10 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
           displayShortestPath();
 
         if(visualize_trajectory_)
-        {
-          ROS_INFO("[plan] Visualizing the trajectory (throttle = %d)", throttle_);
           aviz_->visualizeJointTrajectoryMsg(res.trajectory.joint_trajectory, throttle_);
 
-          if(attached_object_) 
-            visualizeAttachedObject(res.trajectory.joint_trajectory, throttle_);
-        }
-
         if(visualize_collision_model_trajectory_)
-          aviz_->visualizeCollisionModelFromJointTrajectoryMsg(res.trajectory.joint_trajectory, *cspace_);
+          aviz_->visualizeCollisionModelFromJointTrajectoryMsg(res.trajectory.joint_trajectory, *cspace_, throttle_);
 
         if(use_research_heuristic_)
           visualizeElbowPoses();
@@ -635,6 +686,7 @@ bool SBPLArmPlannerNode::planKinematicPath(motion_planning_msgs::GetMotionPlan::
     ROS_ERROR("There are no goal pose constraints in the request message. We need those to plan :).");
     return false;
   }
+
   if(!planToPosition(req, res))
     return false;
 
@@ -664,11 +716,10 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   // if a path is returned, then pack it into msg form
   if(b_ret && (solution_state_ids_v.size() > 0))
   {
-    unsigned int i;
     ROS_DEBUG("[plan] A path was returned with %d waypoints.", int(solution_state_ids_v.size()));
     ROS_INFO("Initial Epsilon: %0.3f   Final Epsilon: %0.3f", planner_->get_initial_eps(),planner_->get_final_epsilon());
     arm_path.resize(solution_state_ids_v.size()+1);
-    for(i=0; i < solution_state_ids_v.size(); i++)
+    for(size_t i=0; i < solution_state_ids_v.size(); i++)
     {       
       arm_path[i].positions.resize(num_joints_);
       sbpl_arm_env_.StateID2Angles(solution_state_ids_v[i], angles);
@@ -690,11 +741,96 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
         for (int p = 0; p < num_joints_; ++p)
           arm_path[i].positions[p] = angles::normalize_angle(angles[p]);
       }
-      ROS_DEBUG("%i: %.4f %.4f %.4f %.4f %.4f %.4f %.4f", i, arm_path[i].positions[0],arm_path[i].positions[1],arm_path[i].positions[2],arm_path[i].positions[3],arm_path[i].positions[4],arm_path[i].positions[5],arm_path[i].positions[6]);
+      ROS_DEBUG("%i: %.4f %.4f %.4f %.4f %.4f %.4f %.4f", int(i), arm_path[i].positions[0],arm_path[i].positions[1],arm_path[i].positions[2],arm_path[i].positions[3],arm_path[i].positions[4],arm_path[i].positions[5],arm_path[i].positions[6]);
     }
   }
   return b_ret;
 }
+
+bool SBPLArmPlannerNode::isGoalConstraintSatisfied(const std::vector<double> &angles, const motion_planning_msgs::Constraints &goal)
+{
+  bool satisfied = true;
+  geometry_msgs::Pose pose, err;
+
+  if(!computeFK(angles,pose))
+  {
+    ROS_ERROR("Failed to check if goal constraint is satisfied because the FK service failed.");
+    return false;
+  }
+
+  if(goal.position_constraints.size() > 0)
+  {
+    err.position.x = fabs(pose.position.x - goal.position_constraints[0].position.x);
+    err.position.y = fabs(pose.position.y - goal.position_constraints[0].position.y);
+    err.position.z = fabs(pose.position.z - goal.position_constraints[0].position.z);
+  }
+
+  if(goal.orientation_constraints.size() > 0)
+  {
+    err.orientation.x = fabs(pose.orientation.x - goal.orientation_constraints[0].orientation.x);
+    err.orientation.y = fabs(pose.orientation.y - goal.orientation_constraints[0].orientation.y);
+    err.orientation.z = fabs(pose.orientation.z - goal.orientation_constraints[0].orientation.z);
+    err.orientation.w = fabs(pose.orientation.w - goal.orientation_constraints[0].orientation.w);
+  }
+
+  ROS_INFO(" ");
+  ROS_INFO("Pose:  xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+  ROS_INFO("Goal:  xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", goal.position_constraints[0].position.x, goal.position_constraints[0].position.y, goal.position_constraints[0].position.z, goal.orientation_constraints[0].orientation.x, goal.orientation_constraints[0].orientation.y, goal.orientation_constraints[0].orientation.z, goal.orientation_constraints[0].orientation.w);
+  ROS_INFO("Error: xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", err.position.x, err.position.y, err.position.z, err.orientation.x, err.orientation.y, err.orientation.z, err.orientation.w);
+  ROS_INFO(" ");
+
+  if(goal.position_constraints[0].constraint_region_shape.type == geometric_shapes_msgs::Shape::BOX)
+  {
+    if(goal.position_constraints[0].constraint_region_shape.dimensions.size() < 3)
+    { 
+      ROS_WARN("Goal constraint region shape is a BOX but fewer than 3 dimensions are defined.");
+      return false;
+    }
+    if(err.position.x >= goal.position_constraints[0].constraint_region_shape.dimensions[0])
+    {
+      ROS_WARN("X is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.x, goal.position_constraints[0].constraint_region_shape.dimensions[0]);
+      satisfied = false;
+    }
+    if(err.position.y >= goal.position_constraints[0].constraint_region_shape.dimensions[1])
+    {
+      ROS_WARN("Y is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.y, goal.position_constraints[0].constraint_region_shape.dimensions[1]); 
+      satisfied = false;
+    }
+    if(err.position.z >= goal.position_constraints[0].constraint_region_shape.dimensions[2])
+    {
+      ROS_WARN("Z is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.z, goal.position_constraints[0].constraint_region_shape.dimensions[2]);
+      satisfied = false;
+    }
+  }
+  else if(goal.position_constraints[0].constraint_region_shape.type == geometric_shapes_msgs::Shape::SPHERE)
+  {
+    if(goal.position_constraints[0].constraint_region_shape.dimensions.size() < 1)
+    { 
+      ROS_WARN("Goal constraint region shape is a SPHERE but it has no dimensions...");
+      return false;
+    }
+    if(err.position.x >= goal.position_constraints[0].constraint_region_shape.dimensions[0])
+    {
+      ROS_WARN("X is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.x, goal.position_constraints[0].constraint_region_shape.dimensions[0]);
+      satisfied = false;
+    }
+    if(err.position.y >= goal.position_constraints[0].constraint_region_shape.dimensions[0])
+    {
+      ROS_WARN("Y is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.y, goal.position_constraints[0].constraint_region_shape.dimensions[1]);
+      satisfied = false;
+    }
+    if(err.position.z >= goal.position_constraints[0].constraint_region_shape.dimensions[0])
+    {
+      ROS_WARN("Z is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.z, goal.position_constraints[0].constraint_region_shape.dimensions[2]);
+      satisfied = false;
+    }
+  }
+  else
+    ROS_WARN("Goal constraint region shape is of type %d.", goal.position_constraints[0].constraint_region_shape.type);
+
+  return satisfied;
+}
+
 
 /* Kinematics ----------------------------------------------------------------*/
 bool SBPLArmPlannerNode::computeIK(const geometry_msgs::Pose &pose, std::vector<double> jnt_pos, std::vector<double> &solution)
@@ -903,6 +1039,28 @@ void SBPLArmPlannerNode::visualizeElbowPoses()
   ROS_INFO("[visualizeElbowPoses] Visualizing %d elbow poses.", int(elbow_poses.size()));
 }
 
+void SBPLArmPlannerNode::visualizeCollisionObjects()
+{
+  std::vector<geometry_msgs::Pose> poses;
+  std::vector<std::vector<double> > points(1,std::vector<double>(3,0));
+  std::vector<double> color(4,1);
+  color[2] = 0;
+
+  cspace_->getCollisionObjectVoxelPoses(poses);
+
+  points.resize(poses.size());
+  for(size_t i = 0; i < poses.size(); ++i)
+  {
+    points[i].resize(3);
+    points[i][0] = poses[i].position.x;
+    points[i][1] = poses[i].position.y;
+    points[i][2] = poses[i].position.z;
+  }
+
+  ROS_INFO("[visualizeCollisionObjects] Displaying %d known collision object voxels.", int(points.size()));
+  aviz_->visualizeBasicStates(points, color, "known_objects", 0.01);
+}
+
 void SBPLArmPlannerNode::visualizeAttachedObject(trajectory_msgs::JointTrajectory &traj_msg, int throttle)
 {
   std::vector<double> angles(7,0);
@@ -921,12 +1079,24 @@ void SBPLArmPlannerNode::visualizeAttachedObject(trajectory_msgs::JointTrajector
     if(!cspace_->getAttachedObject(angles, xyz))
       continue;
    
-    //ROS_INFO("%d: Visualizing %d points",int(i),int(xyz.size()));
     aviz_->visualizeSpheres(xyz, 10*(i+1), "sbpl_attached_object_" + boost::lexical_cast<std::string>(i), cspace_->getAttachedObjectRadius());
   }
+}
 
-  //TODO: Throttle this
-  ROS_DEBUG("IGNORING THROTTLE");
+void SBPLArmPlannerNode::visualizeAttachedObject(const std::vector<double> &angles)
+{
+  std::vector<std::vector<double> > xyz;
+
+  if(angles.size() < 7)
+  {
+    ROS_WARN("[visualizeAttachedObject] Joint configuration is not of the right length.");
+    return;
+  }
+
+  if(!cspace_->getAttachedObject(angles, xyz))
+    return;
+
+  aviz_->visualizeSpheres(xyz, 50, "sbpl_attached_object", cspace_->getAttachedObjectRadius());
 }
 
 void SBPLArmPlannerNode::displayShortestPath()
@@ -947,6 +1117,8 @@ void SBPLArmPlannerNode::displayShortestPath()
 
 void SBPLArmPlannerNode::printPath(const std::vector<trajectory_msgs::JointTrajectoryPoint> &arm_path)
 {
+  double roll,pitch,yaw;
+  tf::Pose tf_pose;
   geometry_msgs::Pose pose;
   std::vector<double> jnt_pos(num_joints_,0);
 
@@ -957,7 +1129,10 @@ void SBPLArmPlannerNode::printPath(const std::vector<trajectory_msgs::JointTraje
       jnt_pos[j] = arm_path[i].positions[j];
 
     computeFK(jnt_pos, pose);
-    ROS_INFO("%3d: %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f      xyz: %2.3f %2.3f %2.3f", i,arm_path[i].positions[0],arm_path[i].positions[1],arm_path[i].positions[2],arm_path[i].positions[3],arm_path[i].positions[4],arm_path[i].positions[5],arm_path[i].positions[6],pose.position.x, pose.position.y, pose.position.z);
+    tf::poseMsgToTF(pose, tf_pose);
+    tf_pose.getBasis().getRPY(roll,pitch,yaw);
+
+    ROS_INFO("%3d: %1.4f %1.4f %1.4f %1.4f %1.4f %1.4f %1.4f\n   xyz: %2.3f %2.3f %2.3f  rpy: %0.3f %0.3f %0.3f  quat: %0.2f %0.2f %0.2f %0.2f", i,arm_path[i].positions[0],arm_path[i].positions[1],arm_path[i].positions[2],arm_path[i].positions[3],arm_path[i].positions[4],arm_path[i].positions[5],arm_path[i].positions[6],pose.position.x, pose.position.y, pose.position.z, roll, pitch, yaw, pose.orientation.x,pose.orientation.y, pose.orientation.z, pose.orientation.w);
   }
 }
 
