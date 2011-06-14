@@ -123,12 +123,12 @@ bool SBPLArmPlannerParams::initMotionPrimsFromFile(FILE* fCfg)
 
   if(fCfg == NULL)
   {
-    SBPL_ERROR("ERROR: unable to open the params file. Exiting.\n");
+    SBPL_ERROR("ERROR: unable to open the params file. Exiting.");
     return false;
   }
 
   if(fscanf(fCfg,"%s",sTemp) < 1)
-    SBPL_WARN("Parsed string has length < 1.\n"); 
+    SBPL_WARN("Parsed string has length < 1."); 
   if(strcmp(sTemp, "Motion_Primitives(degrees):") != 0)
   {
     SBPL_ERROR("ERROR: First line of motion primitive file should be 'Motion_Primitives(degrees):'. Please check your file. (parsed string: %s)\n", sTemp);
@@ -138,7 +138,7 @@ bool SBPLArmPlannerParams::initMotionPrimsFromFile(FILE* fCfg)
   //number of actions
   if(fscanf(fCfg,"%s",sTemp) < 1) 
   {
-    SBPL_WARN("Parsed string has length < 1.\n");
+    SBPL_WARN("Parsed string has length < 1.");
     return false;
   }
   else
@@ -147,7 +147,7 @@ bool SBPLArmPlannerParams::initMotionPrimsFromFile(FILE* fCfg)
   //length of joint array
   if(fscanf(fCfg,"%s",sTemp) < 1)
   {
-    SBPL_WARN("Parsed string has length < 1.\n");
+    SBPL_WARN("Parsed string has length < 1.");
     return false;
   }
   else
@@ -156,7 +156,7 @@ bool SBPLArmPlannerParams::initMotionPrimsFromFile(FILE* fCfg)
   //number of short distance motion primitives
   if(fscanf(fCfg,"%s",sTemp) < 1)
   { 
-    SBPL_WARN("Parsed string has length < 1.\n");
+    SBPL_WARN("Parsed string has length < 1.");
     return false;
   }
   else
@@ -169,12 +169,12 @@ bool SBPLArmPlannerParams::initMotionPrimsFromFile(FILE* fCfg)
     for(int j=0; j < ncols; ++j)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_WARN("Parsed string has length < 1.\n");
+        SBPL_WARN("Parsed string has length < 1.");
       if(!feof(fCfg) && strlen(sTemp) != 0)
         mprim[j] = atof(sTemp);
       else
       {
-        SBPL_ERROR("ERROR: End of parameter file reached prematurely. Check for newline.\n");
+        SBPL_ERROR("ERROR: End of parameter file reached prematurely. Check for newline.");
         return false;
       }
     }
@@ -309,13 +309,13 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
     else if(strcmp(sTemp,"verbose:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_PRINTF("Parsed string has length < 1.");
       verbose_ = atoi(sTemp);
     }
     else if(strcmp(sTemp,"solve_for_ik_threshold(distance):") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_PRINTF("Parsed string has length < 1.");
       solve_for_ik_thresh_m_ = atof(sTemp);
     }
     //motion primitives must be last thing in the file
@@ -327,18 +327,18 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
 
     else
     {
-      SBPL_PRINTF("Error: Invalid Field name (%s) in parameter file.\n",sTemp);
+      SBPL_PRINTF("Error: Invalid Field name (%s) in parameter file.",sTemp);
       //return false;
     }
     if(fscanf(fCfg,"%s",sTemp) < 1) 
-      SBPL_PRINTF("Parsed string has length < 1.\n");
+      SBPL_PRINTF("Parsed string has length < 1.");
   }
 
 
   //number of actions
   if(fscanf(fCfg,"%s",sTemp) < 1) 
   {
-    SBPL_PRINTF("Parsed string has length < 1.\n");
+    SBPL_PRINTF("Parsed string has length < 1.");
     return false;
   }
   else
@@ -347,7 +347,7 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
   //length of joint array
   if(fscanf(fCfg,"%s",sTemp) < 1)
   {
-    SBPL_PRINTF("Parsed string has length < 1.\n");
+    SBPL_PRINTF("Parsed string has length < 1.");
     return false;
   }
   else
@@ -356,7 +356,7 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
   //number of short distance motion primitives
   if(fscanf(fCfg,"%s",sTemp) < 1)
   { 
-    SBPL_PRINTF("Parsed string has length < 1.\n");
+    SBPL_PRINTF("Parsed string has length < 1.");
     return false;
   }
   else
@@ -369,12 +369,12 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
     for(int j=0; j < ncols; ++j)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_PRINTF("Parsed string has length < 1.");
       if(!feof(fCfg) && strlen(sTemp) != 0)
         mprim[j] = atof(sTemp);
       else
       {
-        SBPL_ERROR("ERROR: End of parameter file reached prematurely. Check for newline.\n");
+        SBPL_ERROR("ERROR: End of parameter file reached prematurely. Check for newline.");
         return false;
       }
     }
@@ -391,7 +391,7 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
 
   max_mprim_offset_ = getLargestMotionPrimOffset(); 
     
-  SBPL_PRINTF("Successfully parsed parameters file\n");
+  SBPL_PRINTF("Successfully parsed parameters file");
   return true;
 }
 

@@ -62,11 +62,12 @@ namespace sbpl_arm_planner
 typedef struct
 {
   bool is_6dof_goal;
+  short unsigned int xyz_tolerance;
   int type;
   int xyz[3];
   double pos[3];
   double rpy[3];
-  short unsigned int xyz_tolerance;
+  double q[4];
   double pos_tolerance[3];
   double rpy_tolerance[3];
 } GoalPos;

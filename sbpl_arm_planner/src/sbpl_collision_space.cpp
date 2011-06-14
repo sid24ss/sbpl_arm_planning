@@ -354,10 +354,11 @@ void SBPLCollisionSpace::addArmCuboidsToGrid()
 
 bool SBPLCollisionSpace::getCollisionCylinders(const std::vector<double> &angles, std::vector<std::vector<double> > &cylinders)
 {
-  std::vector<std::vector<int> > jnts;
+  int num_arm_spheres = 0;
   KDL::Frame f_out;
   std::vector<double> xyzr(4,0);
-  std::vector<std::vector<int> > points;
+  std::vector<std::vector<int> > points, jnts;
+  std::vector<std::vector<double> > object;
 
   //get position of joints in the occupancy grid
   if(!getJointPosesInGrid(angles, jnts, f_out, false))
@@ -376,6 +377,23 @@ bool SBPLCollisionSpace::getCollisionCylinders(const std::vector<double> &angles
       cylinders.push_back(xyzr);
     }
   }
+
+  num_arm_spheres = cylinders.size();
+
+  if(object_attached_)
+  {
+    getAttachedObject(angles, object);
+    for(size_t i = 0; i < object.size(); ++i)
+    {
+      xyzr[0] = object[i][0];
+      xyzr[1] = object[i][1];
+      xyzr[2] = object[i][2];
+      xyzr[3]=double(attached_object_radius_)*grid_->getResolution();
+      cylinders.push_back(xyzr);
+    }
+  }
+
+  ROS_DEBUG("[getCollisionCylinders] {Collision Spheres}  arm: %d object: %d ", int(num_arm_spheres), int(object.size()));
 
   return true;
 }
@@ -460,6 +478,13 @@ void SBPLCollisionSpace::getInterpolatedPath(const std::vector<double> &start, c
     if (changed)
       path.push_back(next);
   }
+}
+
+void SBPLCollisionSpace::removeAttachedObject()
+{
+  object_attached_ = false;
+  object_points_.clear();
+  SBPL_INFO("[removeAttachedObject] Removed attached object.");
 }
 
 void SBPLCollisionSpace::attachSphereToGripper(std::string frame, geometry_msgs::Pose pose, double radius)
@@ -814,5 +839,115 @@ void SBPLCollisionSpace::getBoundingCylinderOfMesh(const std::vector<int32_t> &t
   ROS_INFO("Bounding cylinder has radius: %0.3f  length: %0.3f", cyl.radius, cyl.length);
 }
 
+void SBPLCollisionSpace::processCollisionObjectMsg(const mapping_msgs::CollisionObject &object)
+{
+  if(object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
+  {
+    object_map_[object.id] = object;
+    addCollisionObject(object);
+  }
+  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
+  {
+    removeCollisionObject(object);
+  }
+  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
+  {
+    object_map_[object.id] = object;
+    addCollisionObject(object);
+  }
+  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
+  {
+    //TODO: Attach to gripper
+    removeCollisionObject(object);
+  }
+  else
+    ROS_WARN("*** Operation isn't supported. ***\n\n");
 }
 
+void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject &object)
+{
+  geometry_msgs::Pose pose;
+
+  for(size_t i = 0; i < object.shapes.size(); ++i)
+  {
+    if(object.shapes[i].type == geometric_shapes_msgs::Shape::BOX)
+    {
+      ROS_INFO(" ");
+      ROS_INFO("[%s] TransformPose from %s to %s.", object.id.c_str(), object.header.frame_id.c_str(), grid_->getReferenceFrame().c_str());
+      ROS_INFO("[%s] %s: xyz: %0.3f %0.3f %0.3f   quat: %0.3f %0.3f %0.3f %0.3f", object.id.c_str(), object.header.frame_id.c_str(), object.poses[i].position.x,  object.poses[i].position.y, object.poses[i].position.z, object.poses[i].orientation.x, object.poses[i].orientation.y, object.poses[i].orientation.z,object.poses[i].orientation.w);
+
+      transformPose(object.header.frame_id, grid_->getReferenceFrame(), object.poses[i], pose);
+      ROS_INFO("[%s] %s: xyz: %0.3f %0.3f %0.3f   quat: %0.3f %0.3f %0.3f %0.3f", object.id.c_str(), grid_->getReferenceFrame().c_str(), pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+      grid_->getVoxelsInBox(pose, object.shapes[i].dimensions, object_voxel_map_[object.id]);
+      ROS_INFO("[%s] occupies %d voxels.",object.id.c_str(), int(object_voxel_map_[object.id].size()));
+      ROS_INFO(" ");
+    }
+    else
+      ROS_WARN("[addCollisionObject] Collision objects of type %d are not yet supported.", object.shapes[i].type);
+  }
+
+  // add this object to list of objects that get added to grid
+  bool new_object = true;
+  for(size_t i = 0; i < known_objects_.size(); ++i)
+  {
+    if(known_objects_[i].compare(object.id) == 0)
+      new_object = false;
+  }
+  if(new_object)
+    known_objects_.push_back(object.id);
+}
+
+void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObject &object)
+{
+  for(size_t i = 0; i < known_objects_.size(); ++i)
+  {
+    if(known_objects_[i].compare(object.id) == 0)
+    {
+      known_objects_.erase(known_objects_.begin() + i);
+      ROS_INFO("[removeCollisionObject] Removing %s from list of known objects.", object.id.c_str());
+    }
+  }
+}
+
+void SBPLCollisionSpace::putCollisionObjectsInGrid()
+{
+  ROS_INFO("Should we reset the grid in putCollisionObjectsInGrid()?");
+  for(size_t i = 0; i < known_objects_.size(); ++i)
+  {
+    grid_->addPointsToField(object_voxel_map_[known_objects_[i]]);
+    ROS_INFO("[putCollisionObjectsInGrid] Added %s to grid with %d voxels.",known_objects_[i].c_str(), int(object_voxel_map_[known_objects_[i]].size()));
+  }
+}
+
+void SBPLCollisionSpace::getCollisionObjectVoxelPoses(std::vector<geometry_msgs::Pose> &points)
+{
+  geometry_msgs::Pose pose;
+
+  pose.orientation.x = 0; 
+  pose.orientation.y = 0;
+  pose.orientation.z = 0; 
+  pose.orientation.w = 1;
+
+  for(size_t i = 0; i < known_objects_.size(); ++i)
+  {
+    for(size_t j = 0; j < object_voxel_map_[known_objects_[i]].size(); ++j)
+    {
+      pose.position.x = object_voxel_map_[known_objects_[i]][j].x();
+      pose.position.y = object_voxel_map_[known_objects_[i]][j].y();
+      pose.position.z = object_voxel_map_[known_objects_[i]][j].z();
+      points.push_back(pose);
+    }
+  }
+}
+
+void SBPLCollisionSpace::transformPose(const std::string &current_frame, const std::string &desired_frame, const geometry_msgs::Pose &pose_in, geometry_msgs::Pose &pose_out)
+{
+  geometry_msgs::PoseStamped stpose_in, stpose_out;
+  stpose_in.header.frame_id = current_frame;
+  stpose_in.header.stamp = ros::Time();
+  stpose_in.pose = pose_in;
+  tf_.transformPose(desired_frame, stpose_in, stpose_out);
+  pose_out = stpose_out.pose;
+}
+
+}

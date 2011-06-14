@@ -131,7 +131,7 @@ bool SBPLArmModel::getArmDescription(FILE* fCfg)
       for(i = 0; i < num_joints_; i++)
       {
         if(fscanf(fCfg,"%s",sTemp) < 1)
-          SBPL_WARN("Parsed string has length < 1.\n");
+          SBPL_WARN("Parsed string has length < 1.");
         joints_[i].min = atof(sTemp);
 
         if(joints_[i].min != 0.0)
@@ -143,7 +143,7 @@ bool SBPLArmModel::getArmDescription(FILE* fCfg)
       for(i = 0; i < num_joints_; i++)
       {
         if(fscanf(fCfg,"%s",sTemp) < 1)
-          SBPL_WARN("Parsed string has length < 1.\n");
+          SBPL_WARN("Parsed string has length < 1.");
         joints_[i].max = atof(sTemp);
         
         if(joints_[i].max != 0.0)
@@ -155,7 +155,7 @@ bool SBPLArmModel::getArmDescription(FILE* fCfg)
       for(i = 0; i < num_links_; i++)
       {
         if(fscanf(fCfg,"%s",sTemp) < 1)
-          SBPL_WARN("Parsed string has length < 1.\n");
+          SBPL_WARN("Parsed string has length < 1.");
         links_[i].radius = atof(sTemp);
       }
     }
@@ -164,14 +164,14 @@ bool SBPLArmModel::getArmDescription(FILE* fCfg)
       for(i = 0; i < num_links_; i++)
       {
         if(fscanf(fCfg,"%s",sTemp) < 1)
-          SBPL_WARN("Parsed string has length < 1.\n");
+          SBPL_WARN("Parsed string has length < 1.");
         links_[i].length = atof(sTemp);
       }
     }
     else if(strcmp(sTemp, "collision_cuboids:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1)
-          SBPL_WARN("Parsed string has length < 1.\n");
+          SBPL_WARN("Parsed string has length < 1.");
      
       num_collision_cuboids_  = atoi(sTemp);
       collision_cuboids_.resize(num_collision_cuboids_);
@@ -181,7 +181,7 @@ bool SBPLArmModel::getArmDescription(FILE* fCfg)
         for(int j = 0; j < 6; j++)
         {
           if(fscanf(fCfg,"%s",sTemp) < 1)
-            SBPL_WARN("Parsed string has length < 1.\n");
+            SBPL_WARN("Parsed string has length < 1.");
           collision_cuboids_[i][j] = atof(sTemp);
         }
       }
@@ -193,18 +193,17 @@ bool SBPLArmModel::getArmDescription(FILE* fCfg)
       for(i = 0; i < num_links_ + 1; i++)
       {
         if(fscanf(fCfg,"%s",sTemp) < 1)
-          SBPL_WARN("Parsed string has length < 1.\n");
+          SBPL_WARN("Parsed string has length < 1.");
 
         joint_indeces_[i] = atoi(sTemp);
       }
     }
     
     if(fscanf(fCfg,"%s",sTemp) < 1)
-      SBPL_DEBUG("Parsed string has length < 1.\n");
-
+      SBPL_DEBUG("Parsed string has length < 1.");
   }
   
-  SBPL_DEBUG("[getArmDescription] Finished parsing arm file\n");
+  SBPL_DEBUG("[getArmDescription] Finished parsing arm file.");
   return true;
 }
 
@@ -441,7 +440,13 @@ bool SBPLArmModel::computeIK(const std::vector<double> pose, const std::vector<d
   frame_des.p.x(pose[0]);
   frame_des.p.y(pose[1]);
   frame_des.p.z(pose[2]);
-  frame_des.M = KDL::Rotation::RPY(pose[3],pose[4],pose[5]);
+  if(pose.size() == 6)
+    frame_des.M = KDL::Rotation::RPY(pose[3],pose[4],pose[5]);
+  else
+  {
+    //ROS_INFO("Feeding q {%0.3f %0.3f %0.3f %0.3f} into IK",pose[3],pose[4],pose[5],pose[6]);
+    frame_des.M = KDL::Rotation::Quaternion(pose[3],pose[4],pose[5],pose[6]);
+  }
 
   //transform from reference link to "torso lift link"
   frame_des.p = transform_inverse_ * frame_des.p;

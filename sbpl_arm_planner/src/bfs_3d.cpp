@@ -310,10 +310,7 @@ bool BFS3D::isGoal(const std::vector<int> &state)
   for(unsigned int i = 0; i < goal_.size(); ++i)
   {
     if((state[0] <= goal_[i][0]+GOAL_TOLERANCE && state[0] >= goal_[i][0]-GOAL_TOLERANCE) && (state[1] <= goal_[i][1]+GOAL_TOLERANCE && state[1] >= goal_[i][1]-GOAL_TOLERANCE) && (state[2] <= goal_[i][2]+GOAL_TOLERANCE && state[2] >= goal_[i][2]-GOAL_TOLERANCE))
-    {
-      //SBPL_PRINTF("the goal is found: %d %d %d\n", state[0],state[1],state[2]);
       return true;
-    }
   }
   return false;
 }

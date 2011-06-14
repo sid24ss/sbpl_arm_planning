@@ -123,9 +123,14 @@ class OccupancyGrid{
     */
     void addCollisionCuboid(double origin_x, double origin_y, double origin_z, double size_x, double size_y, double size_z);
 
+    void addPointsToField(const std::vector<btVector3> &points);
+
+    void getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<btVector3> &voxels);
     bool saveGridToBinaryFile(std::string filename);
 
     void printGridFromBinaryFile(std::string filename);
+
+    std::string getReferenceFrame();
 
   private:
 
@@ -167,6 +172,16 @@ inline bool OccupancyGrid::isInBounds(int x, int y, int z)
     return false;
   
   return true;
+}
+
+inline std::string OccupancyGrid::getReferenceFrame()
+{
+  return reference_frame_;
+}
+
+inline void OccupancyGrid::addPointsToField(const std::vector<btVector3> &points)
+{
+  grid_->addPointsToField(points);
 }
 
 #endif

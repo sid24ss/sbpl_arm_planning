@@ -29,7 +29,6 @@
 
 #include <ros/ros.h>
 #include <vector>
-//#include <sbpl/config.h>
 #include <resource_retriever/retriever.h>
 #include <sbpl_arm_planner/bresenham.h>
 #include <sbpl_arm_planner/sbpl_arm_model.h>
@@ -38,6 +37,9 @@
 #include <geometric_shapes/bodies.h>
 #include <geometric_shapes/shape_operations.h>
 #include <tf_conversions/tf_kdl.h>
+
+#include <tf/tf.h>
+#include <mapping_msgs/CollisionObject.h>
 
 using namespace std;
 
@@ -65,44 +67,74 @@ class SBPLCollisionSpace
     */
     SBPLCollisionSpace(SBPLArmModel* arm, OccupancyGrid* grid);
 
+    /** \brief destructor */
     ~SBPLCollisionSpace(){};
 
-    /** @brief choose the file to output debug information */
+    /** \brief choose the file to output debug information */
     void setDebugFile(FILE* file_ptr);
 
-    /** @brief check joint configuration for collision (0: collision) */
+    /** \brief check joint configuration for collision (0: collision) */
     bool checkCollision(const std::vector<double> &angles, bool verbose, bool check_mesh, unsigned char &dist);
 
-    /** @brief check if the cell's distance to nearest obstacle > radius */
+    /** \brief check if the cell's distance to nearest obstacle > radius */
     inline bool isValidCell(const int x, const int y, const int z, const int radius);
 
     void addArmCuboidsToGrid();
 
     bool getCollisionCylinders(const std::vector<double> &angles, std::vector<std::vector<double> > &cylinders);
 
+    /** \brief get coordinates of cells that a line segment intersects */
     void getLineSegment(const std::vector<int> a,const std::vector<int> b,std::vector<std::vector<int> > &points);
 
     void getInterpolatedPath(const std::vector<double> &start, const std::vector<double> &end, double inc, std::vector<std::vector<double> > &path);
 
     void getInterpolatedPath(const std::vector<double> &start, const std::vector<double> &end, std::vector<double> &inc, std::vector<std::vector<double> > &path);
 
+    /** \brief check linearly interpolated path for collisions */
     bool checkPathForCollision(const std::vector<double> &start, const std::vector<double> &end, bool verbose, unsigned char &dist);
 
-    /** @brief check if a line segment lies on an invalid cell (0: collision) */
+    /** \brief check if a line segment lies on an invalid cell (0: collision) */
     unsigned char isValidLineSegment(const std::vector<int> a,const std::vector<int> b,const short unsigned int radius);
- 
+
+    /* \brief remove all attached objects from gripper */
+    void removeAttachedObject();
+
+    /* \brief attach a sphere to the gripper */
     void attachSphereToGripper(std::string frame, geometry_msgs::Pose pose, double radius);
 
+    /* \brief attach a cylinder to the gripper */
     void attachCylinderToGripper(std::string frame, geometry_msgs::Pose pose, double radius, double length);
 
+    /* \brief attach a mesh to the gripper (attach a bounding cylinder of that mesh)*/
     void attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const bodies::BoundingCylinder &cyl);
     
+    /* \brief attach a mesh to the gripper (attach a bounding cylinder of that mesh)*/
     void attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices);
 
+    /** \brief get the voxels that the attached object occupies */
     bool getAttachedObject(const std::vector<double> &angles, std::vector<std::vector<double> > &xyz);
 
+    /** \brief get the radius of the attached object (sphere or cylinder) */
     double getAttachedObjectRadius();
-    
+   
+    /** \brief add a collision object to the environment */ 
+    void addCollisionObject(const mapping_msgs::CollisionObject &object);
+
+    /** \brief transform a pose from one frame to another */
+    void transformPose(std::string current_frame, std::string desired_frame, geometry_msgs::Pose &pose_in, geometry_msgs::Pose &pose_out);
+
+    void transformPose(const std::string &current_frame, const std::string &desired_frame, const geometry_msgs::Pose &pose_in, geometry_msgs::Pose &pose_out);
+
+    /** \brief process a collision object message */
+    void processCollisionObjectMsg(const mapping_msgs::CollisionObject &object);
+
+    void removeCollisionObject(const mapping_msgs::CollisionObject &object);
+
+    void putCollisionObjectsInGrid();
+
+    void getCollisionObjectVoxelPoses(std::vector<geometry_msgs::Pose> &points);
+
+
   private:
 
 
@@ -114,6 +146,16 @@ class SBPLCollisionSpace
 
     /** @brief the file for dumping debug output */
     FILE* fOut_;
+
+    /** \brief map from object id to object details */
+    std::map<std::string, mapping_msgs::CollisionObject> object_map_;
+    
+    /** \brief map from object id to list of occupying voxels */
+    std::map<std::string, std::vector<btVector3> > object_voxel_map_;
+
+    std::vector<std::string> known_objects_;
+
+    tf::TransformListener tf_;
 
     std::vector<double> inc_;
 

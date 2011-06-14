@@ -27,6 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef __SBPL_ARM_PLANNER_PARAMS_H_
+#define __SBPL_ARM_PLANNER_PARAMS_H_
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -192,4 +195,6 @@ class SBPLArmPlannerParams
     int solve_for_ik_thresh_;
     double solve_for_ik_thresh_m_;
 };
+
+#endif
 

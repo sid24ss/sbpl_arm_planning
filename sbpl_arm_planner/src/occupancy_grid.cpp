@@ -30,6 +30,8 @@
  /** \author Benjamin Cohen */
 
 #include <sbpl_arm_planner/occupancy_grid.h>
+#include <LinearMath/btTransform.h>
+#include <LinearMath/btVector3.h>
 
 using namespace std;
 
@@ -100,7 +102,7 @@ void OccupancyGrid::setWorldSize(double dim_x, double dim_y, double dim_z)
   world_size_[1] = dim_y;
   world_size_[2] = dim_z;
 
-  SBPL_PRINTF("[OccupancyGrid] Set internal world dimensions but not distance field\n");
+  SBPL_INFO("[OccupancyGrid] Set internal world dimensions but not distance field\n");
 }
 
 void OccupancyGrid::getWorldSize(double &dim_x, double &dim_y, double &dim_z)
@@ -138,13 +140,15 @@ void OccupancyGrid::updateFromCollisionMap(const mapping_msgs::CollisionMap &col
 {
   if(collision_map.boxes.empty())
   {
-    SBPL_PRINTF("[updateFromCollisionMap] collision map received is empty.\n");
+    SBPL_INFO("[updateFromCollisionMap] collision map received is empty.\n");
     return;
   }
 
   reference_frame_ = collision_map.header.frame_id;
+  
+  SBPL_INFO("[OccupancyGrid] Resetting grid and updating from collision map");
   grid_->reset();
-  grid_->addPointsToField(cuboid_points_);
+  //grid_->addPointsToField(cuboid_points_);
   grid_->addCollisionMapToField(collision_map);
 }
 
@@ -167,12 +171,35 @@ void OccupancyGrid::addCollisionCuboid(double origin_x, double origin_y, double 
  
   grid_->addPointsToField(cuboid_points_);
 
-  ROS_DEBUG("[addCollisionCuboid] Added %d points for collision cuboid (origin: %0.2f %0.2f %0.2f  size: %0.2f %0.2f %0.2f).", num_points, origin_x, origin_y, origin_z, size_x, size_y, size_z);
+  ROS_INFO("[addCollisionCuboid] Added %d points for collision cuboid (origin: %0.2f %0.2f %0.2f  size: %0.2f %0.2f %0.2f).", num_points, origin_x, origin_y, origin_z, size_x, size_y, size_z);
+}
+
+void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<btVector3> &voxels)
+{
+  btVector3 vin, vout, v(pose.position.x, pose.position.y, pose.position.z);
+  btMatrix3x3 m(btQuaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w));
+
+  for (double x=0-dim[0]/2.0; x<=dim[0]/2.0; x+=grid_resolution_)
+  {
+    for (double y=0-dim[1]/2.0; y<=dim[1]/2.0; y+=grid_resolution_)
+    {
+      for (double z=0-dim[2]/2.0; z<=dim[2]/2.0; z+=grid_resolution_)
+      {
+        vin.setX(x);
+        vin.setY(y);
+        vin.setZ(z);
+        vout = m*vin;
+        vout += v;
+
+        voxels.push_back(vout);
+      }
+    }
+  }
 }
 
 void OccupancyGrid::visualize()
 {
-  btTransform::btTransform trans; 
+  btTransform trans; 
   trans.setIdentity();
   grid_->visualize(0.01, 0.02, reference_frame_, trans, ros::Time::now());
 }
@@ -255,7 +282,7 @@ bool OccupancyGrid::saveGridToBinaryFile(std::string filename)
   }
   else
   {
-    SBPL_PRINTF("[saveGridToBinaryFile] Failed to open file for writing.\n");
+    SBPL_ERROR("[saveGridToBinaryFile] Failed to open file for writing.\n");
     return false;
   }
 
@@ -264,16 +291,16 @@ bool OccupancyGrid::saveGridToBinaryFile(std::string filename)
   //verify writing to file was successful
   if(stat(name, &file_stats) == 0)
   {
-    SBPL_PRINTF("[saveGridToBinaryFile] The size of the file created is %d kb.\n", int(file_stats.st_size)/1024);
+    SBPL_INFO("[saveGridToBinaryFile] The size of the file created is %d kb.\n", int(file_stats.st_size)/1024);
     if(file_stats.st_size == 0)
     {
-      SBPL_PRINTF("[saveGridToBinaryFile] File created is empty. Exiting.\n");
+      SBPL_ERROR("[saveGridToBinaryFile] File created is empty. Exiting.\n");
       return false;
     }
   }
   else
   {
-    SBPL_PRINTF("[saveGridToBinaryFile] An error occurred when retrieving size of file created. Exiting.\n");
+    SBPL_ERROR("[saveGridToBinaryFile] An error occurred when retrieving size of file created. Exiting.\n");
     return false;
   }
 

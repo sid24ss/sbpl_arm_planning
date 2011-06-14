@@ -950,15 +950,21 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, con
 
   EnvROBARMCfg.ik_solution=jnt_angles;
 
-  std::vector<double> goal_pose(6,0);
+  std::vector<double> goal_pose(7,0);  //changed from 6
   unsigned char dist = 0;
 
   goal_pose[0] = goal.pos[0];
   goal_pose[1] = goal.pos[1];
   goal_pose[2] = goal.pos[2];
+/*
   goal_pose[3] = goal.rpy[0];
   goal_pose[4] = goal.rpy[1];
   goal_pose[5] = goal.rpy[2];
+*/
+  goal_pose[3] = goal.q[0];
+  goal_pose[4] = goal.q[1];
+  goal_pose[5] = goal.q[2];
+  goal_pose[6] = goal.q[3];
 
   EnvROBARMCfg.num_calls_to_ik++;
 
@@ -1154,6 +1160,11 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     EnvROBARMCfg.EndEffGoals[i].is_6dof_goal = goals[i][6];
     prms_.use_6d_pose_goal_ = goals[i][6];
 
+    EnvROBARMCfg.EndEffGoals[i].q[0] = goals[i][7];
+    EnvROBARMCfg.EndEffGoals[i].q[1] = goals[i][8];
+    EnvROBARMCfg.EndEffGoals[i].q[2] = goals[i][9];
+    EnvROBARMCfg.EndEffGoals[i].q[3] = goals[i][10];
+    
     if(!prms_.use_6d_pose_goal_)
       SBPL_DEBUG("[setGoalPosition] Goal position constraint set. No goal orientation constraint requested.\n");
 
@@ -1176,7 +1187,10 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     EnvROBARM.goalHashEntry->coord[i] = 0;
 
   for(unsigned int i = 0; i < EnvROBARMCfg.EndEffGoals.size(); i++)
+  {
     SBPL_INFO("goal %i:  grid: %u %u %u (cells)  xyz: %0.2f %0.2f %0.2f (meters)  (tol: %0.3fm %0.3fm %0.3fm) rpy: %1.2f %1.2f %1.2f (radians) (tol: %0.3f %0.3f %0.3f)",i,EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],tolerances[i][1],tolerances[i][2],EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][3],tolerances[i][4],tolerances[i][5]);
+    SBPL_INFO("quat: %0.3f %0.3f %0.3f %0.3f",EnvROBARMCfg.EndEffGoals[i].q[0], EnvROBARMCfg.EndEffGoals[i].q[1], EnvROBARMCfg.EndEffGoals[i].q[2], EnvROBARMCfg.EndEffGoals[i].q[3]);
+  }
 
 #if DEBUG_SEARCH
   if(prms_.verbose_)
