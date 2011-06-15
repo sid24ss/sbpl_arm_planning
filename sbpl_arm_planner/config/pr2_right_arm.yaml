@@ -5,8 +5,11 @@ planner:
   use_research_heuristic: false
   use_uniform_obstacle_cost: false
   use_multiresolution_motion_primitives: true
+  obstacle_distance_cost_far: 2
+  obstacle_distance_cost_mid: 7
+  obstacle_distance_cost_near: 12
   research:
-    solve_with_ik_threshold: 0.06
+    solve_with_ik_threshold: 0.02
     sum_heuristics: false
     short_distance_mprims_threshold: 0.2
   
