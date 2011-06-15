@@ -848,7 +848,13 @@ void SBPLCollisionSpace::processCollisionObjectMsg(const mapping_msgs::Collision
   }
   else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
   {
-    removeCollisionObject(object);
+    if(object.id.compare("all") == 0)
+    {
+      ROS_INFO("REMOVING ALL OBJECTS. NEXT TIME AROUND IT SHOULD BE CLEAR.");
+      removeAllCollisionObjects();
+    }
+    else
+      removeCollisionObject(object);
   }
   else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
   {
@@ -872,29 +878,32 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
   {
     if(object.shapes[i].type == geometric_shapes_msgs::Shape::BOX)
     {
-      ROS_INFO(" ");
-      ROS_INFO("[%s] TransformPose from %s to %s.", object.id.c_str(), object.header.frame_id.c_str(), grid_->getReferenceFrame().c_str());
-      ROS_INFO("[%s] %s: xyz: %0.3f %0.3f %0.3f   quat: %0.3f %0.3f %0.3f %0.3f", object.id.c_str(), object.header.frame_id.c_str(), object.poses[i].position.x,  object.poses[i].position.y, object.poses[i].position.z, object.poses[i].orientation.x, object.poses[i].orientation.y, object.poses[i].orientation.z,object.poses[i].orientation.w);
-
       transformPose(object.header.frame_id, grid_->getReferenceFrame(), object.poses[i], pose);
-      ROS_INFO("[%s] %s: xyz: %0.3f %0.3f %0.3f   quat: %0.3f %0.3f %0.3f %0.3f", object.id.c_str(), grid_->getReferenceFrame().c_str(), pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
       grid_->getVoxelsInBox(pose, object.shapes[i].dimensions, object_voxel_map_[object.id]);
-      ROS_INFO("[%s] occupies %d voxels.",object.id.c_str(), int(object_voxel_map_[object.id].size()));
-      ROS_INFO(" ");
+      
+      ROS_DEBUG("[%s] TransformPose from %s to %s.", object.id.c_str(), object.header.frame_id.c_str(), grid_->getReferenceFrame().c_str());
+      ROS_DEBUG("[%s] %s: xyz: %0.3f %0.3f %0.3f   quat: %0.3f %0.3f %0.3f %0.3f", object.id.c_str(), object.header.frame_id.c_str(), object.poses[i].position.x,  object.poses[i].position.y, object.poses[i].position.z, object.poses[i].orientation.x, object.poses[i].orientation.y, object.poses[i].orientation.z,object.poses[i].orientation.w);
+      ROS_DEBUG("[%s] %s: xyz: %0.3f %0.3f %0.3f   quat: %0.3f %0.3f %0.3f %0.3f", object.id.c_str(), grid_->getReferenceFrame().c_str(), pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+      ROS_DEBUG("[%s] occupies %d voxels.",object.id.c_str(), int(object_voxel_map_[object.id].size()));
     }
     else
       ROS_WARN("[addCollisionObject] Collision objects of type %d are not yet supported.", object.shapes[i].type);
   }
 
+  ROS_INFO("known_objects:");
   // add this object to list of objects that get added to grid
   bool new_object = true;
   for(size_t i = 0; i < known_objects_.size(); ++i)
   {
     if(known_objects_[i].compare(object.id) == 0)
       new_object = false;
+    ROS_INFO("%d: %s", int(i), known_objects_[i].c_str());
   }
   if(new_object)
     known_objects_.push_back(object.id);
+
+  grid_->addPointsToField(object_voxel_map_[object.id]);
+  ROS_DEBUG("[addCollisionObject] Just added %s to the distance field.", object.id.c_str());
 }
 
 void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObject &object)
@@ -904,18 +913,24 @@ void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObje
     if(known_objects_[i].compare(object.id) == 0)
     {
       known_objects_.erase(known_objects_.begin() + i);
-      ROS_INFO("[removeCollisionObject] Removing %s from list of known objects.", object.id.c_str());
+      ROS_DEBUG("[removeCollisionObject] Removing %s from list of known objects.", object.id.c_str());
     }
   }
 }
 
+void SBPLCollisionSpace::removeAllCollisionObjects()
+{
+  known_objects_.clear();
+}
+
 void SBPLCollisionSpace::putCollisionObjectsInGrid()
 {
-  ROS_INFO("Should we reset the grid in putCollisionObjectsInGrid()?");
+  ROS_DEBUG("[putCollisionObjectsInGrid] Should we reset first?");
+
   for(size_t i = 0; i < known_objects_.size(); ++i)
   {
     grid_->addPointsToField(object_voxel_map_[known_objects_[i]]);
-    ROS_INFO("[putCollisionObjectsInGrid] Added %s to grid with %d voxels.",known_objects_[i].c_str(), int(object_voxel_map_[known_objects_[i]].size()));
+    ROS_DEBUG("[putCollisionObjectsInGrid] Added %s to grid with %d voxels.",known_objects_[i].c_str(), int(object_voxel_map_[known_objects_[i]].size()));
   }
 }
 

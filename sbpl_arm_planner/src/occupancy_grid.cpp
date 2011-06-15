@@ -146,7 +146,7 @@ void OccupancyGrid::updateFromCollisionMap(const mapping_msgs::CollisionMap &col
 
   reference_frame_ = collision_map.header.frame_id;
   
-  SBPL_INFO("[OccupancyGrid] Resetting grid and updating from collision map");
+  SBPL_DEBUG("[OccupancyGrid] Resetting grid and updating from collision map");
   grid_->reset();
   //grid_->addPointsToField(cuboid_points_);
   grid_->addCollisionMapToField(collision_map);

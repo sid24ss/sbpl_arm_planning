@@ -258,8 +258,8 @@ bool SBPLArmModel::initKDLChain(const std::string &fKDL)
   jnt_pos_in_.resize(chain_.getNrOfJoints());
   jnt_pos_out_.resize(chain_.getNrOfJoints());
 
-  SBPL_INFO("[initKDLChain] The FK chain has %d segments with %d joints.", chain_.getNrOfSegments(), chain_.getNrOfJoints());
-  SBPL_INFO("[initKDLChain] root: %s tip: %s.", chain_root_name_.c_str(), chain_tip_name_.c_str());
+  SBPL_DEBUG("[initKDLChain] The FK chain has %d segments with %d joints.", chain_.getNrOfSegments(), chain_.getNrOfJoints());
+  SBPL_DEBUG("[initKDLChain] root: %s tip: %s.", chain_root_name_.c_str(), chain_tip_name_.c_str());
   
   if (!kdl_tree_.getChain("torso_lift_link", chain_tip_name_, ik_chain_))
   {

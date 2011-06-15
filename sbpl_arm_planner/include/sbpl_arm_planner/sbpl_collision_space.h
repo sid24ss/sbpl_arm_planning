@@ -130,6 +130,8 @@ class SBPLCollisionSpace
 
     void removeCollisionObject(const mapping_msgs::CollisionObject &object);
 
+    void removeAllCollisionObjects();
+
     void putCollisionObjectsInGrid();
 
     void getCollisionObjectVoxelPoses(std::vector<geometry_msgs::Pose> &points);

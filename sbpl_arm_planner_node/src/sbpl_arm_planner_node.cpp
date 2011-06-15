@@ -129,8 +129,8 @@ bool SBPLArmPlannerNode::init()
   collision_map_filter_ = new tf::MessageFilter<mapping_msgs::CollisionMap>(collision_map_subscriber_,tf_,reference_frame_,1);
   collision_map_filter_->registerCallback(boost::bind(&SBPLArmPlannerNode::collisionMapCallback, this, _1));
 
-  collision_object_subscriber_ = root_handle_.subscribe("collision_object", 1, &SBPLArmPlannerNode::collisionObjectCallback, this);
-  object_subscriber_ = root_handle_.subscribe("attached_collision_object", 1, &SBPLArmPlannerNode::attachedObjectCallback,this);
+  collision_object_subscriber_ = root_handle_.subscribe("collision_object", 3, &SBPLArmPlannerNode::collisionObjectCallback, this);
+  object_subscriber_ = root_handle_.subscribe("attached_collision_object", 3, &SBPLArmPlannerNode::attachedObjectCallback,this);
 
   // main planning service
   planning_service_ = root_handle_.advertiseService("/sbpl_planning/plan_path", &SBPLArmPlannerNode::planKinematicPath,this);
@@ -206,10 +206,10 @@ void SBPLArmPlannerNode::collisionMapCallback(const mapping_msgs::CollisionMapCo
 
 void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map)
 {
-  ROS_DEBUG("[updateMapFromCollisionMap] trying to get colmap_mutex_ mutex");
+  ROS_DEBUG("[updateMapFromCollisionMap] trying to get colmap_mutex_");
   if(colmap_mutex_.try_lock())
   {
-    ROS_DEBUG("[updateMapFromCollisionMap] locked colmap_mutex_ mutex.");
+    ROS_DEBUG("[updateMapFromCollisionMap] locked colmap_mutex_");
 
     if(collision_map->header.frame_id.compare(reference_frame_) != 0)
     {
@@ -221,7 +221,7 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
     grid_->updateFromCollisionMap(*collision_map);
 
     // add self collision blocks
-    //cspace_->addArmCuboidsToGrid();
+    cspace_->addArmCuboidsToGrid();
   
     cspace_->putCollisionObjectsInGrid();
 
@@ -245,24 +245,6 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
 
 void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedCollisionObjectConstPtr &attached_object)
 {
-/*
-  bool gripper_object = false;
-
-  // is the object attached to the gripper of the arm we are planning for
-  for(size_t i=0; i <attached_object->touch_links.size(); i++)
-  {
-    if(attached_object->touch_links[i].find(side_ + "_gripper") != string::npos)
-      gripper_object = true;
-    ROS_INFO("[attachedObjectCallback] allowed touch links: %s", attached_object->touch_links[i].c_str());
-  }
-
-  if (!gripper_object)
-  {
-    ROS_WARN("AttachedCollisionObjects that don't describe objects in the gripper are currently not supported.");
-    return;
-  }
-*/
-
   if(object_mutex_.try_lock())
   {
     // remove all objects
@@ -282,38 +264,50 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
     // attach object and remove it from collision space
     else if( attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
     {
-      ROS_INFO("[attachedObjectCallback] Received a message with ATTACH_AND_REMOVE_AS_OBJECT an object with %d shapes.", int(attached_object->object.shapes.size()));
+      ROS_INFO("[attachedObjectCallback] Received a message to ATTACH_AND_REMOVE_AS_OBJECT of object: %s", attached_object->object.id.c_str());
       
       // have we seen this collision object before?
       if(object_map_.find(attached_object->object.id) != object_map_.end())
       {
-        ROS_INFO("[attachedObjectCallback] We have seen this object (%s) before.", attached_object->object.id.c_str());
+        ROS_DEBUG("[attachedObjectCallback] We have seen this object (%s) before.", attached_object->object.id.c_str());
         attachObject(object_map_.find(attached_object->object.id)->second);
       }
       else
       {
-        ROS_INFO("[attachedObjectCallback] We have NOT seen this object (%s) before.", attached_object->object.id.c_str());
+        ROS_DEBUG("[attachedObjectCallback] We have NOT seen this object (%s) before.", attached_object->object.id.c_str());
         object_map_[attached_object->object.id] = attached_object->object;
         attachObject(attached_object->object);
       }
+      cspace_->removeCollisionObject(attached_object->object);
     }
     // remove object
-    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE ||
-        attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
+    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
     {
       attached_object_ = false;
       ROS_INFO("[attachedObjectCallback] Removing object (%s) from gripper.", attached_object->object.id.c_str());
       cspace_->removeAttachedObject();
+    }
+    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
+    {
+      attached_object_ = false;
+      ROS_INFO("[attachedObjectCallback] Removing object (%s) from gripper and adding to collision map.", attached_object->object.id.c_str());
+      cspace_->removeAttachedObject();
+      cspace_->addCollisionObject(attached_object->object);
     }
     else
       ROS_WARN("Received a collision object with an unknown operation");
 
     object_mutex_.unlock();
   }
+  visualizeCollisionObjects();
 }
 
 void SBPLArmPlannerNode::collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object)
 {
+  // for some reason, it wasn't getting all of the 'all' messages...
+  if(collision_object->id.compare("all") == 0)
+    cspace_->removeAllCollisionObjects();
+
   if(object_mutex_.try_lock())
   {
     // debug: have we seen this collision object before?
@@ -325,7 +319,10 @@ void SBPLArmPlannerNode::collisionObjectCallback(const mapping_msgs::CollisionOb
     object_mutex_.unlock();
   }
 
+  ROS_INFO("[collisionObjectCallback] %s", collision_object->id.c_str());
   cspace_->processCollisionObjectMsg((*collision_object));
+
+  visualizeCollisionObjects();
 }
 
 void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj)
@@ -470,34 +467,12 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
     return false;
   }
 
-  /*
-  double x,y,z,w;
-  KDL::Frame frame_des;
-  frame_des.p.x(sbpl_goal[0][0]);
-  frame_des.p.y(sbpl_goal[0][1]);
-  frame_des.p.z(sbpl_goal[0][2]);
-  frame_des.M = KDL::Rotation::RPY(sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5]);
-  frame_des.M.GetQuaternion(x,y,z,w);
-  */
-
   tf::Quaternion q;
   q.setRPY(roll,pitch,yaw);
 
   ROS_INFO("Quat from MoveArm: %0.3f %0.3f %0.3f %0.3f", goals.orientation_constraints[0].orientation.x, goals.orientation_constraints[0].orientation.y, goals.orientation_constraints[0].orientation.z, goals.orientation_constraints[0].orientation.w);
   ROS_INFO("      RPY with TF: %0.3f %0.3f %0.3f", roll,pitch,yaw);
   ROS_INFO("     Quat with TF: %0.3f %0.3f %0.3f %0.3f", q.x(), q.y(), q.z(), q.w());
-
-/*
-  pose_msg.orientation.x = x;
-  pose_msg.orientation.y = y;
-  pose_msg.orientation.z = z;
-  pose_msg.orientation.w = w;
-
-  tf::poseMsgToTF(pose_msg, tf_pose);
-  tf_pose.getBasis().getRPY(roll,pitch,yaw);
-  
-  ROS_INFO("GOAL QUATERNION FROM KDL: %0.3f %0.3f %0.3f %0.3f --> Converted back to RPY: %0.3f %0.3f %0.3f", x,y,z,w, roll,pitch,yaw);
-*/
 
   return true;
 }
