@@ -1,6 +1,6 @@
 planner:
   epsilon: 100
-  verbose: true
+  verbose: false
   use_dijkstra_heuristic: true
   use_research_heuristic: false
   use_uniform_obstacle_cost: false

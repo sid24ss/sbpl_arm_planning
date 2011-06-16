@@ -1,6 +1,6 @@
 planner:
   epsilon: 100
-  verbose: true
+  verbose: false
   use_dijkstra_heuristic: true
   use_research_heuristic: false
   use_uniform_obstacle_cost: false
@@ -9,7 +9,7 @@ planner:
   obstacle_distance_cost_mid: 7
   obstacle_distance_cost_near: 12
   research:
-    solve_with_ik_threshold: 0.02
+    solve_with_ik_threshold: 0.06
     sum_heuristics: false
     short_distance_mprims_threshold: 0.2
   
