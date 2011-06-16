@@ -76,6 +76,9 @@ class SBPLCollisionSpace
     /** \brief check joint configuration for collision (0: collision) */
     bool checkCollision(const std::vector<double> &angles, bool verbose, bool check_mesh, unsigned char &dist);
 
+    /** \brief check if a specific link is in collision (0: collision) */
+    bool checkLinkForCollision(const std::vector<double> &angles, int link_num, bool verbose, unsigned char &dist);
+
     /** \brief check if the cell's distance to nearest obstacle > radius */
     inline bool isValidCell(const int x, const int y, const int z, const int radius);
 
@@ -92,6 +95,9 @@ class SBPLCollisionSpace
 
     /** \brief check linearly interpolated path for collisions */
     bool checkPathForCollision(const std::vector<double> &start, const std::vector<double> &end, bool verbose, unsigned char &dist);
+
+    /** \brief check linearly interpolated path for collision of a specific link */
+    bool checkLinkPathForCollision(const std::vector<double> &start, const std::vector<double> &end, int link_num, bool verbose, unsigned char &dist);
 
     /** \brief check if a line segment lies on an invalid cell (0: collision) */
     unsigned char isValidLineSegment(const std::vector<int> a,const std::vector<int> b,const short unsigned int radius);
@@ -136,6 +142,9 @@ class SBPLCollisionSpace
 
     void getCollisionObjectVoxelPoses(std::vector<geometry_msgs::Pose> &points);
 
+    /** @brief get the xyz coords of each joint in the arm */ 
+    bool getJointPosesInGrid(std::vector<double> angles, std::vector<std::vector<int> > &jnts, KDL::Frame &f_out, bool verbose);
+
 
   private:
 
@@ -166,8 +175,6 @@ class SBPLCollisionSpace
     short unsigned int attached_object_radius_;
     std::vector<KDL::Frame> object_points_;
 
-    /** @brief get the xyz coords of each joint in the arm */ 
-    bool getJointPosesInGrid(std::vector<double> angles, std::vector<std::vector<int> > &jnts, KDL::Frame &f_out, bool verbose);
 
      /** @brief get the shortest distance between two 3D line segments */
     double distanceBetween3DLineSegments(std::vector<int> l1a, std::vector<int> l1b,std::vector<int> l2a,std::vector<int> l2b);

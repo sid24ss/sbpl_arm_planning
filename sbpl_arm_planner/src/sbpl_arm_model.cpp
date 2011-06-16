@@ -519,7 +519,8 @@ bool SBPLArmModel::getJointPositions(const std::vector<double> angles, std::vect
     links[i][1] = f.p.y();
     links[i][2] = f.p.z();
 
-    if(i == planning_joint_)
+    // changed from planning_joint_ to 2  (6/15/11)
+    if(i == 2)
       f_out = f;
   }
 

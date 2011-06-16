@@ -632,19 +632,21 @@ void EnvironmentROBARM3D::discretizeAngles()
 
 int EnvironmentROBARM3D::cost(EnvROBARM3DHashEntry_t* HashEntry1, EnvROBARM3DHashEntry_t* HashEntry2, bool bState2IsGoal)
 {
- // if(bState2IsGoal)
- // 	return 0;
-
   if(prms_.use_uniform_cost_)
     return prms_.cost_multiplier_;
   else
   {
     // Max's suggestion is to just put a high cost on being close to
     // obstacles but don't provide some sort of gradient 
-    if(int(HashEntry2->dist) < 6) //in cells of resolution_
-      return prms_.cost_multiplier_ * 11;
-    else if(int(HashEntry2->dist) < 9) //in cells of resolution_
-      return prms_.cost_multiplier_ * 5;
+    if(int(HashEntry2->dist) < 7) // in cells
+    {
+      //printf("%d->%d: dist: %d cost: %d heur: %d\n",int(HashEntry1->stateID), int(HashEntry2->stateID), int(HashEntry2->dist), prms_.cost_multiplier_ * prms_.range1_cost_, GetFromToHeuristic(HashEntry1->stateID, HashEntry2->stateID));
+      return prms_.cost_multiplier_ * prms_.range1_cost_;
+    }
+    else if(int(HashEntry2->dist) < 12)
+      return prms_.cost_multiplier_ * prms_.range2_cost_;
+    else if(int(HashEntry2->dist) < 17)
+      return prms_.cost_multiplier_ * prms_.range3_cost_;
     else
       return prms_.cost_multiplier_;
   }
@@ -781,11 +783,11 @@ bool EnvironmentROBARM3D::initGeneral()
       prms_.printSmoothingCosts(stdout);
   }
 
-#if DEBUG_SEARCH
-    arm_->printArmDescription(fSucc);
-    prms_.printParams(fSucc);
-    fflush(fSucc);
-#endif
+  if(prms_.verbose_)
+  {
+    arm_->printArmDescription(stdout);
+    prms_.printParams(stdout);
+  }
 
   //set heuristic function pointer
   if(prms_.use_research_heuristic_)
@@ -1127,11 +1129,11 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
   pose = goals[0];
   unsigned char dist_ik;
   if(!arm_->computeIK(pose, jnt_angles, EnvROBARMCfg.ik_solution))
-    SBPL_WARN("[setGoalPosition] No valid IK solution for the goal pose.");
+    SBPL_DEBUG("[setGoalPosition] No valid IK solution for the goal pose.");
   else
   {
     if(!cspace_->checkCollision(EnvROBARMCfg.ik_solution, false, false, dist_ik))
-      SBPL_WARN("[setGoalPosition] An IK solution for the goal pose was found but it's in collision. Valid solutions may exist.");
+      SBPL_DEBUG("[setGoalPosition] An IK solution for the goal pose was found but it's in collision. Valid solutions may exist.");
     else
       SBPL_DEBUG("[setGoalPosition] A valid IK solution for the goal pose was found.");
   }
@@ -1189,7 +1191,7 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
   for(unsigned int i = 0; i < EnvROBARMCfg.EndEffGoals.size(); i++)
   {
     SBPL_INFO("goal %i:  grid: %u %u %u (cells)  xyz: %0.2f %0.2f %0.2f (meters)  (tol: %0.3fm %0.3fm %0.3fm) rpy: %1.2f %1.2f %1.2f (radians) (tol: %0.3f %0.3f %0.3f)",i,EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],tolerances[i][1],tolerances[i][2],EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][3],tolerances[i][4],tolerances[i][5]);
-    SBPL_INFO("quat: %0.3f %0.3f %0.3f %0.3f",EnvROBARMCfg.EndEffGoals[i].q[0], EnvROBARMCfg.EndEffGoals[i].q[1], EnvROBARMCfg.EndEffGoals[i].q[2], EnvROBARMCfg.EndEffGoals[i].q[3]);
+    SBPL_DEBUG("quat: %0.3f %0.3f %0.3f %0.3f",EnvROBARMCfg.EndEffGoals[i].q[0], EnvROBARMCfg.EndEffGoals[i].q[1], EnvROBARMCfg.EndEffGoals[i].q[2], EnvROBARMCfg.EndEffGoals[i].q[3]);
   }
 
 #if DEBUG_SEARCH
@@ -1463,7 +1465,7 @@ void EnvironmentROBARM3D::computeCostPerCell()
   for (int i = 0; i < prms_.num_mprims_; i++)
   {
     for(int j = 0; j < arm_->num_joints_; j++)
-      angles[j] = DEG2RAD(prms_.mprims_[i][j]);// * (360.0/prms_.angle_delta_));
+      angles[j] = DEG2RAD(prms_.mprims_[i][j]);
 
     //starting at zeroed angles, find end effector position after each action
     if(!arm_->getPlanningJointPose(angles, pose))
@@ -1681,7 +1683,7 @@ void EnvironmentROBARM3D::debugAdaptiveMotionPrims()
   {
     rpysolver_->printStats();
 
-    SBPL_INFO("Calls to IK: %d   No Solutions Returned: %d  Invalid Joint Limits: %d   Invalid Solutions: %d   Invalid Paths to Solutions: %d", EnvROBARMCfg.num_calls_to_ik, EnvROBARMCfg.num_no_ik_solutions, EnvROBARMCfg.num_ik_invalid_joint_limits,EnvROBARMCfg.num_invalid_ik_solutions, EnvROBARMCfg.num_ik_invalid_path);
+    SBPL_INFO("Calls to IK: %d   No Solutions: %d  Invalid Joint Limits: %d   Invalid Solutions: %d   Invalid Paths: %d", EnvROBARMCfg.num_calls_to_ik, EnvROBARMCfg.num_no_ik_solutions, EnvROBARMCfg.num_ik_invalid_joint_limits,EnvROBARMCfg.num_invalid_ik_solutions, EnvROBARMCfg.num_ik_invalid_path);
   }
   
   //print out elbow cell for final joint configuration - 9/5/2010

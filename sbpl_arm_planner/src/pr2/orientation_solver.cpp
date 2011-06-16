@@ -375,6 +375,8 @@ bool RPYSolver::isOrientationFeasible(const double* rpy, std::vector<double> &st
   std::vector<double>endeff_pose(6,0);
   std::vector<double>goal_joint_config(7,0);
 
+  int link_num = 2; //added 6/15/11
+
   //get pose of forearm link
   if(!arm_->computeFK(start,FOREARM_ROLL,forearm_pose))
   {
@@ -428,7 +430,8 @@ SET_ANGLES_AGAIN: //GoTO label, temporary, do not continue use of this
     goal_joint_config[4+my_count]+=hand_rotations[1+my_count];
 
     //check for collisions
-    if(!cspace_->checkCollision(goal_joint_config, verbose_, false, dist))
+    //if(!cspace_->checkCollision(goal_joint_config, verbose_, false, dist))
+    if(!cspace_->checkLinkForCollision(goal_joint_config, link_num, verbose_, dist))
     {
       num_invalid_solution_++;
       return false;
@@ -442,7 +445,7 @@ SET_ANGLES_AGAIN: //GoTO label, temporary, do not continue use of this
     }
 
     //check for collisions along the path
-    if(!cspace_->checkPathForCollision(start, goal_joint_config, verbose_, dist))
+    if(!cspace_->checkLinkPathForCollision(start, goal_joint_config, link_num, verbose_, dist))
     {
       //try rotating in the opposite direction
       if(try_both_rotations)
@@ -481,7 +484,7 @@ SET_ANGLES_AGAIN: //GoTO label, temporary, do not continue use of this
 
 void RPYSolver::printStats()
 {
-  SBPL_INFO("Calls to OS: %d   OS Predicts Impossible:  %d    Solutions In Collision: %d    Invalid Paths to Solutions: %d", num_calls_, num_invalid_predictions_, num_invalid_solution_, num_invalid_path_to_solution_); 
+  SBPL_INFO("Calls to OS: %d   Predicts Impossible: %d   Invalid Solutions: %d   Invalid Paths: %d", num_calls_, num_invalid_predictions_, num_invalid_solution_, num_invalid_path_to_solution_); 
 }
 
 }

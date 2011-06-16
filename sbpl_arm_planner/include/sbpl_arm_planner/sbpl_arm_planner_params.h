@@ -163,6 +163,10 @@ class SBPLArmPlannerParams
     /** \brief cost multiplier (so we don't have to deal with doubles) */
     int cost_multiplier_;
 
+    int range1_cost_;
+    int range2_cost_;
+    int range3_cost_;
+
     /** \brief cost of moving one cell in the grid */
     int cost_per_cell_;
 

@@ -57,7 +57,11 @@ SBPLArmPlannerParams::SBPLArmPlannerParams()
   cost_multiplier_ = 1000;
   cost_per_cell_ = 0;
   cost_per_meter_ = 0;
-  
+
+  range1_cost_ = 12;
+  range2_cost_ = 7;
+  range3_cost_ = 2;
+
   solve_for_ik_thresh_ = 1000;
   solve_for_ik_thresh_m_= 0.20;
 
@@ -76,6 +80,9 @@ void SBPLArmPlannerParams::initFromParamServer()
   nh.param("planner/use_multiresolution_motion_primitives",use_multires_mprims_,true);
   nh.param("planner/use_uniform_obstacle_cost", use_uniform_cost_,false);
   nh.param("planner/verbose",verbose_,false);
+  nh.param("planner/obstacle_distance_cost_far",range3_cost_,12);
+  nh.param("planner/obstacle_distance_cost_mid",range2_cost_,7);
+  nh.param("planner/obstacle_distance_cost_near",range1_cost_,2);
 
   /* research params of the planner */
   nh.param("planner/research/solve_with_ik_threshold",solve_for_ik_thresh_m_,0.15);
@@ -369,7 +376,7 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
     for(int j=0; j < ncols; ++j)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.");
+        SBPL_WARN("Parsed string has length < 1.");
       if(!feof(fCfg) && strlen(sTemp) != 0)
         mprim[j] = atof(sTemp);
       else
@@ -473,20 +480,20 @@ void SBPLArmPlannerParams::printMotionPrims(FILE* fOut)
 
 void SBPLArmPlannerParams::printParams(FILE* fOut)
 {
-  SBPL_FPRINTF(fOut,"\nArm Planner Parameters:\n");
-  SBPL_FPRINTF(fOut,"%40s: %d\n", "# motion primitives",num_mprims_);
-  SBPL_FPRINTF(fOut,"%40s: %d\n", "# short distance motion primitives", num_short_dist_mprims_);
-  SBPL_FPRINTF(fOut,"%40s: %d\n", "# long distance motion primitives", num_long_dist_mprims_);
-  SBPL_FPRINTF(fOut,"%40s: %.2f\n", "epsilon",epsilon_);
-  SBPL_FPRINTF(fOut,"%40s: %s\n", "use multi-resolution motion primitives", use_multires_mprims_ ? "yes" : "no");
-  SBPL_FPRINTF(fOut,"%40s: %s\n", "use dijkstra heuristic", use_dijkstra_heuristic_ ? "yes" : "no");
-  SBPL_FPRINTF(fOut,"%40s: %s\n", "use research heuristic", use_research_heuristic_ ? "yes" : "no");
-  SBPL_FPRINTF(fOut,"%40s: %s\n", "h = h_elbow + h_endeff", sum_heuristics_ ? "yes" : "no"); 
-  SBPL_FPRINTF(fOut,"%40s: %s\n", "use a uniform cost",use_uniform_cost_ ? "yes" : "no");
-  SBPL_FPRINTF(fOut,"%40s: %d\n", "cost per cell", cost_per_cell_);
-  SBPL_FPRINTF(fOut,"%40s: %.5f\n", "distance from goal to start using IK:",solve_for_ik_thresh_m_);
-  SBPL_FPRINTF(fOut,"%40s: %d\n", "cost from goal to start using IK:",solve_for_ik_thresh_);
-  SBPL_FPRINTF(fOut,"\n");
+  SBPL_DEBUG_NAMED(fOut,"\nArm Planner Parameters:\n");
+  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "# motion primitives",num_mprims_);
+  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "# short distance motion primitives", num_short_dist_mprims_);
+  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "# long distance motion primitives", num_long_dist_mprims_);
+  SBPL_DEBUG_NAMED(fOut,"%40s: %.2f\n", "epsilon",epsilon_);
+  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "use multi-resolution motion primitives", use_multires_mprims_ ? "yes" : "no");
+  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "use dijkstra heuristic", use_dijkstra_heuristic_ ? "yes" : "no");
+  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "use research heuristic", use_research_heuristic_ ? "yes" : "no");
+  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "h = h_elbow + h_endeff", sum_heuristics_ ? "yes" : "no"); 
+  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "use a uniform cost",use_uniform_cost_ ? "yes" : "no");
+  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "cost per cell", cost_per_cell_);
+  SBPL_DEBUG_NAMED(fOut,"%40s: %.5f\n", "distance from goal to start using IK:",solve_for_ik_thresh_m_);
+  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "cost from goal to start using IK:",solve_for_ik_thresh_);
+  SBPL_DEBUG_NAMED(fOut,"\n");
 }
 
 void SBPLArmPlannerParams::precomputeSmoothingCosts()

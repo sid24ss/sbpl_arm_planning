@@ -68,12 +68,12 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
     return false;
 
   //check bounds
-  for(int i = 0; i < arm_->num_links_; ++i)
+  for(size_t i = 0; i < jnts.size(); ++i)
   {
     if(!grid_->isInBounds(jnts[i][0],jnts[i][1],jnts[i][2]))
     {
       if(verbose)
-        SBPL_DEBUG("End of link %d is out of bounds. (%d %d %d)", i, jnts[i][0],jnts[i][1],jnts[i][2]);
+        SBPL_DEBUG("End of link %d is out of bounds. (%d %d %d)", int(i), jnts[i][0],jnts[i][1],jnts[i][2]);
       return false;
     }
   }
@@ -82,7 +82,7 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
   for(int i = 0; i < int(jnts.size()-1); i++)
   {
     dist_temp = isValidLineSegment(jnts[i], jnts[i+1], arm_->getLinkRadiusCells(i));
-
+    
     //if the line's distance to the nearest obstacle is less than the radius
     if(dist_temp <= arm_->getLinkRadiusCells(i))
     { 
@@ -99,7 +99,7 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
   //check attached object for collision
   if(!isValidAttachedObject(angles, dist_temp, jnts[0],jnts[1]))
   {
-    //SBPL_DEBUG("Attached object is in collision.");
+    dist = dist_temp;
     return false;
   }
 
@@ -109,12 +109,68 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
   return true;
 }
 
+bool SBPLCollisionSpace::checkLinkForCollision(const std::vector<double> &angles, int link_num, bool verbose, unsigned char &dist)
+{
+  unsigned char dist_temp = 0;
+  std::vector<std::vector<int> > jnts;
+  KDL::Frame f_out;
+
+  if(link_num >= arm_->num_links_)
+  {
+    SBPL_WARN("[checkLinkInCollision] %d is not a valid link index. There are %d links.", link_num, arm_->num_links_);
+    return false;
+  }
+  
+  //get position of joints in the occupancy grid
+  if(!getJointPosesInGrid(angles, jnts, f_out, false))
+    return false;
+
+  //check bounds
+  if(!grid_->isInBounds(jnts[link_num][0],jnts[link_num][1],jnts[link_num][2]))
+  {
+    if(verbose)
+      SBPL_DEBUG("End of link %d is out of bounds. (%d %d %d)", link_num, jnts[link_num][0],jnts[link_num][1],jnts[link_num][2]);
+    return false;
+  }
+
+  //is link in collision?
+  dist = isValidLineSegment(jnts[link_num], jnts[link_num+1], arm_->getLinkRadiusCells(link_num));
+
+  //if the line's distance to the nearest obstacle is less than the radius
+  if(dist <= arm_->getLinkRadiusCells(link_num))
+  {
+    if(verbose)
+      SBPL_DEBUG("Link %d: {%d %d %d} -> {%d %d %d} with radius %0.2f is in collision.",link_num,jnts[link_num][0],jnts[link_num][1],jnts[link_num][2],jnts[link_num+1][0],jnts[link_num+1][1],jnts[link_num+1][2],arm_->getLinkRadius(link_num));
+    return false;
+  }
+
+  //check attached object for collision with world and upper_arm
+  if(!isValidAttachedObject(angles, dist_temp, jnts[0], jnts[1]))
+  {
+    if(verbose)
+      SBPL_DEBUG("Attached object is in collision.");
+    dist = dist_temp;
+    return false;
+  }
+
+  if(dist_temp < dist)
+  {
+    if(verbose)
+      SBPL_DEBUG("Attached object is the closest thing to the nearest obstacle with dist=%d", int(dist_temp));
+    dist = dist_temp;
+  }
+
+  return true;
+}
+
 bool SBPLCollisionSpace::checkPathForCollision(const std::vector<double> &start, const std::vector<double> &end, bool verbose, unsigned char &dist)
 {
   int inc_cc = 10;
+  unsigned char dist_temp = 0;
   std::vector<double> start_norm(start);
   std::vector<double> end_norm(end);
   std::vector<std::vector<double> > path;
+  dist = 100;
 
   for(size_t i=0; i < start.size(); i++)
   {
@@ -149,8 +205,14 @@ bool SBPLCollisionSpace::checkPathForCollision(const std::vector<double> &start,
     {
       for(size_t j = i; j < path.size(); j=j+inc_cc)
       {
-        if(!checkCollision(path[j], verbose, false, dist))
+        if(!checkCollision(path[j], verbose, false, dist_temp))
+        {
+          dist = dist_temp;
           return false; 
+        }
+
+        if(dist_temp < dist)
+          dist = dist_temp;
       }
     }
   }
@@ -158,8 +220,74 @@ bool SBPLCollisionSpace::checkPathForCollision(const std::vector<double> &start,
   {
     for(size_t i = 0; i < path.size(); i++)
     {
-      if(!checkCollision(path[i], verbose, false, dist))
+      if(!checkCollision(path[i], verbose, false, dist_temp))
+      {
+        dist = dist_temp;
         return false;
+      }
+
+      if(dist_temp < dist)
+        dist = dist_temp;
+    }
+  }
+
+  return true;
+}
+
+bool SBPLCollisionSpace::checkLinkPathForCollision(const std::vector<double> &start, const std::vector<double> &end, int link_num, bool verbose, unsigned char &dist)
+{
+  int inc_cc = 10;
+  unsigned char dist_temp = 0;
+  std::vector<double> start_norm(start);
+  std::vector<double> end_norm(end);
+  std::vector<std::vector<double> > path;
+  dist = 100;
+
+  for(size_t i=0; i < start.size(); i++)
+  {
+    start_norm[i] = angles::normalize_angle(start[i]);
+    end_norm[i] = angles::normalize_angle(end[i]);
+  }
+ 
+  //problem with upper_arm_roll  
+  if(start[2] > 0.85)
+    start_norm[2] = start[2] + (2*-M_PI);
+
+  if(end[2] > 0.85)
+    end_norm[2] = end[2] + (2*-M_PI);
+
+  getInterpolatedPath(start_norm, end_norm, inc_, path);
+
+  //try to find collisions that might come later in the path earlier
+  if(int(path.size()) > inc_cc)
+  {
+    for(int i = 0; i < inc_cc; i++)
+    {
+      for(size_t j = i; j < path.size(); j=j+inc_cc)
+      {
+        if(!checkLinkForCollision(path[j], link_num, verbose, dist_temp))
+        {
+          dist = dist_temp;
+          return false; 
+        }
+
+        if(dist_temp < dist)
+          dist = dist_temp;
+      }
+    }
+  }
+  else
+  {
+    for(size_t i = 0; i < path.size(); i++)
+    {
+      if(!checkLinkForCollision(path[i], link_num, verbose, dist_temp))
+      {
+        dist = dist_temp;
+        return false;
+      }
+
+      if(dist_temp < dist)
+        dist = dist_temp;
     }
   }
 
@@ -173,21 +301,18 @@ bool SBPLCollisionSpace::getJointPosesInGrid(std::vector<double> angles, std::ve
   if(!arm_->getJointPositions(angles, jnts_m, f_out))
     return false;
 
+  // replace r_finger_tip_link 6/15/11
+  KDL::Vector tip_f_ref, tip_f_wrist(0.16,0,0);
+  tip_f_ref = f_out.M * tip_f_wrist + f_out.p;
+  jnts_m[3][0] = tip_f_ref.x();
+  jnts_m[3][1] = tip_f_ref.y();
+  jnts_m[3][2] = tip_f_ref.z();
+
   jnts.resize(jnts_m.size());
-
-  // debugging
-  if(verbose)
-  {
-    for(int i = 0; i < (int)jnts.size(); i++)
-      SBPL_DEBUG("%5d: %0.2f %0.2f %0.2f",i, jnts_m[i][0], jnts_m[i][1], jnts_m[i][2]);
-  }
-
   for(int i = 0; i < int(jnts.size()); ++i)
   {
     jnts[i].resize(3);
     grid_->worldToGrid(jnts_m[i][0],jnts_m[i][1],jnts_m[i][2],jnts[i][0],jnts[i][1],jnts[i][2]);
-    if(jnts[i][0] < 0)
-      SBPL_DEBUG("WTF: %0.2f %0.2f %0.2f --> %d %d %d", jnts_m[i][0], jnts_m[i][1], jnts_m[i][2], jnts[i][0],jnts[i][1],jnts[i][2]);
   }
 
   return true;
@@ -498,7 +623,7 @@ void SBPLCollisionSpace::attachSphereToGripper(std::string frame, geometry_msgs:
   object_points_.resize(1);
   tf::PoseMsgToKDL(pose, object_points_[0]);
 
-  SBPL_INFO("[addSphereToGripper] Added collision sphere.  xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
+  SBPL_DEBUG("[addSphereToGripper] Added collision sphere.  xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
 
   arm_->printArmDescription(stdout);
 }
@@ -508,7 +633,7 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   object_attached_ = true;
   attached_object_frame_num_ = 12; //TODO: CHANGE THIS
   
-  SBPL_INFO("[addCylinderToGripper] Cylinder: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius, length); 
+  SBPL_DEBUG("[addCylinderToGripper] Cylinder: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius, length); 
 
   attached_object_radius_ = radius / grid_->getResolution();
 
@@ -523,8 +648,8 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   object_points_[0].p.data[2] -= length/2.0;
   object_points_[1].p.data[2] += length/2.0;
 
-  SBPL_INFO("[addCylinderToGripper] Added cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
-  SBPL_INFO("[addCylinderToGripper] Added cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), radius, attached_object_radius_);
+  SBPL_DEBUG("[addCylinderToGripper] Added cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
+  SBPL_DEBUG("[addCylinderToGripper] Added cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), radius, attached_object_radius_);
 
   arm_->printArmDescription(stdout);
 }
@@ -587,6 +712,7 @@ bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles
   KDL::Vector p_base,p1,p2;
   //double r,p,y;
   std::vector<int> q1(3,0), q2(3,0);
+  dist = 100;
 
   if(!object_attached_)
     return true;
@@ -635,14 +761,9 @@ bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles
       dist = dist_temp;
   }
 
-  double link_dist = 0;
-  if ((link_dist = distanceBetween3DLineSegments(q1,q2,j1,j2)) < 6)
-  {
-   //ROS_INFO("Collision between attached object & upper arm link with distance %0.3f cells", link_dist);
+  //TODO: attached object only being checked against forearm
+  if (distanceBetween3DLineSegments(q1,q2,j1,j2) < 6)
    return false;
-  }
-   
-  //ROS_INFO("NO Collision between attached object & upper arm link with distance %0.3f cells", link_dist);
 
   return true;
 }
@@ -849,10 +970,7 @@ void SBPLCollisionSpace::processCollisionObjectMsg(const mapping_msgs::Collision
   else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
   {
     if(object.id.compare("all") == 0)
-    {
-      ROS_INFO("REMOVING ALL OBJECTS. NEXT TIME AROUND IT SHOULD BE CLEAR.");
       removeAllCollisionObjects();
-    }
     else
       removeCollisionObject(object);
   }
@@ -890,14 +1008,12 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
       ROS_WARN("[addCollisionObject] Collision objects of type %d are not yet supported.", object.shapes[i].type);
   }
 
-  ROS_INFO("known_objects:");
   // add this object to list of objects that get added to grid
   bool new_object = true;
   for(size_t i = 0; i < known_objects_.size(); ++i)
   {
     if(known_objects_[i].compare(object.id) == 0)
       new_object = false;
-    ROS_INFO("%d: %s", int(i), known_objects_[i].c_str());
   }
   if(new_object)
     known_objects_.push_back(object.id);

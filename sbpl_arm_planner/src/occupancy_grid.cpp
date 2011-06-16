@@ -51,7 +51,7 @@ OccupancyGrid::OccupancyGrid()
   grid_size_[1] = world_size_[1] / grid_resolution_;
   grid_size_[2] = world_size_[2] / grid_resolution_;
 
-  prop_distance_ = 0.40;
+  prop_distance_ = 0.60;
 
   grid_ = new distance_field::PropagationDistanceField(world_size_[0], world_size_[1], world_size_[2], grid_resolution_, origin_[0], origin_[1], origin_[2], prop_distance_);
 
@@ -76,7 +76,7 @@ OccupancyGrid::OccupancyGrid(double dim_x, double dim_y, double dim_z, double re
   grid_size_[1] = world_size_[1] / grid_resolution_;
   grid_size_[2] = world_size_[2] / grid_resolution_;
 
-  prop_distance_ = 0.40;
+  prop_distance_ = 0.60;
  
   grid_ = new distance_field::PropagationDistanceField(world_size_[0], world_size_[1], world_size_[2], grid_resolution_, origin_[0], origin_[1], origin_[2], prop_distance_);
   grid_->reset();
@@ -171,7 +171,7 @@ void OccupancyGrid::addCollisionCuboid(double origin_x, double origin_y, double 
  
   grid_->addPointsToField(cuboid_points_);
 
-  ROS_INFO("[addCollisionCuboid] Added %d points for collision cuboid (origin: %0.2f %0.2f %0.2f  size: %0.2f %0.2f %0.2f).", num_points, origin_x, origin_y, origin_z, size_x, size_y, size_z);
+  ROS_DEBUG("[addCollisionCuboid] Added %d points for collision cuboid (origin: %0.2f %0.2f %0.2f  size: %0.2f %0.2f %0.2f).", num_points, origin_x, origin_y, origin_z, size_x, size_y, size_z);
 }
 
 void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<btVector3> &voxels)
