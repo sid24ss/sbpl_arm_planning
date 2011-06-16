@@ -969,7 +969,7 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
   {
     if(i % throttle != 0)
     {
-      if(i != 0 && i != path.size()-1)
+      if(i != 0 && i != int(path.size())-1)
         continue;
     }
   
@@ -982,7 +982,7 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
 
     for(int j = 0; j < int(cylinders.size()); ++j)
     {
-      marker_array.markers[j].header.frame_id = "base_link";
+      marker_array.markers[j].header.frame_id = reference_frame_;
       marker_array.markers[j].header.stamp = ros::Time::now();
       marker_array.markers[j].ns = "arm_collision_model_" + boost::lexical_cast<std::string>(i);
       marker_array.markers[j].id = j;
@@ -1029,7 +1029,7 @@ void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs
       traj[i][j] = traj_msg.points[i].positions[j];
   }
 
-  ROS_INFO("[visualizeCollisionModelFromJointTrajectoryMsg] Visualizing collision model of trajectory with length %d ",int(traj.size()));
+  ROS_DEBUG("[visualizeCollisionModelFromJointTrajectoryMsg] Visualizing collision model of trajectory with length %d ",int(traj.size()));
 
   visualizeCollisionModel(traj, cspace, throttle);
 }
@@ -1084,7 +1084,7 @@ void VisualizeArm::visualizeBasicStates(const std::vector<std::vector<double> > 
   //check if the list is empty
   if(states.empty())
   {
-    ROS_INFO("[visualizeBasicStates] There are no states in the %s states list.", name.c_str());
+    ROS_DEBUG("[visualizeBasicStates] There are no states in the %s states list.", name.c_str());
     return;
   }
 
@@ -1128,7 +1128,7 @@ void VisualizeArm::visualizeBasicStates(const std::vector<std::vector<double> > 
   }
 
   marker_publisher_.publish(marker);
-  ROS_INFO("[visualizeBasicStates] published %d markers for %s states", int(marker.points.size()), name.c_str());
+  ROS_DEBUG("[visualizeBasicStates] published %d markers for %s states", int(marker.points.size()), name.c_str());
 }
 
 void VisualizeArm::visualizeDetailedStates(const std::vector<std::vector<double> > &states, const std::vector<std::vector<double> >&color, std::string name, double size)
