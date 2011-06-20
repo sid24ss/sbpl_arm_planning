@@ -143,22 +143,26 @@ void AddObjectsToMap::printObjects(FILE * fOut)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc,argv,"add_objects");
+  ros::init(argc,argv,"add_object_to_map");
   sleep(2);
   AddObjectsToMap addobj;
- while(true)
- { 
-  if(argc > 1)
-    addobj.addObjectsFromFile(std::string(argv[1]));
-  else
-    addobj.addObjectsFromFile(std::string("objects.txt"));
 
-  ROS_INFO("added objects to collision map");
+  ROS_INFO("Adding known objects to map 5 times.");
+  int i = 0;
+  while(i<5)
+  { 
+    if(argc > 1)
+      addobj.addObjectsFromFile(std::string(argv[1]));
+    else
+      addobj.addObjectsFromFile(std::string("objects.txt"));
 
-  sleep(5);
- }
+    ROS_INFO("%d: added objects to collision map", i);
 
-  ros::spin();
+    ros::spinOnce();
+    sleep(5);
+    i++;
+  }
+
   return 0;
 }
 
