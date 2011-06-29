@@ -52,8 +52,6 @@ using namespace std;
 #define DIRECTIONS3D 26 
 #define GOAL_TOLERANCE 0 
 
-#define FIFO_SIZE 150*150*6
-
 typedef struct
 {
   unsigned int g;
@@ -66,25 +64,29 @@ typedef struct
 
 class BFS3D
 {
-  class Cell3D{
+  class Cell3D
+  {
     public:
       int x;
       int y;
       int z;
   };
 
-  class FIFO{
+  class FIFO
+  {
     public:
-      FIFO();
+      FIFO(int length);
+      ~FIFO();
       bool empty();
       void clear();
       void insert(int x, int y, int z);
       void remove(int* x, int* y, int* z);
 
     private:
-      int head;
-      int tail;
-      Cell3D q[FIFO_SIZE];
+      int head_;
+      int tail_;
+      int size_;
+      Cell3D *q_;
   };
 
   public:
@@ -177,7 +179,7 @@ class BFS3D
     bool isGoal(const std::vector<int> &state);
     bool isValidCell(const int x, const int y, const int z);
 
-    FIFO q;
+    FIFO *q_;
 };
 
 inline int BFS3D::xyzToIndex(int x, int y, int z)

@@ -34,6 +34,8 @@
 
 BFS3D::BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell)
 {
+  int fifo_size = 0;
+
   if(dim_x < 0 || dim_y < 0 || dim_z < 0)
     SBPL_ERROR("Dimensions must have positive values. Fix this.\n");
 
@@ -52,7 +54,10 @@ BFS3D::BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell)
   enable_df_ = false; //configDistanceField() should be called to enable
   radius_m_ = 0.1;
 
-  SBPL_DEBUG("goal bounds: %d %d %d\n",dimX_, dimY_,dimZ_);
+  fifo_size = 2*dimX_*dimY_ + 2*dimY_*dimZ_ + 2*dimX_*dimZ_;
+  q_ = new FIFO(fifo_size);
+  SBPL_INFO("[BFS3d] Allocated a FIFO of size %d", fifo_size);      
+  SBPL_DEBUG("[BFS3D] grid dimensions: %d %d %d\n",dimX_, dimY_,dimZ_);
 }
 
 BFS3D::~BFS3D()
@@ -68,6 +73,9 @@ BFS3D::~BFS3D()
     delete [] grid3D_;
     grid3D_ = NULL;
   }
+
+  if(q_ != NULL)
+    delete q_;
 }
 
 void BFS3D::init()
@@ -221,8 +229,8 @@ int dx[DIRECTIONS3D] = { 1,  1,  1,  0,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0
 int dy[DIRECTIONS3D] = { 1,  0, -1,  1,  0, -1, -1,  0,  1,    1,  0, -1,  1, -1, -1,  0,  1,    1,  0, -1,  1,  0, -1, -1,  0,  1};
 int dz[DIRECTIONS3D] = {-1, -1, -1, -1, -1, -1, -1, -1, -1,    0,  0,  0,  0,  0,  0,  0,  0,    1,  1,  1,  1,  1,  1,  1,  1,  1};
 
-void BFS3D::search3DwithFifo(State3D*** statespace){
-
+void BFS3D::search3DwithFifo(State3D*** statespace)
+{
   clock_t t0 = clock();
 
   for(int x=0; x<dimX_; x++){
@@ -234,25 +242,26 @@ void BFS3D::search3DwithFifo(State3D*** statespace){
     }
   }
 
-  q.clear();
+  q_->clear();
   for(unsigned int i=0; i<goal_.size(); i++){
     int x = goal_[i][0];
     int y = goal_[i][1];
     int z = goal_[i][2];
     //statespace[x][y][z].g = 0;
     dist_[xyzToIndex(x,y,z)] = 0;
-    q.insert(x,y,z);
+    q_->insert(x,y,z);
   }
 
   printf("init goal heuristic took %f seconds\n", ((double)(clock()-t0))/CLOCKS_PER_SEC);
 }
 
-int BFS3D::getDist(int x, int y, int z){
+int BFS3D::getDist(int x, int y, int z)
+{
   int idx = xyzToIndex(x,y,z);
   int d = dist_[idx];
-  while(d==INFINITE_COST && !q.empty()){
+  while(d==INFINITE_COST && !q_->empty()){
     int x,y,z;
-    q.remove(&x,&y,&z);
+    q_->remove(&x,&y,&z);
 
     bool onBoundary = x==0 || x==dimX_-1 || y==0 || y==dimY_-1 || z==0 || z==dimZ_-1;
 
@@ -264,7 +273,7 @@ int BFS3D::getDist(int x, int y, int z){
       if((!onBoundary || (newX>=0 && newX<dimX_ && newY>=0 && newY<dimY_ && newZ>=0 && newZ<dimZ_)) && //check if the successor is in work space
           isValidCell(newX,newY,newZ) && //is not an obstacle
           (dist_[xyzToIndex(newX,newY,newZ)] == INFINITE_COST)){ //and has not already been put in the queue
-        q.insert(newX,newY,newZ);
+        q_->insert(newX,newY,newZ);
         dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_1_move_;
       }
     }
@@ -275,40 +284,56 @@ int BFS3D::getDist(int x, int y, int z){
 }
 
 
-BFS3D::FIFO::FIFO(){
-  head = 0;
-  tail = 0;
+BFS3D::FIFO::FIFO(int length) : size_(length)
+{
+  head_ = 0;
+  tail_ = 0;
+
+  q_ = new Cell3D[size_];
 }
 
-void BFS3D::FIFO::clear(){
-  head = 0;
-  tail = 0;
+BFS3D::FIFO::~FIFO()
+{
+  if(q_ != NULL)
+  {
+    delete [] q_;
+    q_ = NULL;
+  }
 }
 
-bool BFS3D::FIFO::empty(){
-  return head==tail;
+void BFS3D::FIFO::clear()
+{
+  head_ = 0;
+  tail_ = 0;
 }
 
-void BFS3D::FIFO::insert(int x, int y, int z){
-  q[head].x = x;
-  q[head].y = y;
-  q[head].z = z;
-  if(head==tail-1 || (tail==0 && head==FIFO_SIZE-1)){
-    printf("\n\n\nFIFO FULL!!!!!\n\n\n");
+bool BFS3D::FIFO::empty()
+{
+  return head_ == tail_;
+}
+
+void BFS3D::FIFO::insert(int x, int y, int z)
+{
+  q_[head_].x = x;
+  q_[head_].y = y;
+  q_[head_].z = z;
+  if(head_==tail_-1 || (tail_==0 && head_==size_-1)){
+    SBPL_ERROR("FIFO FULL! This shouldn't have happened. Are you setting the correct size for the FIFO in the constructor? Exiting. ");
     exit(0);
   }
-  head++;
-  if(head == FIFO_SIZE)
-    head = 0;
+  head_++;
+  if(head_ == size_)
+    head_ = 0;
 }
 
-void BFS3D::FIFO::remove(int* x, int* y, int* z){
-  *x = q[tail].x;
-  *y = q[tail].y;
-  *z = q[tail].z;
-  tail++;
-  if(tail == FIFO_SIZE)
-    tail = 0;
+void BFS3D::FIFO::remove(int* x, int* y, int* z)
+{
+  *x = q_[tail_].x;
+  *y = q_[tail_].y;
+  *z = q_[tail_].z;
+  tail_++;
+  if(tail_ == size_)
+    tail_ = 0;
 }
 
 void BFS3D::search3DwithQueue(State3D*** statespace)
