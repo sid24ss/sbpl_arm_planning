@@ -204,16 +204,111 @@ bool BFS3D::runBFS()
   dist_.resize(dist_length_);
 
   State3D*** statespace3D;
-  create3DStateSpace(&statespace3D);
+  //create3DStateSpace(&statespace3D);
 
-  search3DwithQueue(statespace3D);
+  //search3DwithQueue(statespace3D);
+  search3DwithFifo(statespace3D);
 
-  delete3DStateSpace(&statespace3D);
+  //delete3DStateSpace(&statespace3D);
 #if DEBUG_TIME
   SBPL_DEBUG("completed in %.3f seconds.\n", double(clock()-currenttime) / CLOCKS_PER_SEC);
 #endif
 
   return true;
+}
+
+int dx[DIRECTIONS3D] = { 1,  1,  1,  0,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0,  0, -1, -1, -1};
+int dy[DIRECTIONS3D] = { 1,  0, -1,  1,  0, -1, -1,  0,  1,    1,  0, -1,  1, -1, -1,  0,  1,    1,  0, -1,  1,  0, -1, -1,  0,  1};
+int dz[DIRECTIONS3D] = {-1, -1, -1, -1, -1, -1, -1, -1, -1,    0,  0,  0,  0,  0,  0,  0,  0,    1,  1,  1,  1,  1,  1,  1,  1,  1};
+
+void BFS3D::search3DwithFifo(State3D*** statespace){
+
+  clock_t t0 = clock();
+
+  for(int x=0; x<dimX_; x++){
+    for(int y=0; y<dimY_; y++){
+      for(int z=0; z<dimZ_; z++){
+        //statespace[x][y][z].g = INFINITE_COST;
+        dist_[xyzToIndex(x,y,z)] = INFINITE_COST;
+      }
+    }
+  }
+
+  q.clear();
+  for(unsigned int i=0; i<goal_.size(); i++){
+    int x = goal_[i][0];
+    int y = goal_[i][1];
+    int z = goal_[i][2];
+    //statespace[x][y][z].g = 0;
+    dist_[xyzToIndex(x,y,z)] = 0;
+    q.insert(x,y,z);
+  }
+
+  printf("init goal heuristic took %f seconds\n", ((double)(clock()-t0))/CLOCKS_PER_SEC);
+}
+
+int BFS3D::getDist(int x, int y, int z){
+  int idx = xyzToIndex(x,y,z);
+  int d = dist_[idx];
+  while(d==INFINITE_COST && !q.empty()){
+    int x,y,z;
+    q.remove(&x,&y,&z);
+
+    bool onBoundary = x==0 || x==dimX_-1 || y==0 || y==dimY_-1 || z==0 || z==dimZ_-1;
+
+    int parentDist = dist_[xyzToIndex(x,y,z)];
+    for(int i=0; i<DIRECTIONS3D; i++){
+      int newX = x+dx[i];
+      int newY = y+dy[i];
+      int newZ = z+dz[i];
+      if((!onBoundary || (newX>=0 && newX<dimX_ && newY>=0 && newY<dimY_ && newZ>=0 && newZ<dimZ_)) && //check if the successor is in work space
+          isValidCell(newX,newY,newZ) && //is not an obstacle
+          (dist_[xyzToIndex(newX,newY,newZ)] == INFINITE_COST)){ //and has not already been put in the queue
+        q.insert(newX,newY,newZ);
+        dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_1_move_;
+      }
+    }
+    
+    d = dist_[idx];
+  }
+  return d;
+}
+
+
+BFS3D::FIFO::FIFO(){
+  head = 0;
+  tail = 0;
+}
+
+void BFS3D::FIFO::clear(){
+  head = 0;
+  tail = 0;
+}
+
+bool BFS3D::FIFO::empty(){
+  return head==tail;
+}
+
+void BFS3D::FIFO::insert(int x, int y, int z){
+  q[head].x = x;
+  q[head].y = y;
+  q[head].z = z;
+  if(head==tail-1 || (tail==0 && head==FIFO_SIZE-1)){
+    printf("\n\n\nFIFO FULL!!!!!\n\n\n");
+    exit(0);
+  }
+  head++;
+  if(head == FIFO_SIZE)
+    head = 0;
+}
+
+void BFS3D::FIFO::remove(int* x, int* y, int* z){
+  *x = q[tail].x;
+  *y = q[tail].y;
+  *z = q[tail].z;
+  tail++;
+  if(tail == FIFO_SIZE)
+    tail = 0;
 }
 
 void BFS3D::search3DwithQueue(State3D*** statespace)
@@ -310,7 +405,10 @@ bool BFS3D::isGoal(const std::vector<int> &state)
   for(unsigned int i = 0; i < goal_.size(); ++i)
   {
     if((state[0] <= goal_[i][0]+GOAL_TOLERANCE && state[0] >= goal_[i][0]-GOAL_TOLERANCE) && (state[1] <= goal_[i][1]+GOAL_TOLERANCE && state[1] >= goal_[i][1]-GOAL_TOLERANCE) && (state[2] <= goal_[i][2]+GOAL_TOLERANCE && state[2] >= goal_[i][2]-GOAL_TOLERANCE))
+    {
+      //SBPL_PRINTF("the goal is found: %d %d %d\n", state[0],state[1],state[2]);
       return true;
+    }
   }
   return false;
 }

@@ -52,6 +52,8 @@ using namespace std;
 #define DIRECTIONS3D 26 
 #define GOAL_TOLERANCE 0 
 
+#define FIFO_SIZE 150*150*6
+
 typedef struct
 {
   unsigned int g;
@@ -64,6 +66,27 @@ typedef struct
 
 class BFS3D
 {
+  class Cell3D{
+    public:
+      int x;
+      int y;
+      int z;
+  };
+
+  class FIFO{
+    public:
+      FIFO();
+      bool empty();
+      void clear();
+      void insert(int x, int y, int z);
+      void remove(int* x, int* y, int* z);
+
+    private:
+      int head;
+      int tail;
+      Cell3D q[FIFO_SIZE];
+  };
+
   public:
 
     /**  \brief constructor
@@ -149,9 +172,12 @@ class BFS3D
     void create3DStateSpace(State3D**** statespace3D);
     void delete3DStateSpace(State3D**** statespace3D);
     inline int xyzToIndex(int x, int y, int z);
+    void search3DwithFifo(State3D*** statespace);
     void search3DwithQueue(State3D*** statespace);
     bool isGoal(const std::vector<int> &state);
     bool isValidCell(const int x, const int y, const int z);
+
+    FIFO q;
 };
 
 inline int BFS3D::xyzToIndex(int x, int y, int z)
@@ -164,11 +190,6 @@ inline int BFS3D::xyzToIndex(int x, int y, int z)
     SBPL_WARN("[BFS3D] out of bounds (%d %d %d) (index: %d  size: %d)\n", x,y,z,ret,dist_length_);
     return 0;
   }
-}
-
-inline int BFS3D::getDist(int x, int y, int z)
-{
-  return dist_[xyzToIndex(x,y,z)];
 }
 
 #endif

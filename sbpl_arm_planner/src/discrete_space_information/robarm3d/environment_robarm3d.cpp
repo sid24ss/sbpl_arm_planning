@@ -712,22 +712,39 @@ bool EnvironmentROBARM3D::initEnvironment(std::string arm_description_filename, 
 
   //parse motion primitives file
   if((mprims_fp=fopen(mprims_filename.c_str(),"r")) == NULL)
-   return false;
-  if(!prms_.initMotionPrimsFromFile(mprims_fp))
+  {
+    SBPL_ERROR("Failed to open motion primitive file.");
     return false;
+  }
+  if(!prms_.initMotionPrimsFromFile(mprims_fp))
+  {
+    SBPL_ERROR("Failed to parse motion primitive file.");
+    fclose(mprims_fp);
+    return false;
+  }
   fclose(mprims_fp);
 
   //initialize the arm model
   if((arm_fp=fopen(arm_description_filename.c_str(),"r")) == NULL)
-   return false;
+  {
+    SBPL_ERROR("Failed to open arm description file.");
+    return false;
+  }
   std::string ros_param("ROS_PARAM");
   if(!initArmModel(arm_fp,ros_param))
+  {
+    SBPL_ERROR("Failed to initialize arm model.");
+    fclose(arm_fp);
     return false;
+  }
   fclose(arm_fp);
 
   //initialize the environment & planning variables  
   if(!initGeneral())
+  {
+    SBPL_ERROR("Failed to initialize environment.");
     return false;
+  }
 
   //set 'Environment is Initialized' flag
   EnvROBARMCfg.bInitialized = true;
