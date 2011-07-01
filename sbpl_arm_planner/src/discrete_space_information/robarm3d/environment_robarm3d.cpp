@@ -771,8 +771,8 @@ bool EnvironmentROBARM3D::initGeneral()
   rpysolver_ = new RPYSolver(arm_, cspace_);
 
 #if DEBUG_SEARCH
+  arm_->setDebugFile(std::string("sbpl"));
   cspace_->setDebugFile(fSucc);
-  arm_->setDebugFile(fSucc);
 #endif
 
   //initialize Environment
@@ -793,7 +793,7 @@ bool EnvironmentROBARM3D::initGeneral()
 
   if(prms_.verbose_)
   {
-    arm_->printArmDescription(stdout);
+    arm_->printArmDescription(std::string("sbpl_arm"));
     prms_.printParams(stdout);
     prms_.printMotionPrims(stdout);
     if(prms_.use_smoothing_)
@@ -802,7 +802,7 @@ bool EnvironmentROBARM3D::initGeneral()
 
   if(prms_.verbose_)
   {
-    arm_->printArmDescription(stdout);
+    arm_->printArmDescription(std::string("sbpl_arm"));
     prms_.printParams(stdout);
   }
 

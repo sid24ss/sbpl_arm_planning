@@ -31,18 +31,14 @@
 #include <map>
 #include <vector>
 #include <sbpl/config.h>
+#include <ros/ros.h>
 #include <angles/angles.h>
 #include <kdl_parser/kdl_parser.hpp>
 #include <kdl/jntarray.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chain.hpp>
 #include <kdl/frames.hpp>
-#include <kdl/chainiksolver.hpp>
-#include <kdl/chainiksolverpos_nr.hpp>
-#include <kdl/chainiksolvervel_pinv_givens.hpp>
-#include <kdl/treefksolverpos_recursive.hpp>
 #include <urdf/model.h>
-#include <ros/ros.h>
 #include <pr2_arm_kinematics/pr2_arm_ik_solver.h>
 
 using namespace std;
@@ -134,6 +130,9 @@ class SBPLArmModel{
     /** \brief compute the inverse kinematics for the planning_joint pose */
     bool computeIK(const std::vector<double> pose, const std::vector<double> start, std::vector<double> &solution);
 
+    /** \brief compute the closed form inverse kinematics solution  */
+    bool computeFastIK(const std::vector<double> pose, const std::vector<double> start, std::vector<double> &solution);
+
     /** \brief compute the positions of all the tips of the links (collision checking)*/ 
     bool getJointPositions(const std::vector<double> angles, const double R_target[3][3], std::vector<std::vector<double> > &links, double *axis_angle);
   
@@ -151,7 +150,7 @@ class SBPLArmModel{
     bool checkJointLimits(std::vector<double> angles, bool verbose);
 
     /** \brief print description of arm from SBPL arm text file */
-    void printArmDescription(FILE* fOut);
+    void printArmDescription(std::string stream);
 
     /** \brief get the radius (in meters) of the widest link */
     int getMaxLinkRadius();
@@ -178,7 +177,7 @@ class SBPLArmModel{
     std::vector<std::vector<double> >  getCollisionCuboids();
 
     /** \brief set the file used for debug output  */
-    void setDebugFile(FILE* file);
+    void setDebugFile(std::string stream_name);
 
     /** \brief get the joint postition limits of specified joint */
     void getJointLimits(int joint_num, double* min, double *max);
@@ -229,9 +228,9 @@ class SBPLArmModel{
 
     int num_collision_cuboids_;
 
-    FILE* fOut_;
+    std::string debug_stream_;
 
-    //from CHOMP
+    //copied from CHOMP - but not used as of now
     void parseKDLTree();
 	  int num_kdl_joints_;
     std::map<std::string, std::string> joint_segment_mapping_;    /**< Joint -> Segment mapping for KDL tree */
@@ -245,11 +244,6 @@ class SBPLArmModel{
 	  
     KDL::Chain chain_;
 	  KDL::ChainFkSolverPos_recursive *fk_solver_;
-
-    KDL::Chain ik_chain_;
-	  KDL::ChainFkSolverPos_recursive *ik_fk_solver_;
-	  KDL::ChainIkSolverPos_NR *ik_solver_;
-    KDL::ChainIkSolverVel_pinv_givens *ik_solver_vel_;
 	  KDL::JntArray ik_jnt_pos_in_;
 	  KDL::JntArray ik_jnt_pos_out_;
 	 

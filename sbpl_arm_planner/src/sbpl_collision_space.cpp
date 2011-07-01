@@ -625,7 +625,7 @@ void SBPLCollisionSpace::attachSphereToGripper(std::string frame, geometry_msgs:
 
   SBPL_DEBUG("[addSphereToGripper] Added collision sphere.  xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
 
-  arm_->printArmDescription(stdout);
+  arm_->printArmDescription(std::string("sbpl_cspace"));
 }
 
 void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msgs::Pose pose, double radius, double length)
@@ -651,7 +651,7 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   SBPL_DEBUG("[addCylinderToGripper] Added cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
   SBPL_DEBUG("[addCylinderToGripper] Added cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), radius, attached_object_radius_);
 
-  arm_->printArmDescription(stdout);
+  arm_->printArmDescription(std::string("sbpl_cspace"));
 }
 
 void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices)
@@ -702,7 +702,7 @@ void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geom
   SBPL_INFO("[addMeshToGripper] Added bounding cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), cyl.radius, attached_object_radius_);
   SBPL_INFO("[addMeshToGripper] Added bounding cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), cyl.radius, attached_object_radius_);
 
-  arm_->printArmDescription(stdout);
+  arm_->printArmDescription(std::string("sbpl_cspace"));
 }
 
 bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles, unsigned char &dist, std::vector<int> j1, std::vector<int> j2)

@@ -33,7 +33,7 @@
 
 using namespace std;
 
-SBPLArmModel::SBPLArmModel(FILE* arm_file) : fk_solver_(NULL), ik_fk_solver_(NULL), ik_solver_(NULL), ik_solver_vel_(NULL), pr2_arm_ik_solver_(NULL)
+SBPLArmModel::SBPLArmModel(FILE* arm_file) : fk_solver_(NULL), pr2_arm_ik_solver_(NULL)
 {
   num_joints_ = 7;
   num_links_ = 3;
@@ -52,7 +52,7 @@ SBPLArmModel::SBPLArmModel(FILE* arm_file) : fk_solver_(NULL), ik_fk_solver_(NUL
   if(!getArmDescription(arm_file))
     SBPL_WARN("Parsing of sbpl arm description file failed. Will attempt to use defaults.");
  
-  fOut_ = stdout; 
+  debug_stream_ = "sbpl_arm";
   max_radius_ = 0;
   resolution_ = 0.01;
 }
@@ -61,19 +61,13 @@ SBPLArmModel::~SBPLArmModel()
 {
   if(fk_solver_ != NULL)
     delete fk_solver_;
-  if(ik_fk_solver_ != NULL)
-    delete ik_fk_solver_;
-  if(ik_solver_ != NULL)
-    delete ik_solver_;
-  if(ik_solver_vel_ != NULL)
-    delete ik_solver_vel_;
   if(pr2_arm_ik_solver_ != NULL)
     delete pr2_arm_ik_solver_;
 }
 
-void SBPLArmModel::setDebugFile(FILE* file)
+void SBPLArmModel::setDebugFile(std::string stream_name)
 {
-  fOut_ = file;
+  debug_stream_ = stream_name;
 }
 
 bool SBPLArmModel::getArmDescription(FILE* fCfg)
@@ -261,23 +255,9 @@ bool SBPLArmModel::initKDLChain(const std::string &fKDL)
   SBPL_DEBUG("[initKDLChain] The FK chain has %d segments with %d joints.", chain_.getNrOfSegments(), chain_.getNrOfJoints());
   SBPL_DEBUG("[initKDLChain] root: %s tip: %s.", chain_root_name_.c_str(), chain_tip_name_.c_str());
   
-  if (!kdl_tree_.getChain("torso_lift_link", chain_tip_name_, ik_chain_))
-  {
-    SBPL_ERROR("Error: could not fetch the KDL chain for the desired manipulator. Exiting."); 
-    return false;
-  }
-
-  ik_fk_solver_ = new KDL::ChainFkSolverPos_recursive(ik_chain_); 
-  ik_solver_vel_ = new KDL::ChainIkSolverVel_pinv_givens(ik_chain_);
-  ik_solver_ = new KDL::ChainIkSolverPos_NR(chain_, *(ik_fk_solver_), *(ik_solver_vel_));
-  ik_jnt_pos_in_.resize(ik_chain_.getNrOfJoints());
-  ik_jnt_pos_out_.resize(ik_chain_.getNrOfJoints());
-
-  SBPL_DEBUG("[initKDLChain] The IK chain has %d segments with %d joints.", ik_chain_.getNrOfSegments(), ik_chain_.getNrOfJoints());
-
-  //initialize PR2ArmIKSolver because the KDL IK solver isn't working
+  // initialize PR2ArmIKSolver
   robot_model_.initString(fKDL);
-  pr2_arm_ik_solver_ = new pr2_arm_kinematics::PR2ArmIKSolver(robot_model_,"torso_lift_link",planning_joint_name_, 0.02,2); 
+  pr2_arm_ik_solver_ = new pr2_arm_kinematics::PR2ArmIKSolver(robot_model_, "torso_lift_link", planning_joint_name_, 0.02, 2); 
 
   if(!pr2_arm_ik_solver_->active_)
   {
@@ -285,7 +265,10 @@ bool SBPLArmModel::initKDLChain(const std::string &fKDL)
     return false;
   }
 
-  printArmDescription(stdout); 
+  ik_jnt_pos_in_.resize(num_joints_);
+  ik_jnt_pos_out_.resize(num_joints_);
+
+  printArmDescription(std::string("sbpl_arm")); 
   return true;
 }
 
@@ -334,10 +317,11 @@ void SBPLArmModel::parseKDLTree()
 
 bool SBPLArmModel::computeFK(const std::vector<double> angles, int frame_num, KDL::Frame *frame_out)
 {
+  KDL::Frame fk_frame_out;
+  
   for(int i = 0; i < num_joints_; ++i)
     jnt_pos_in_(i) = angles::normalize_angle(angles[i]);
 
-  KDL::Frame fk_frame_out;
   if(fk_solver_->JntToCart(jnt_pos_in_, fk_frame_out, frame_num) < 0)
   {
     SBPL_ERROR("JntToCart returned < 0. Exiting.");
@@ -345,20 +329,7 @@ bool SBPLArmModel::computeFK(const std::vector<double> angles, int frame_num, KD
   }
 
   *frame_out = fk_frame_out;
-
-/*
-  //temp 
-  KDL::Frame f;
-  f.p = transform_ * fk_frame_out.p;
-
-  //NOTE: HACK HACK HACK HACK HACK
-  frame_out->p.x(frame_out->p.x() - 0.05);
-  frame_out->p.z(frame_out->p.z() + 0.743);
-*/
-
   frame_out->p = transform_ * fk_frame_out.p;
-
-  //printf("x: %0.5f | %0.5f  y: %0.5f | %0.5f  z: %0.5f | %0.5f\n",f.p.x(),frame_out->p.x(),f.p.y(),frame_out->p.y(),f.p.z(),frame_out->p.z());
 
   return true;
 }
@@ -433,35 +404,23 @@ double SBPLArmModel::frameToAxisAngle(const KDL::Frame frame, const double R_tar
 
 bool SBPLArmModel::computeIK(const std::vector<double> pose, const std::vector<double> start, std::vector<double> &solution)
 {
-  // pose: {x,y,z,r,p,y}  
+  //pose: {x,y,z,r,p,y}  or {x,y,z,qx,qy,qz,qw}
   KDL::Frame frame_des;
 
   //fill the goal frame
   frame_des.p.x(pose[0]);
   frame_des.p.y(pose[1]);
   frame_des.p.z(pose[2]);
+  
+  //RPY
   if(pose.size() == 6)
     frame_des.M = KDL::Rotation::RPY(pose[3],pose[4],pose[5]);
+  //Quaternion
   else
-  {
-    //ROS_INFO("Feeding q {%0.3f %0.3f %0.3f %0.3f} into IK",pose[3],pose[4],pose[5],pose[6]);
     frame_des.M = KDL::Rotation::Quaternion(pose[3],pose[4],pose[5],pose[6]);
-  }
 
-  //transform from reference link to "torso lift link"
+  //transform from reference_frame_ to root_link_
   frame_des.p = transform_inverse_ * frame_des.p;
-
-/*
-  ROS_INFO("---");
-  ROS_INFO("[computeIK] (%s) xyz: %0.5f %0.5f %0.5f", reference_frame_.c_str(),pose[0],pose[1],pose[2]);
-  ROS_INFO("[computeIK] (torso_lift_link) xyz: %0.5f %0.5f %0.5f", frame_des.p.x(),frame_des.p.y(),frame_des.p.z());
-  
-  KDL::Frame f = frame_des;
-  f.p = transform_inverse_ * frame_des.p;
-  frame_des.p.x(frame_des.p.x() + 0.05);
-  frame_des.p.z(frame_des.p.z() - 0.743);
-  ROS_DEBUG("x: %0.5f | %0.5f  y: %0.5f | %0.5f  z: %0.5f | %0.5f\n",f.p.x(),frame_des.p.x(),f.p.y(),frame_des.p.y(),f.p.z(),frame_des.p.z());
-*/
 
   //fill the start configuration (to be used as a seed)
   for(unsigned int i = 0; i < start.size(); i++)
@@ -472,7 +431,42 @@ bool SBPLArmModel::computeIK(const std::vector<double> pose, const std::vector<d
     return false;
 
   solution.resize(start.size());
-  for(unsigned int i = 0; i < solution.size(); i++)
+  for(size_t i = 0; i < solution.size(); ++i)
+    solution[i] = ik_jnt_pos_out_(i);
+
+  return true;
+}
+
+bool SBPLArmModel::computeFastIK(const std::vector<double> pose, const std::vector<double> start, std::vector<double> &solution)
+{
+  //pose: {x,y,z,r,p,y}  or {x,y,z,qx,qy,qz,qw}
+  KDL::Frame frame_des;
+
+  //fill the goal frame
+  frame_des.p.x(pose[0]);
+  frame_des.p.y(pose[1]);
+  frame_des.p.z(pose[2]);
+  
+  //RPY
+  if(pose.size() == 6)
+    frame_des.M = KDL::Rotation::RPY(pose[3],pose[4],pose[5]);
+  //Quaternion
+  else
+    frame_des.M = KDL::Rotation::Quaternion(pose[3],pose[4],pose[5],pose[6]);
+
+  //transform from reference_frame_ to root_link of the IK tree
+  frame_des.p = transform_inverse_ * frame_des.p;
+
+  //fill the start configuration (to be used as a seed)
+  for(unsigned int i = 0; i < start.size(); i++)
+    ik_jnt_pos_in_(i) = angles::normalize_angle(start[i]); // must be normalized for CartToJnt
+
+  //call IK solver
+  if(pr2_arm_ik_solver_->CartToJnt(ik_jnt_pos_in_, frame_des, ik_jnt_pos_out_) < 0)
+    return false;
+
+  solution.resize(start.size());
+  for(size_t i = 0; i < solution.size(); ++i)
     solution[i] = ik_jnt_pos_out_(i);
 
   return true;
@@ -707,7 +701,7 @@ bool SBPLArmModel::checkJointLimits(std::vector<double> angles, bool verbose)
     norm_angles[2] = angles[2] + (2*-M_PI);
 
   if(int(norm_angles.size()) < num_joints_)
-    SBPL_FPRINTF(fOut_,"Joint array has %d joints. (should be %d joints)\n", int(norm_angles.size()),num_joints_);
+    SBPL_DEBUG_NAMED(debug_stream_,"Joint array has %d joints. (should be %d joints)\n", int(norm_angles.size()),num_joints_);
 
   for(int i = 0; i < num_joints_; ++i)
   {
@@ -716,7 +710,7 @@ bool SBPLArmModel::checkJointLimits(std::vector<double> angles, bool verbose)
       if(joints_[i].min > norm_angles[i] || norm_angles[i] > joints_[i].max)
       {
         //if(verbose)
-        //  SBPL_FPRINTF(fOut_, "Joint %d is invalid with value %0.3f (limits are {%0.3f, %0.3f}.\n",i,norm_angles[i],joints_[i].min,joints_[i].max);
+        //  SBPL_DEBUG_NAMED(debug_stream_, "Joint %d is invalid with value %0.3f (limits are {%0.3f, %0.3f}.\n",i,norm_angles[i],joints_[i].min,joints_[i].max);
         return false;
       }
     }
@@ -724,34 +718,34 @@ bool SBPLArmModel::checkJointLimits(std::vector<double> angles, bool verbose)
   return true;
 }
 
-void SBPLArmModel::printArmDescription(FILE* fOut)
+void SBPLArmModel::printArmDescription(std::string stream)
 {
-  SBPL_FPRINTF(fOut, "\nSBPL Arm Description:\n");
-  SBPL_FPRINTF(fOut, "# Joints: %d,   # Links: %d\n",num_joints_,num_links_);
-  SBPL_FPRINTF(fOut, "Root Frame: %s, Tip Frame: %s\n", chain_root_name_.c_str(),chain_tip_name_.c_str());
-  SBPL_FPRINTF(fOut, "Joint Limits:\n");
+  SBPL_DEBUG_NAMED(stream, "\nSBPL Arm Description:");
+  SBPL_DEBUG_NAMED(stream, "# Joints: %d,   # Links: %d",num_joints_,num_links_);
+  SBPL_DEBUG_NAMED(stream, "Root Frame: %s, Tip Frame: %s", chain_root_name_.c_str(),chain_tip_name_.c_str());
+  SBPL_DEBUG_NAMED(stream, "Joint Limits:");
   for(int i = 0; i < num_joints_; ++i)
-    SBPL_FPRINTF(fOut, "%d: {%.3f, %0.3f}\n",i,joints_[i].min,joints_[i].max);
+    SBPL_DEBUG_NAMED(stream, "%d: {%.3f, %0.3f}",i,joints_[i].min,joints_[i].max);
 
-  SBPL_FPRINTF(fOut,"Joints ");
+  SBPL_DEBUG_NAMED(stream,"Joints ");
   for(int i =0; i < num_joints_; ++i)
   {
     if(joints_[i].continuous)
-      SBPL_FPRINTF(fOut, "%d ",i);
+      SBPL_DEBUG_NAMED(stream, "%d ",i);
   }
-  SBPL_FPRINTF(fOut, "are continuous.\n");
+  SBPL_DEBUG_NAMED(stream, "are continuous.");
 
-  SBPL_FPRINTF(fOut, "Links:\n");
+  SBPL_DEBUG_NAMED(stream, "Links:");
   for(int i = 0; i < num_links_; ++i)
-    SBPL_FPRINTF(fOut, "(%d) radius: %0.3fm (%d cells)  length: %0.3fm   KDL chain index: %d\n",i,links_[i].radius,links_[i].radius_c, links_[i].length,links_[i].ind_chain);
+    SBPL_DEBUG_NAMED(stream, "(%d) radius: %0.3fm (%d cells)  length: %0.3fm   KDL chain index: %d",i,links_[i].radius,links_[i].radius_c, links_[i].length,links_[i].ind_chain);
 
-  SBPL_FPRINTF(fOut,"\nKDL Arm Chain:\n");
-  SBPL_FPRINTF(fOut, "# segments: %d, # joints: %d\n", chain_.getNrOfSegments(), chain_.getNrOfJoints());
+  SBPL_DEBUG_NAMED(stream,"\nKDL Arm Chain:");
+  SBPL_DEBUG_NAMED(stream, "# segments: %d, # joints: %d", chain_.getNrOfSegments(), chain_.getNrOfJoints());
 
   double jnt_pos = 0;
-  for(unsigned int j = 0; j < chain_.getNrOfSegments(); ++j)
+  for(size_t j = 0; j < chain_.getNrOfSegments(); ++j)
   {
-    SBPL_FPRINTF(fOut, "frame %2d: segment: %0.3f %0.3f %0.3f  joint: %0.3f %0.3f %0.3f   joint_type: %s\n",j,
+    SBPL_DEBUG_NAMED(stream, "frame %2d: segment: %0.3f %0.3f %0.3f  joint: %0.3f %0.3f %0.3f   joint_type: %s",int(j),
         chain_.getSegment(j).pose(jnt_pos).p.x(),
         chain_.getSegment(j).pose(jnt_pos).p.y(),
         chain_.getSegment(j).pose(jnt_pos).p.z(),
