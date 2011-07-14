@@ -997,6 +997,7 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
     if(object.shapes[i].type == geometric_shapes_msgs::Shape::BOX)
     {
       transformPose(object.header.frame_id, grid_->getReferenceFrame(), object.poses[i], pose);
+      object_voxel_map_[object.id].clear();
       grid_->getVoxelsInBox(pose, object.shapes[i].dimensions, object_voxel_map_[object.id]);
       
       ROS_DEBUG("[%s] TransformPose from %s to %s.", object.id.c_str(), object.header.frame_id.c_str(), grid_->getReferenceFrame().c_str());
@@ -1005,7 +1006,7 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
       ROS_DEBUG("[%s] occupies %d voxels.",object.id.c_str(), int(object_voxel_map_[object.id].size()));
     }
     else
-      ROS_WARN("[addCollisionObject] Collision objects of type %d are not yet supported.", object.shapes[i].type);
+      ROS_WARN("Collision objects of type %d are not yet supported.", object.shapes[i].type);
   }
 
   // add this object to list of objects that get added to grid
@@ -1029,6 +1030,7 @@ void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObje
     if(known_objects_[i].compare(object.id) == 0)
     {
       known_objects_.erase(known_objects_.begin() + i);
+      object_voxel_map_[object.id].clear();
       ROS_DEBUG("[removeCollisionObject] Removing %s from list of known objects.", object.id.c_str());
     }
   }
@@ -1069,6 +1071,24 @@ void SBPLCollisionSpace::getCollisionObjectVoxelPoses(std::vector<geometry_msgs:
       points.push_back(pose);
     }
   }
+}
+
+void SBPLCollisionSpace::printObjectMaps()
+{
+  std::map<std::string, mapping_msgs::CollisionObject>::iterator itr1;
+  std::map<std::string, std::vector<btVector3> >::iterator itr2;
+
+  ROS_INFO("object_map_ has %d elements:", int(object_map_.size()));
+  for(itr1 = object_map_.begin();itr1!=object_map_.end();itr1++)
+    ROS_INFO("%s", itr1->first.c_str());
+
+  ROS_INFO("object_voxel_map_ has %d elements:", int(object_voxel_map_.size()));
+  for(itr2 = object_voxel_map_.begin();itr2!=object_voxel_map_.end();itr2++)
+    ROS_INFO("%s  # voxels: %d", itr2->first.c_str(), int(itr2->second.size()));
+
+  ROS_INFO("known_objects_ has %d elements:", int(known_objects_.size()));
+  for(size_t i = 0; i < known_objects_.size(); i++)
+    ROS_INFO("%d: %s", int(i), known_objects_[i].c_str()); 
 }
 
 void SBPLCollisionSpace::transformPose(const std::string &current_frame, const std::string &desired_frame, const geometry_msgs::Pose &pose_in, geometry_msgs::Pose &pose_out)

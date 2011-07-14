@@ -145,6 +145,7 @@ class SBPLCollisionSpace
     /** @brief get the xyz coords of each joint in the arm */ 
     bool getJointPosesInGrid(std::vector<double> angles, std::vector<std::vector<int> > &jnts, KDL::Frame &f_out, bool verbose);
 
+    void printObjectMaps();
 
   private:
 
