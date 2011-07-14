@@ -46,6 +46,8 @@ using namespace std;
 #ifndef _SBPL_ARM_MODEL_
 #define _SBPL_ARM_MODEL_
 
+namespace sbpl_arm_planner {
+
 /** \brief this struct contains a description of each joint in the arm. It's
  * mainly used for checking joint limits. It's very primitive and will be
  * redesigned later on.
@@ -281,4 +283,5 @@ inline std::vector<std::vector<double> >  SBPLArmModel::getCollisionCuboids()
   return collision_cuboids_;
 }
 
+}
 #endif

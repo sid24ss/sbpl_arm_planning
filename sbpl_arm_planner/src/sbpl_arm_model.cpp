@@ -33,6 +33,8 @@
 
 using namespace std;
 
+namespace sbpl_arm_planner {
+
 SBPLArmModel::SBPLArmModel(FILE* arm_file) : fk_solver_(NULL), pr2_arm_ik_solver_(NULL)
 {
   num_joints_ = 7;
@@ -461,14 +463,22 @@ bool SBPLArmModel::computeFastIK(const std::vector<double> pose, const std::vect
   for(unsigned int i = 0; i < start.size(); i++)
     ik_jnt_pos_in_(i) = angles::normalize_angle(start[i]); // must be normalized for CartToJnt
 
+  ROS_DEBUG("[ik]  xyz: %0.2f %0.2f %0.2f  rpy: %0.2f %0.2f %0.2f", pose[0],pose[1],pose[2],pose[3],pose[4],pose[5]);
+  ROS_DEBUG("[ik] seed: %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f",ik_jnt_pos_in_(0),ik_jnt_pos_in_(1),ik_jnt_pos_in_(2),ik_jnt_pos_in_(3),ik_jnt_pos_in_(4),ik_jnt_pos_in_(5),ik_jnt_pos_in_(6));
+
   //call IK solver
   if(pr2_arm_ik_solver_->CartToJnt(ik_jnt_pos_in_, frame_des, ik_jnt_pos_out_) < 0)
+  {
+    ROS_DEBUG("[ik] Failed with error code: %d", pr2_arm_ik_solver_->CartToJnt(ik_jnt_pos_in_, frame_des, ik_jnt_pos_out_));
     return false;
+  }
 
   solution.resize(start.size());
   for(size_t i = 0; i < solution.size(); ++i)
     solution[i] = ik_jnt_pos_out_(i);
 
+  ROS_DEBUG("[ik] sol.: %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f",ik_jnt_pos_out_(0),ik_jnt_pos_out_(1),ik_jnt_pos_out_(2),ik_jnt_pos_out_(3),ik_jnt_pos_out_(4),ik_jnt_pos_out_(5),ik_jnt_pos_out_(6));
+  
   return true;
 }
 
@@ -778,3 +788,4 @@ void SBPLArmModel::getArmChainRootLinkName(std::string &name)
   name = chain_root_name_;
 }
 
+}
