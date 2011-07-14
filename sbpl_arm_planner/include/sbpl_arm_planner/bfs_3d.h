@@ -52,6 +52,8 @@ using namespace std;
 #define DIRECTIONS3D 26 
 #define GOAL_TOLERANCE 0 
 
+namespace sbpl_arm_planner {
+
 typedef struct
 {
   unsigned int g;
@@ -194,5 +196,8 @@ inline int BFS3D::xyzToIndex(int x, int y, int z)
   }
 }
 
+}
+
 #endif
+
 

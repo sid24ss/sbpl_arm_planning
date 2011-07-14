@@ -31,6 +31,7 @@
 
 #include <sbpl_arm_planner/bfs_3d.h>
 
+namespace sbpl_arm_planner {
 
 BFS3D::BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell)
 {
@@ -572,3 +573,4 @@ void BFS3D::printCostToGoal()
   }
 }
 
+}

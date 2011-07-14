@@ -35,6 +35,8 @@
 
 using namespace std;
 
+namespace sbpl_arm_planner {
+
 OccupancyGrid::OccupancyGrid()
 {
   origin_[0] = 0.0;
@@ -140,7 +142,7 @@ void OccupancyGrid::updateFromCollisionMap(const mapping_msgs::CollisionMap &col
 {
   if(collision_map.boxes.empty())
   {
-    SBPL_INFO("[updateFromCollisionMap] collision map received is empty.\n");
+    SBPL_INFO("[updateFromCollisionMap] collision map received is empty.");
     return;
   }
 
@@ -307,3 +309,4 @@ bool OccupancyGrid::saveGridToBinaryFile(std::string filename)
   return true;
 }
 
+}

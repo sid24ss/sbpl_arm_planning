@@ -42,6 +42,10 @@ using namespace std;
 #ifndef _OCCUPANCY_GRID_
 #define _OCCUPANCY_GRID_
 
+
+namespace sbpl_arm_planner
+{
+
 class OccupancyGrid{
 
   public:
@@ -182,6 +186,8 @@ inline std::string OccupancyGrid::getReferenceFrame()
 inline void OccupancyGrid::addPointsToField(const std::vector<btVector3> &points)
 {
   grid_->addPointsToField(points);
+}
+
 }
 
 #endif
