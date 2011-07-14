@@ -159,7 +159,7 @@ int planRobarm(int argc, char *argv[])
 
   //create arm model so we can run IK to verify final waypoint
   FILE* afid = fopen("./config/pr2_right_arm.cfg","r");
-  SBPLArmModel arm(afid);
+  sbpl_arm_planner::SBPLArmModel arm(afid);
   arm.initKDLChainFromParamServer();
 
   std::vector<double> pose;

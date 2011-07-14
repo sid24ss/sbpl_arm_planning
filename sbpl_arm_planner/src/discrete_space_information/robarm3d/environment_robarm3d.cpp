@@ -438,13 +438,13 @@ if(prms_.verbose_)
 
 #if DEBUG_SEARCH
   if(prms_.verbose_)
-      SBPL_DEBUG_NAMED("search", "%5i: action: %2d dist: %2d edge_distance_cost: %5d edge_smoothing_cost: %2d heur: %2d endeff: %3d %3d %3d", OutHashEntry->stateID, i, int(OutHashEntry->dist), cost(HashEntry,OutHashEntry,bSuccisGoal), prms_.smoothing_cost_[HashEntry->action][OutHashEntry->action], GetFromToHeuristic(OutHashEntry->stateID, EnvROBARM.goalHashEntry->stateID), OutHashEntry->xyz[0],OutHashEntry->xyz[1],OutHashEntry->xyz[2]);
+      SBPL_DEBUG_NAMED("search", "%5i: action: %2d dist: %2d edge_distance_cost: %5d heur: %2d endeff: %3d %3d %3d", OutHashEntry->stateID, i, int(OutHashEntry->dist), cost(HashEntry,OutHashEntry,bSuccisGoal), GetFromToHeuristic(OutHashEntry->stateID, EnvROBARM.goalHashEntry->stateID), OutHashEntry->xyz[0],OutHashEntry->xyz[1],OutHashEntry->xyz[2]);
 #endif
     }
 
     //put successor on successor list with the proper cost
     SuccIDV->push_back(OutHashEntry->stateID);
-    CostV->push_back(cost(HashEntry,OutHashEntry,bSuccisGoal) + prms_.smoothing_cost_[HashEntry->action][OutHashEntry->action] + final_mp_cost);
+    CostV->push_back(cost(HashEntry,OutHashEntry,bSuccisGoal) + final_mp_cost);
   }
 
   if(save_expanded_states)
@@ -526,13 +526,6 @@ EnvROBARM3DHashEntry_t* EnvironmentROBARM3D::getHashEntry(const std::vector<shor
   {
     int j = 0;
 
-    if(prms_.use_smoothing_)
-    {
-      //first check if it is the correct action
-      if (EnvROBARM.Coord2StateIDHashTable[binid][ind]->action != action)
-        continue;
-    }
-
     for(j = 0; j < int(coord.size()); j++)
     {
       if(EnvROBARM.Coord2StateIDHashTable[binid][ind]->coord[j] != coord[j]) 
@@ -550,8 +543,6 @@ EnvROBARM3DHashEntry_t* EnvironmentROBARM3D::createHashEntry(const std::vector<s
 {
   int i;
   EnvROBARM3DHashEntry_t* HashEntry = new EnvROBARM3DHashEntry_t;
-
-  //memcpy(HashEntry->coord, coord, numofcoord*sizeof(short unsigned int));
 
   HashEntry->coord = coord;
 
@@ -749,7 +740,7 @@ bool EnvironmentROBARM3D::initEnvironment(std::string arm_description_filename, 
   //set 'Environment is Initialized' flag
   EnvROBARMCfg.bInitialized = true;
 
-  prms_.printMotionPrims(stdout);
+  prms_.printMotionPrims(std::string("sbpl_arm"));
 
   SBPL_INFO("[initEnvironment] Environment has been initialized.");
 
@@ -779,9 +770,6 @@ bool EnvironmentROBARM3D::initGeneral()
   if(initEnvConfig() == false)
     return false;
 
-  //pre-compute action-to-action costs
-  prms_.precomputeSmoothingCosts();
-
   //compute the cost per cell to be used by heuristic
   computeCostPerCell();
 
@@ -794,16 +782,14 @@ bool EnvironmentROBARM3D::initGeneral()
   if(prms_.verbose_)
   {
     arm_->printArmDescription(std::string("sbpl_arm"));
-    prms_.printParams(stdout);
-    prms_.printMotionPrims(stdout);
-    if(prms_.use_smoothing_)
-      prms_.printSmoothingCosts(stdout);
+    prms_.printParams(std::string("sbpl_arm"));
+    prms_.printMotionPrims(std::string("sbpl_arm"));
   }
 
   if(prms_.verbose_)
   {
     arm_->printArmDescription(std::string("sbpl_arm"));
-    prms_.printParams(stdout);
+    prms_.printParams(std::string("sbpl_arm"));
   }
 
   //set heuristic function pointer
