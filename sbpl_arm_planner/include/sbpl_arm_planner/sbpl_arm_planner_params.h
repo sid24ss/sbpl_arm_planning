@@ -43,9 +43,24 @@
 
 using namespace std;
 
+namespace sbpl_arm_planner {
+
+enum MotionPrimitiveType {
+  LONG_DISTANCE,
+  SHORT_DISTANCE
+};
+
+typedef std::vector<std::vector<int> > MPrim;
+ 
+typedef struct
+{
+  char type;
+  int nsteps;
+  MPrim m;
+} MotionPrimitive;
+
 class SBPLArmPlannerParams
 {
-
   public:
 
     /** \brief default constructor (just assigns default values) */
@@ -63,18 +78,14 @@ class SBPLArmPlannerParams
     /** \brief grab motion primitives from a text file */
     bool initMotionPrimsFromFile(FILE* fCfg);
 
+    /** \brief grab long primitives from a text file  (cartesian arm planner)*/
+    bool initLongMotionPrimsFromFile(FILE* fCfg);
+
     /** \brief grab parameters from a text file */
     bool initFromParamFile(FILE* fCfg);
 
-    /** \brief use a resource retriever to grab params from a file */
-    bool initFromResource(std::string url);
-
     /** \brief print out the parameters */
-    void printParams(FILE* fOut);
-
-    /** \brief precompute the smoothing cost from each mprim to every other
-     * mprim */
-    void precomputeSmoothingCosts();
+    void printParams(std::string stream);
 
     /** \brief add a motion primitive vector to the list */
     void addMotionPrim(std::vector<double> mprim, bool add_converse, bool short_dist_mprim);
@@ -83,15 +94,15 @@ class SBPLArmPlannerParams
     void setCellCost(int cost_per_cell);
 
     /** \brief print the motion primitives */
-    void printMotionPrims(FILE* fOut);
+    void printMotionPrims(std::string stream);
 
     double getSmallestShoulderPanMotion();
 
     /** \brief NOTE: For computing cost for IK and OS solutions */
     double getLargestMotionPrimOffset();
 
-    /** \brief print the smoothing cost table */
-    void printSmoothingCosts(FILE* fOut);
+    /** \brief Output the long motion prims to the terminal */
+    void printLongMotionPrims(std::string stream);
 
     /** \brief epsilon to be used by planner (epsilon is the bounds on the
      * suboptimality of the solution of a weighted A* type search)*/
@@ -109,9 +120,6 @@ class SBPLArmPlannerParams
     /** \brief use IK to try to satisfy the orientation constraint */
     bool use_ik_;
 
-    /** \brief enable path smoothing during search */ 
-    bool use_smoothing_;
-    
     /** \brief plan to a 6D pose goal (if false, plans to 3D goal {x,y,z}) */
     bool use_6d_pose_goal_;
 
@@ -156,10 +164,6 @@ class SBPLArmPlannerParams
 
     std::string planner_name_;
 
-    /** \brief cost of transitioning from mprim to mprim, this provides the
-     * smoothing factor */
-    std::vector<std::vector<int> > smoothing_cost_;
-
     /** \brief cost multiplier (so we don't have to deal with doubles) */
     int cost_multiplier_;
 
@@ -177,8 +181,10 @@ class SBPLArmPlannerParams
     /** \brief set which function to use to check if at goal position */
     int is_goal_function_;
 
+    /** \brief call the orientation solver twice (try rotating the wrist clockwise and then counter-clockwise) */
     bool two_calls_to_op_;
 
+    /** \brief use the elbow heuristic */
     bool use_research_heuristic_;
     
     double max_mprim_offset_;
@@ -198,7 +204,14 @@ class SBPLArmPlannerParams
 
     int solve_for_ik_thresh_;
     double solve_for_ik_thresh_m_;
+
+    /* For Cartesian Arm Planner */
+    std::vector<MotionPrimitive> mp_;
+    double xyz_resolution_;
+    double rpy_resolution_;
+    double fa_resolution_;
 };
 
+}
 #endif
 

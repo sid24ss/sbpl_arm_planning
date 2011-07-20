@@ -30,12 +30,14 @@
 
 #include <sbpl_arm_planner/sbpl_arm_planner_params.h>
 
+ 
+namespace sbpl_arm_planner {
+
 SBPLArmPlannerParams::SBPLArmPlannerParams()
 {
   epsilon_ = 10;
   use_multires_mprims_ = true;
   use_dijkstra_heuristic_ = true;
-  use_smoothing_ = false;
   use_6d_pose_goal_ = true;
   sum_heuristics_ = false;
   use_uniform_cost_ = true;
@@ -67,6 +69,11 @@ SBPLArmPlannerParams::SBPLArmPlannerParams()
 
   two_calls_to_op_ = false;
   is_goal_function_ = 0;
+
+  /* cartesian planner */
+  xyz_resolution_ = 0.02;
+  rpy_resolution_ = 0.034906585; // 2 rad
+  fa_resolution_ = 0.0523598776; // 3 rad
 }
 
 void SBPLArmPlannerParams::initFromParamServer()
@@ -109,14 +116,14 @@ bool SBPLArmPlannerParams::initFromParamFile(std::string param_file)
   if(initFromParamFile(fCfg))
   {
     delete filename;
-    SBPL_FCLOSE(fCfg);
+    fclose(fCfg);
     delete fCfg;
     return true;
   }
   else
   {
     delete filename;
-    SBPL_FCLOSE(fCfg);
+    fclose(fCfg);
     delete fCfg;
     return false;
   }
@@ -169,6 +176,9 @@ bool SBPLArmPlannerParams::initMotionPrimsFromFile(FILE* fCfg)
   else
     short_mprims = atoi(sTemp);
 
+  if(short_mprims == nrows)
+    SBPL_ERROR("Error: # of motion prims == # of short distance motion prims. No long distance motion prims set.");
+
   std::vector<double> mprim(ncols,0);
 
   for (int i=0; i < nrows; ++i)
@@ -196,6 +206,162 @@ bool SBPLArmPlannerParams::initMotionPrimsFromFile(FILE* fCfg)
   return true;
 }
 
+bool SBPLArmPlannerParams::initLongMotionPrimsFromFile(FILE* fCfg)
+{
+  char sTemp[1024];
+  int ndof=0;
+  MotionPrimitive temp;
+  std::vector<int> p;
+  std::vector<bool> add_reflect(6,0);
+
+  if(fCfg == NULL)
+  {
+    SBPL_ERROR("Failed to open the motion primitive file. Exiting.");
+    return false;
+  }
+
+  if(fscanf(fCfg,"%s",sTemp) < 1) 
+    SBPL_INFO("Parsed string has length < 1.\n");
+
+  while(!feof(fCfg)) // && strlen(sTemp) != 0)
+  {
+    if(sTemp[0] == '#')
+      SBPL_INFO("comment! %s", sTemp);
+    else if(strcmp(sTemp, "degrees_of_freedom:") == 0)
+    {
+      if(fscanf(fCfg,"%s",sTemp) < 1)
+        SBPL_WARN("Failed to parse # degrees of freedom."); 
+      ndof = atoi(sTemp);
+    }
+    else if(strcmp(sTemp, "xyz_resolution(meters):") == 0)
+    {
+      if(fscanf(fCfg,"%s",sTemp) < 1)
+        SBPL_WARN("Failed to parse xyz resolution."); 
+      xyz_resolution_ = atof(sTemp);
+      if(xyz_resolution_ != resolution_)
+        ROS_ERROR("Resolution in motion primitive file does not match the resolution of the occupancy grid.");
+    }
+    else if(strcmp(sTemp, "rpy_resolution(degrees):") == 0)
+    {
+      if(fscanf(fCfg,"%s",sTemp) < 1)
+        SBPL_WARN("Failed to parse rpy resolution."); 
+      rpy_resolution_ = atof(sTemp) * M_PI/180.0;
+    }
+    else if(strcmp(sTemp, "free_angle_resolution(degrees):") == 0)
+    {
+      if(fscanf(fCfg,"%s",sTemp) < 1)
+        SBPL_WARN("Failed to parse free angle resolution."); 
+      fa_resolution_ = atof(sTemp) * M_PI/180.0;
+    }
+    //type needs to be defined first
+    else if(strcmp(sTemp, "type:") == 0)
+    {
+      if(fscanf(fCfg,"%s",sTemp) < 1)
+        SBPL_WARN("Parsed string has length < 1. (type)"); 
+ 
+      if(strcmp(sTemp,"long_distance") == 0)
+        temp.type = LONG_DISTANCE;   
+      else if(strcmp(sTemp,"short_distance") == 0)
+        temp.type = SHORT_DISTANCE;   
+      else
+      {
+        SBPL_ERROR("Invalid primitive type. Currently only two types of motion primitives - 'short_distance' or 'long_distance'. Assuming long_distance.");
+        temp.type = 0;
+      }
+
+      add_reflect.resize(6,0);
+      temp.m.clear();
+    }
+    //add same primitive flipped around a certain axis
+    else if(strcmp(sTemp, "add_reflect(no/x/y/z/xy/xz/yz):") == 0)
+    {
+      if(fscanf(fCfg,"%s",sTemp) < 1)
+        SBPL_WARN("Parsed string has length < 1. (add_reflect)");
+    
+      if(strcmp(sTemp,"x") == 0)
+        add_reflect[0] = true;    
+      else if(strcmp(sTemp,"y") == 0)
+        add_reflect[1] = true;    
+      else if(strcmp(sTemp,"z") == 0)
+        add_reflect[2] = true;    
+      else if(strcmp(sTemp,"xy") == 0)
+        add_reflect[3] = true;    
+      else if(strcmp(sTemp,"xz") == 0)
+        add_reflect[4] = true;    
+      else if(strcmp(sTemp,"yz") == 0)
+        add_reflect[5] = true;    
+      else  
+        SBPL_ERROR("Not adding inverse.Either invalid axis or 'no' selected.");
+    }
+    //add same primitive rotated around a certain axis n times
+    /*
+    else if(strcmp(sTemp, "evenly_distribute_about_x:") == 0)
+    {
+      if(fscanf(fCfg,"%d",n_rotate_x) < 1)
+        SBPL_WARN("Failed to parse # of evenly distributed primitives about x-axis.");
+    }
+    else if(strcmp(sTemp, "evenly_distribute_about_y:") == 0)
+    {
+      if(fscanf(fCfg,"%d",n_rotate_y) < 1)
+        SBPL_WARN("Failed to parse # of evenly distributed primitives about y-axis.");
+    }
+    else if(strcmp(sTemp, "evenly_distribute_about_z:") == 0)
+    {
+      if(fscanf(fCfg,"%d",n_rotate_z) < 1)
+        SBPL_WARN("Failed to parse # of evenly distributed primitives about z-axis.");
+    }
+    */
+    //parse the primitive
+    else if(strcmp(sTemp, "intermediate_steps:") == 0)
+    {
+      if(fscanf(fCfg,"%s",sTemp) < 1)
+        SBPL_WARN("Parsed string has length < 1. (intermediate_steps)"); 
+    
+      temp.nsteps = atoi(sTemp);
+
+      for(int i=0; i < temp.nsteps; ++i)
+      {
+        p.resize(ndof,0);
+
+        for(int j=0; j < ndof; ++j)
+        {
+          if(fscanf(fCfg,"%s",sTemp) < 1)
+            SBPL_WARN("Expected %d values in motion primitive. Adding zeroes instead.", ndof);
+
+          p[j] = atoi(sTemp);  
+        }
+        temp.m.push_back(p);
+      }
+      mp_.push_back(temp);
+
+      /*
+      for(int i=0; i < int(add_reflect.size()); ++i)
+      {
+        ADD ENUMS AT TOP OF FILE
+        ADD INVERSE HERE
+
+        temp2 = temp;
+
+        if(x rotation)
+          for all points in temp2
+            negate x
+        ....
+      
+      }
+      */
+    }
+    else
+      SBPL_WARN("Found unexpected line in motion primitive file. (%s)", sTemp);
+
+    if(fscanf(fCfg,"%s",sTemp) < 1)
+      SBPL_INFO("Parsed string has length < 1. (%d)", sTemp);
+  }
+
+  max_mprim_offset_ = getLargestMotionPrimOffset(); 
+
+  return true;
+}
+
 bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
 { 
   char sTemp[1024];
@@ -208,121 +374,121 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
   }
 
   if(fscanf(fCfg,"%s",sTemp) < 1) 
-    SBPL_PRINTF("Parsed string has length < 1.\n");
+    SBPL_INFO("Parsed string has length < 1.\n");
   while(!feof(fCfg) && strlen(sTemp) != 0)
   {
     if(strcmp(sTemp, "environment_size(meters):") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1)
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       sizeX_ = atof(sTemp);
       if(fscanf(fCfg,"%s",sTemp) < 1)
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       sizeY_ = atof(sTemp);
       if(fscanf(fCfg,"%s",sTemp) < 1)
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       sizeZ_ = atof(sTemp);
     }
     else if(strcmp(sTemp, "environment_origin(meters):") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1)
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       originX_ = atof(sTemp);
       if(fscanf(fCfg,"%s",sTemp) < 1)
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       originY_ = atof(sTemp);
       if(fscanf(fCfg,"%s",sTemp) < 1)
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       originZ_ = atof(sTemp);
     }
     else if(strcmp(sTemp, "resolution(meters):") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1)
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       resolution_ = atof(sTemp);
     }
     else if(strcmp(sTemp, "use_dijkstra_heuristic:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       use_dijkstra_heuristic_ = atoi(sTemp);
     }
     else if(strcmp(sTemp, "use_orientation_solver:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       use_orientation_solver_ = atoi(sTemp);
     }
     else if(strcmp(sTemp, "use_ik:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       use_ik_ = atoi(sTemp);
     }
     else if(strcmp(sTemp, "sum_heuristics:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       sum_heuristics_ = atoi(sTemp);
     }
     else if(strcmp(sTemp, "use_research_heuristic:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       use_research_heuristic_ = atoi(sTemp);
     }
     else if(strcmp(sTemp, "plan_to_6d_pose_constraint:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       use_6d_pose_goal_ = atoi(sTemp);
     }
     else if(strcmp(sTemp,"planner_epsilon:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       epsilon_ = atof(sTemp);
     }
     else if(strcmp(sTemp,"use_multiresolution_motion_primitives:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       use_multires_mprims_ = atoi(sTemp);
     }
     else if(strcmp(sTemp,"use_uniform_obstacle_cost:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       use_uniform_cost_ = atoi(sTemp);
     }
     else if(strcmp(sTemp,"short_distance_mprims_threshold(meters):") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       short_dist_mprims_thresh_m_ = atof(sTemp);
     }
     else if(strcmp(sTemp,"check_if_at_goal_function(0:IK,1:OP):") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       is_goal_function_ = atoi(sTemp);
     }   
     else if(strcmp(sTemp,"two_calls_to_orientation_planner:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.\n");
+        SBPL_INFO("Parsed string has length < 1.\n");
       two_calls_to_op_ = atoi(sTemp);
     }   
     else if(strcmp(sTemp,"verbose:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.");
+        SBPL_INFO("Parsed string has length < 1.");
       verbose_ = atoi(sTemp);
     }
     else if(strcmp(sTemp,"solve_for_ik_threshold(distance):") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1) 
-        SBPL_PRINTF("Parsed string has length < 1.");
+        SBPL_INFO("Parsed string has length < 1.");
       solve_for_ik_thresh_m_ = atof(sTemp);
     }
     //motion primitives must be last thing in the file
@@ -334,18 +500,18 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
 
     else
     {
-      SBPL_PRINTF("Error: Invalid Field name (%s) in parameter file.",sTemp);
+      SBPL_INFO("Error: Invalid Field name (%s) in parameter file.",sTemp);
       //return false;
     }
     if(fscanf(fCfg,"%s",sTemp) < 1) 
-      SBPL_PRINTF("Parsed string has length < 1.");
+      SBPL_INFO("Parsed string has length < 1.");
   }
 
 
   //number of actions
   if(fscanf(fCfg,"%s",sTemp) < 1) 
   {
-    SBPL_PRINTF("Parsed string has length < 1.");
+    SBPL_INFO("Parsed string has length < 1.");
     return false;
   }
   else
@@ -354,7 +520,7 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
   //length of joint array
   if(fscanf(fCfg,"%s",sTemp) < 1)
   {
-    SBPL_PRINTF("Parsed string has length < 1.");
+    SBPL_INFO("Parsed string has length < 1.");
     return false;
   }
   else
@@ -363,7 +529,7 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
   //number of short distance motion primitives
   if(fscanf(fCfg,"%s",sTemp) < 1)
   { 
-    SBPL_PRINTF("Parsed string has length < 1.");
+    SBPL_INFO("Parsed string has length < 1.");
     return false;
   }
   else
@@ -398,7 +564,7 @@ bool SBPLArmPlannerParams::initFromParamFile(FILE* fCfg)
 
   max_mprim_offset_ = getLargestMotionPrimOffset(); 
     
-  SBPL_PRINTF("Successfully parsed parameters file");
+  SBPL_INFO("Successfully parsed parameters file");
   return true;
 }
 
@@ -456,90 +622,62 @@ void SBPLArmPlannerParams::addMotionPrim(std::vector<double> mprim, bool add_con
   num_mprims_ = num_short_dist_mprims_ + num_long_dist_mprims_;
 }
 
-void SBPLArmPlannerParams::printMotionPrims(FILE* fOut)
+void SBPLArmPlannerParams::printMotionPrims(std::string stream)
 {
   int i;
-  SBPL_FPRINTF(fOut,"Long Distance Motion Primitives: %d\n", num_long_dist_mprims_);
+  SBPL_DEBUG_NAMED(stream,"Long Distance Motion Primitives: %d", num_long_dist_mprims_);
   for(i = 0; i < num_long_dist_mprims_; ++i)
   {
-    SBPL_FPRINTF(fOut,"%2d: ",i);
+    SBPL_DEBUG_NAMED(stream,"%2d: ",i);
     for(int j = 0; j < int(mprims_[i].size()); ++j)
-      SBPL_FPRINTF(fOut,"%4.1f ",mprims_[i][j]);
-    SBPL_FPRINTF(fOut,"\n");
+      SBPL_DEBUG_NAMED(stream,"%4.1f ",mprims_[i][j]);
+    SBPL_DEBUG_NAMED(stream," ");
   }
 
-  SBPL_FPRINTF(fOut,"Short Distance Motion Primitives: %d\n", num_short_dist_mprims_);
+  SBPL_DEBUG_NAMED(stream,"Short Distance Motion Primitives: %d", num_short_dist_mprims_);
   for(; i < num_mprims_; ++i)
   {
-    SBPL_FPRINTF(fOut,"%2d: ",i);
+    SBPL_DEBUG_NAMED(stream,"%2d: ",i);
     for(int j = 0; j < int(mprims_[i].size()); ++j)
-      SBPL_FPRINTF(fOut,"%4.1f ",mprims_[i][j]);
-    SBPL_FPRINTF(fOut,"\n");
+      SBPL_DEBUG_NAMED(stream,"%4.1f ",mprims_[i][j]);
+    SBPL_DEBUG_NAMED(stream," ");
   }
 }
 
-void SBPLArmPlannerParams::printParams(FILE* fOut)
+void SBPLArmPlannerParams::printLongMotionPrims(std::string stream)
 {
-  SBPL_DEBUG_NAMED(fOut,"\nArm Planner Parameters:\n");
-  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "# motion primitives",num_mprims_);
-  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "# short distance motion primitives", num_short_dist_mprims_);
-  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "# long distance motion primitives", num_long_dist_mprims_);
-  SBPL_DEBUG_NAMED(fOut,"%40s: %.2f\n", "epsilon",epsilon_);
-  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "use multi-resolution motion primitives", use_multires_mprims_ ? "yes" : "no");
-  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "use dijkstra heuristic", use_dijkstra_heuristic_ ? "yes" : "no");
-  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "use research heuristic", use_research_heuristic_ ? "yes" : "no");
-  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "h = h_elbow + h_endeff", sum_heuristics_ ? "yes" : "no"); 
-  SBPL_DEBUG_NAMED(fOut,"%40s: %s\n", "use a uniform cost",use_uniform_cost_ ? "yes" : "no");
-  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "cost per cell", cost_per_cell_);
-  SBPL_DEBUG_NAMED(fOut,"%40s: %.5f\n", "distance from goal to start using IK:",solve_for_ik_thresh_m_);
-  SBPL_DEBUG_NAMED(fOut,"%40s: %d\n", "cost from goal to start using IK:",solve_for_ik_thresh_);
-  SBPL_DEBUG_NAMED(fOut,"\n");
-}
-
-void SBPLArmPlannerParams::precomputeSmoothingCosts()
-{
-  int i,x,y;
-  double temp = 0.0;
-  
-  smoothing_cost_.resize(num_mprims_);
-
-  for (x = 0; x < num_mprims_; x++)
+  ROS_INFO_NAMED(stream, "Statespace Resolution: xyz: %0.3f rpy: %0.3f fa: %0.3f",xyz_resolution_, rpy_resolution_,fa_resolution_);
+  ROS_INFO_NAMED(stream, "# Motion Primitives: %d", int(mp_.size()));
+  for(int i = 0; i < int(mp_.size()); ++i)
   {
-    smoothing_cost_[x].resize(num_mprims_);
-    for (y = 0; y < num_mprims_; y++)
-    {
-      temp = 0.0;
-      for (i = 0; i < int(mprims_[y].size()); i++)
-        temp += ((mprims_[x][i]-mprims_[y][i])*(mprims_[x][i]-mprims_[y][i]));
+    if(mp_[i].type == LONG_DISTANCE)
+      ROS_INFO_NAMED(stream,"[%d] type: long_distance    nsteps: %d", i, mp_[i].nsteps);
+    else  
+      ROS_INFO_NAMED(stream,"[%d] type: short_distance   nsteps: %d", i, mp_[i].nsteps);
 
-      smoothing_cost_[x][y] = temp * (double)cost_multiplier_ * (double)use_smoothing_;
-    }
+    for(int j = 0; j < int(mp_[i].m.size()); ++j)
+      ROS_INFO_NAMED(stream,"%d %d %d %d %d %d %d", mp_[i].m[j][0],mp_[i].m[j][1],mp_[i].m[j][2],mp_[i].m[j][3],mp_[i].m[j][4],mp_[i].m[j][5],mp_[i].m[j][6]);
+
+    ROS_INFO_NAMED(stream," ");
   }
 }
 
-void SBPLArmPlannerParams::printSmoothingCosts(FILE* fOut)
+void SBPLArmPlannerParams::printParams(std::string stream)
 {
-  int x,y;
-  
-  if(fOut == NULL)
-    fOut = stdout;
-
-  if(smoothing_cost_.empty())
-    return;
-
-  SBPL_FPRINTF(fOut,"Smoothing Costs Table:\n");
-  SBPL_FPRINTF(fOut,"    ");
-  for(x = 0; x < num_mprims_; x++)
-    SBPL_FPRINTF(fOut, "%4d  ",x);
-  SBPL_FPRINTF(fOut,"\n");
-
-  for (x = 0; x < int(smoothing_cost_.size()); x++)
-  {
-    SBPL_FPRINTF(fOut,"%2d: ",x);
-    for (y = 0; y < int(smoothing_cost_[x].size()); y++)
-      SBPL_FPRINTF(fOut,"%4d  ", smoothing_cost_[x][y]);
-    SBPL_FPRINTF(fOut,"\n");
-  }
+  SBPL_DEBUG_NAMED(stream,"Arm Planner Parameters:");
+  SBPL_DEBUG_NAMED(stream,"%40s: %d", "# motion primitives",num_mprims_);
+  SBPL_DEBUG_NAMED(stream,"%40s: %d", "# short distance motion primitives", num_short_dist_mprims_);
+  SBPL_DEBUG_NAMED(stream,"%40s: %d", "# long distance motion primitives", num_long_dist_mprims_);
+  SBPL_DEBUG_NAMED(stream,"%40s: %.2f", "epsilon",epsilon_);
+  SBPL_DEBUG_NAMED(stream,"%40s: %s", "use multi-resolution motion primitives", use_multires_mprims_ ? "yes" : "no");
+  SBPL_DEBUG_NAMED(stream,"%40s: %s", "use dijkstra heuristic", use_dijkstra_heuristic_ ? "yes" : "no");
+  SBPL_DEBUG_NAMED(stream,"%40s: %s", "use research heuristic", use_research_heuristic_ ? "yes" : "no");
+  SBPL_DEBUG_NAMED(stream,"%40s: %s", "h = h_elbow + h_endeff", sum_heuristics_ ? "yes" : "no"); 
+  SBPL_DEBUG_NAMED(stream,"%40s: %s", "use a uniform cost",use_uniform_cost_ ? "yes" : "no");
+  SBPL_DEBUG_NAMED(stream,"%40s: %d", "cost per cell", cost_per_cell_);
+  SBPL_DEBUG_NAMED(stream,"%40s: %.5f", "distance from goal to start using IK:",solve_for_ik_thresh_m_);
+  SBPL_DEBUG_NAMED(stream,"%40s: %d", "cost from goal to start using IK:",solve_for_ik_thresh_);
+  SBPL_DEBUG_NAMED(stream," ");
 }
 
 double SBPLArmPlannerParams::getSmallestShoulderPanMotion()
@@ -552,7 +690,7 @@ double SBPLArmPlannerParams::getSmallestShoulderPanMotion()
   }
 
   min_pan = angles::normalize_angle(angles::from_degrees(min_pan));
-  SBPL_PRINTF("[getSmallestShoulderPanMotion] Smallest shoulder pan motion is %0.3f rad.\n", min_pan);
+  SBPL_INFO("Smallest shoulder pan motion is %0.3f rad.\n", min_pan);
   
   return min_pan;
 }
@@ -570,8 +708,41 @@ double SBPLArmPlannerParams::getLargestMotionPrimOffset()
   }
 
   max_offset = angles::normalize_angle(angles::from_degrees(max_offset));
-  SBPL_PRINTF("[getLargestMotionPrimOffset] Largest single Joint Offset in all Motion Prims is %0.3f rad.\n", max_offset);
+  SBPL_INFO("Largest single joint offset in all Motion Prims is %0.3f rad.", max_offset);
   
   return max_offset;
 }
 
+/*
+void SBPLArmPlannerParams::addLongMotionPrimitives(MotionPrimitive m, std::vector<bool> &reflect, std::vector<int> &rotate)
+{
+  double theta = 0;
+
+  //convert from discrete to continuous coordinates
+
+  //construct transformation matrix for primitive
+  
+  //for each axis of rotation
+  for(size_t i = 0; i < rotate.size(); ++i)
+  {
+    //compute angular distance between prims
+    theta = (2.0*M_PI)/rotate[i];
+
+    //for each rotation around the axis
+    for(size_t j = 0; j < rotate[i]; j++)
+    {
+      //construct rotation matrix - theta degrees around axis i
+
+      //rotate original motion prim
+
+      //for each reflection about an axis
+      for(size_t j = 0; j < reflect.size(); ++j)
+      {
+
+      }
+    }
+  }
+}
+*/
+
+}
