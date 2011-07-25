@@ -42,6 +42,6 @@ collision_space:
     size_z: 1.4
 
 reference_frame: base_footprint
-FK_service_name: pr2_left_arm_kinematics/get_fk
-IK_service_name: pr2_left_arm_kinematics/get_ik
+fk_service_name: pr2_left_arm_kinematics/get_fk
+ik_service_name: pr2_left_arm_kinematics/get_ik
 

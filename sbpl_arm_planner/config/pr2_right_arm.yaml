@@ -4,7 +4,7 @@ planner:
   use_dijkstra_heuristic: true
   use_research_heuristic: false
   use_uniform_obstacle_cost: false
-  use_multiresolution_motion_primitives: true
+  use_multiresolution_motion_primitives: false
   obstacle_distance_cost_far: 2
   obstacle_distance_cost_mid: 7
   obstacle_distance_cost_near: 12
@@ -18,7 +18,7 @@ robot:
   num_joints: 7
   
 debug:
-  print_out_path: false
+  print_out_path: true
 
 visualizations:
   heuristic: true
@@ -26,7 +26,7 @@ visualizations:
   expanded_states: false
   trajectory: false
   collision_model_trajectory: false
-  trajectory_throttle: 3
+  trajectory_throttle: 1
 
 collision_space:
   reference_frame: base_footprint
@@ -42,7 +42,7 @@ collision_space:
     size_z: 1.4
 
 reference_frame: base_footprint
-FK_service_name: pr2_right_arm_kinematics/get_fk
-IK_service_name: pr2_right_arm_kinematics/get_ik
+fk_service_name: pr2_right_arm_kinematics/get_fk
+ik_service_name: pr2_right_arm_kinematics/get_ik
 
 

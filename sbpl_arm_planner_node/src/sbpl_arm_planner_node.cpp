@@ -88,12 +88,14 @@ bool SBPLArmPlannerNode::init()
   joint_names_.resize(num_joints_);
   if(arm_name_ == "left_arm")
   {
+    ROS_INFO("Planning for the left arm.");
     side_ = "l";
     planning_joint_ = "l_wrist_roll_link";
     attached_object_frame_ = "l_gripper_r_finger_tip_link";
   }
   else
   {
+    ROS_INFO("Planning for the right arm.");
     side_ = "r";
     planning_joint_ = "r_wrist_roll_link";
     attached_object_frame_ = "r_gripper_r_finger_tip_link";
