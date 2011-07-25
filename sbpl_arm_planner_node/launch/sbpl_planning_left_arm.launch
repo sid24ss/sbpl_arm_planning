@@ -4,8 +4,12 @@
 
     <rosparam command="load" file="$(find sbpl_arm_planner)/config/pr2_left_arm.yaml" />
 
-    <param name="planner/arm_description_file" textfile="$(find sbpl_arm_planner)/config/pr2_left_arm.cfg" />
-    <param name="planner/motion_primitive_file" textfile="$(find sbpl_arm_planner)/config/pr2.mprim" />
+    <param name="planner/arm_description_file" value="$(find sbpl_arm_planner)/config/pr2_left_arm.cfg" />
+    <param name="planner/motion_primitive_file" value="$(find sbpl_arm_planner)/config/pr2.mprim" />
+
+    <remap from="/sbpl_planning/plan_path" to="/sbpl_left_planning/plan_path"/>
+    <remap from="visualization_markers" to="sbpl_left_arm_markers"/>
+
   </node>
 
 </launch>
