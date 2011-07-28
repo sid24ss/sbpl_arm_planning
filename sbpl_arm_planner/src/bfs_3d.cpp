@@ -57,7 +57,7 @@ BFS3D::BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell)
 
   fifo_size = 2*dimX_*dimY_ + 2*dimY_*dimZ_ + 2*dimX_*dimZ_;
   q_ = new FIFO(fifo_size);
-  SBPL_INFO("[BFS3d] Allocated a FIFO of size %d", fifo_size);      
+  SBPL_DEBUG("[BFS3d] Allocated a FIFO of size %d", fifo_size);      
   SBPL_DEBUG("[BFS3D] grid dimensions: %d %d %d\n",dimX_, dimY_,dimZ_);
 }
 
@@ -252,8 +252,6 @@ void BFS3D::search3DwithFifo(State3D*** statespace)
     dist_[xyzToIndex(x,y,z)] = 0;
     q_->insert(x,y,z);
   }
-
-  printf("init goal heuristic took %f seconds\n", ((double)(clock()-t0))/CLOCKS_PER_SEC);
 }
 
 int BFS3D::getDist(int x, int y, int z)

@@ -186,19 +186,7 @@ bool SBPLCollisionSpace::checkPathForCollision(const std::vector<double> &start,
 
   getInterpolatedPath(start_norm, end_norm, inc_, path);
 
-  /*
-  if(verbose)
-  {
-    SBPL_FPRINTF(fOut_,"      interpolated_path: %d waypoints\n",path.size());
-    SBPL_FPRINTF(fOut_,"           %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f --> %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", start_norm[0],start_norm[1],start_norm[2],start_norm[3],start_norm[4],start_norm[5],start_norm[6], end_norm[0],end_norm[1],end_norm[2],end_norm[3],end_norm[4],end_norm[5],end_norm[6]);
-
-    for(int i = 0; i < int(path.size()); ++i)
-        SBPL_FPRINTF(fOut_,"           %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", path[i][0],path[i][1],path[i][2],path[i][3],path[i][4],path[i][5],path[i][6]);
-  }
-  */
-
-  // 'optimized' collision check added 8/28/2010
-  // try to find collisions that might come later in the path earlier
+  // optimization: try to find collisions that might come later in the path earlier
   if(int(path.size()) > inc_cc)
   {
     for(int i = 0; i < inc_cc; i++)

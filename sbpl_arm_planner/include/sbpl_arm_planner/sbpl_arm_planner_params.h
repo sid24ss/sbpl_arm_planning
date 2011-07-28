@@ -47,7 +47,8 @@ namespace sbpl_arm_planner {
 
 enum MotionPrimitiveType {
   LONG_DISTANCE,
-  SHORT_DISTANCE
+  SHORT_DISTANCE,
+  ADAPTIVE
 };
 
 typedef std::vector<std::vector<int> > MPrim;
@@ -56,6 +57,7 @@ typedef struct
 {
   char type;
   int nsteps;
+  int group;
   MPrim m;
 } MotionPrimitive;
 
@@ -210,6 +212,10 @@ class SBPLArmPlannerParams
     double xyz_resolution_;
     double rpy_resolution_;
     double fa_resolution_;
+
+    int cost_per_second_;
+    double time_per_cell_;
+    std::vector<double> joint_vel_;
 };
 
 }

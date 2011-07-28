@@ -30,8 +30,6 @@
  /** \author Benjamin Cohen */
 
 #include <sbpl_arm_planner/occupancy_grid.h>
-#include <LinearMath/btTransform.h>
-#include <LinearMath/btVector3.h>
 
 using namespace std;
 

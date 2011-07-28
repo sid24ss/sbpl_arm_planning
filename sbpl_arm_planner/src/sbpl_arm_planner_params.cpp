@@ -72,8 +72,24 @@ SBPLArmPlannerParams::SBPLArmPlannerParams()
 
   /* cartesian planner */
   xyz_resolution_ = 0.02;
-  rpy_resolution_ = 0.034906585; // 2 rad
-  fa_resolution_ = 0.0523598776; // 3 rad
+  rpy_resolution_ = 0.034906585; // 2 deg
+  fa_resolution_ = 0.0523598776; // 3 deg
+
+  cost_per_second_ = cost_multiplier_;
+  time_per_cell_ = 0.05;
+  joint_vel_.resize(7, 0.200);
+  
+  //pulled from URDF 
+  double desired_speed_pct = 0.8;
+  joint_vel_[0] = 0.6*3.48*desired_speed_pct;
+  joint_vel_[1] = 0.6*3.47*desired_speed_pct;
+  joint_vel_[2] = 0.6*5.45*desired_speed_pct;
+  joint_vel_[3] = 0.6*5.50*desired_speed_pct;
+  joint_vel_[4] = 0.6*6.00*desired_speed_pct;
+  joint_vel_[5] = 0.6*5.13*desired_speed_pct;
+  joint_vel_[6] = 0.6*6.00*desired_speed_pct;
+
+  ROS_INFO("Joint Velocities:  %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f", joint_vel_[0],joint_vel_[1], joint_vel_[2],joint_vel_[3],joint_vel_[4],joint_vel_[5],joint_vel_[6]);
 }
 
 void SBPLArmPlannerParams::initFromParamServer()
@@ -223,10 +239,10 @@ bool SBPLArmPlannerParams::initLongMotionPrimsFromFile(FILE* fCfg)
   if(fscanf(fCfg,"%s",sTemp) < 1) 
     SBPL_INFO("Parsed string has length < 1.\n");
 
-  while(!feof(fCfg)) // && strlen(sTemp) != 0)
+  while(!feof(fCfg))
   {
-    if(sTemp[0] == '#')
-      SBPL_INFO("comment! %s", sTemp);
+    if(sTemp[0] == '#') //comments
+      fgets(sTemp, 1024,fCfg);
     else if(strcmp(sTemp, "degrees_of_freedom:") == 0)
     {
       if(fscanf(fCfg,"%s",sTemp) < 1)
@@ -271,6 +287,13 @@ bool SBPLArmPlannerParams::initLongMotionPrimsFromFile(FILE* fCfg)
 
       add_reflect.resize(6,0);
       temp.m.clear();
+      temp.group = -1;
+    }
+    else if(strcmp(sTemp, "group:") == 0)
+    {
+      if(fscanf(fCfg,"%s",sTemp) < 1)
+        SBPL_WARN("Parsed string has length < 1. (group)");
+      temp.group = atoi(sTemp);
     }
     //add same primitive flipped around a certain axis
     else if(strcmp(sTemp, "add_reflect(no/x/y/z/xy/xz/yz):") == 0)
@@ -333,31 +356,23 @@ bool SBPLArmPlannerParams::initLongMotionPrimsFromFile(FILE* fCfg)
         temp.m.push_back(p);
       }
       mp_.push_back(temp);
-
-      /*
-      for(int i=0; i < int(add_reflect.size()); ++i)
-      {
-        ADD ENUMS AT TOP OF FILE
-        ADD INVERSE HERE
-
-        temp2 = temp;
-
-        if(x rotation)
-          for all points in temp2
-            negate x
-        ....
-      
-      }
-      */
     }
     else
       SBPL_WARN("Found unexpected line in motion primitive file. (%s)", sTemp);
 
     if(fscanf(fCfg,"%s",sTemp) < 1)
-      SBPL_INFO("Parsed string has length < 1. (%d)", sTemp);
+      SBPL_INFO("Parsed string has length < 1. (%s)", sTemp);
   }
 
-  max_mprim_offset_ = getLargestMotionPrimOffset(); 
+  // add an orientation solving motion primitive
+  temp.nsteps = 1;
+  temp.type = ADAPTIVE;
+  temp.group = 0;
+  p.clear();
+  p.resize(7,0);
+  temp.m.clear();
+  temp.m.push_back(p);
+  mp_.push_back(temp);
 
   return true;
 }
@@ -651,9 +666,11 @@ void SBPLArmPlannerParams::printLongMotionPrims(std::string stream)
   for(int i = 0; i < int(mp_.size()); ++i)
   {
     if(mp_[i].type == LONG_DISTANCE)
-      ROS_INFO_NAMED(stream,"[%d] type: long_distance    nsteps: %d", i, mp_[i].nsteps);
-    else  
-      ROS_INFO_NAMED(stream,"[%d] type: short_distance   nsteps: %d", i, mp_[i].nsteps);
+      ROS_INFO_NAMED(stream,"[%d] type: long_distance    nsteps: %d group: %d", i, mp_[i].nsteps, mp_[i].group);
+    else if(mp_[i].type == SHORT_DISTANCE)  
+      ROS_INFO_NAMED(stream,"[%d] type: short_distance   nsteps: %d group: %d", i, mp_[i].nsteps, mp_[i].group);
+    else
+      ROS_INFO_NAMED(stream,"[%d] type: adaptive   nsteps: %d group: %d", i, mp_[i].nsteps, mp_[i].group);
 
     for(int j = 0; j < int(mp_[i].m.size()); ++j)
       ROS_INFO_NAMED(stream,"%d %d %d %d %d %d %d", mp_[i].m[j][0],mp_[i].m[j][1],mp_[i].m[j][2],mp_[i].m[j][3],mp_[i].m[j][4],mp_[i].m[j][5],mp_[i].m[j][6]);

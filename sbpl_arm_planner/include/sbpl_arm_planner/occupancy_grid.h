@@ -33,6 +33,8 @@
 #include <ros/ros.h>
 #include <sbpl/config.h>
 #include <LinearMath/btTransform.h>
+#include <LinearMath/btVector3.h>
+#include <LinearMath/btTransform.h>
 #include <distance_field/distance_field.h>
 #include <distance_field/voxel_grid.h>
 #include <distance_field/propagation_distance_field.h>
