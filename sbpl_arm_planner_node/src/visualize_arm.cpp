@@ -802,12 +802,12 @@ void VisualizeArm::visualizePose(const geometry_msgs::Pose &pose, std::string te
   marker_array_publisher_.publish(marker_array_);
 }
 
-void VisualizeArm::visualizeSphere(std::vector<double> pose, int color, std::string text, double radius)
+void VisualizeArm::visualizeSphere(std::vector<double> pose, int hue, std::string text, double radius)
 {
   double r=0,g=0,b=0;
   visualization_msgs::Marker marker;
 
-  HSVtoRGB(&r, &g, &b, color, 1.0, 1.0);
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
 
   marker.header.stamp = ros::Time::now();
   marker.header.frame_id = reference_frame_;
@@ -830,16 +830,16 @@ void VisualizeArm::visualizeSphere(std::vector<double> pose, int color, std::str
   marker_publisher_.publish(marker);
 }
 
-void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pose, int color, std::string text, double radius)
+void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pose, int hue, std::string text, double radius)
 {
   double r=0,g=0,b=0;
   visualization_msgs::Marker marker;
 
-  HSVtoRGB(&r, &g, &b, color, 1.0, 1.0);
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
 
   marker.header.stamp = ros::Time::now();
   marker.header.frame_id = reference_frame_;
-  marker.ns = "spheres-" + text;
+  marker.ns = text;
   marker.type = visualization_msgs::Marker::SPHERE_LIST;
   marker.action = visualization_msgs::Marker::ADD;
   marker.scale.x = radius*2.0;
@@ -863,20 +863,20 @@ void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pos
   marker_publisher_.publish(marker);
 }
 
-void VisualizeArm::visualizeArmMeshes(double color_num, std::vector<geometry_msgs::PoseStamped> &poses)
+void VisualizeArm::visualizeArmMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses)
 {
   double r,g,b;
   marker_array_.markers.clear();
   marker_array_.markers.resize(pr2_arm_meshes_.size());
   ros::Time time = ros::Time::now();
 
-  HSVtoRGB(&r, &g, &b, color_num, 1.0, 1.0);
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
 
   for(int i = 0; i < (int)marker_array_.markers.size(); ++i)
   {
     marker_array_.markers[i].header.stamp = time;
     marker_array_.markers[i].header.frame_id = reference_frame_;
-    marker_array_.markers[i].ns = "arm_mesh_" + boost::lexical_cast<std::string>(color_num);
+    marker_array_.markers[i].ns = "arm_mesh_" + boost::lexical_cast<std::string>(hue);
     marker_array_.markers[i].type = visualization_msgs::Marker::MESH_RESOURCE;
     marker_array_.markers[i].id = i;
     marker_array_.markers[i].action = visualization_msgs::Marker::ADD;
@@ -917,19 +917,19 @@ void VisualizeArm::visualizeGripperConfiguration(double color_num, const std::ve
   visualizeGripperMeshes(color_num, poses);
 }
 
-void VisualizeArm::visualizeGripperMeshes(double color_num, std::vector<geometry_msgs::PoseStamped> &poses)
+void VisualizeArm::visualizeGripperMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses)
 {
   double r,g,b;
   marker_array_.markers.clear();
   marker_array_.markers.resize(pr2_gripper_meshes_.size());
 
-  HSVtoRGB(&r, &g, &b, color_num, 1.0, 1.0);
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
 
   for(int i = 0; i < (int)marker_array_.markers.size(); ++i)
   {
     marker_array_.markers[i].header.stamp = ros::Time::now();
     marker_array_.markers[i].header.frame_id = chain_root_name_;
-    marker_array_.markers[i].ns = "gripper_mesh_" + boost::lexical_cast<std::string>(color_num);
+    marker_array_.markers[i].ns = "gripper_mesh_" + boost::lexical_cast<std::string>(hue);
     marker_array_.markers[i].type = visualization_msgs::Marker::MESH_RESOURCE;
     marker_array_.markers[i].id = i;
     marker_array_.markers[i].action = visualization_msgs::Marker::ADD;
@@ -1034,43 +1034,43 @@ void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs
   visualizeCollisionModel(traj, cspace, throttle);
 }
 
-void VisualizeArm::visualize3DPath(std::vector<std::vector<double> > &dpath)
+void VisualizeArm::visualize3DPath(std::vector<std::vector<double> > &path, std::vector<double> &color, std::string text)
 {
-  if(dpath.empty())
+  if(path.empty())
   {
-    ROS_INFO("[visualizeShortestPath] The shortest path is empty.");
+    ROS_INFO("The 3D path is empty. Not visualizing anything.");
     return;
   }
   else
-    ROS_INFO("[visualizeShortestPath] There are %i waypoints in the shortest path.",int(dpath.size()));
+    ROS_INFO("There are %i waypoints in the 3D path.",int(path.size()));
 
   visualization_msgs::Marker obs_marker;
   obs_marker.header.frame_id = reference_frame_;
   obs_marker.header.stamp = ros::Time();
   obs_marker.header.seq = 0;
-  obs_marker.ns = "path";
+  obs_marker.ns = text;
   obs_marker.id = 0;
   obs_marker.type = visualization_msgs::Marker::SPHERE_LIST;
   obs_marker.action = 0;
   obs_marker.scale.x = 3*0.02;
   obs_marker.scale.y = 3*0.02;
   obs_marker.scale.z = 3*0.02;
-  obs_marker.color.r = 0.45;
-  obs_marker.color.g = 0.3;
-  obs_marker.color.b = 0.4;
-  obs_marker.color.a = 0.8;
+  obs_marker.color.r = color[0];
+  obs_marker.color.g = color[1];
+  obs_marker.color.b = color[2];
+  obs_marker.color.a = color[3];
   obs_marker.lifetime = ros::Duration(120.0);
 
-  obs_marker.points.resize(dpath.size());
+  obs_marker.points.resize(path.size());
 
-  for (int k = 0; k < int(dpath.size()); k++)
+  for (int k = 0; k < int(path.size()); k++)
   {
-    if(int(dpath[k].size()) < 3)
+    if(int(path[k].size()) < 3)
       continue;
 
-    obs_marker.points[k].x = dpath[k][0];
-    obs_marker.points[k].y = dpath[k][1];
-    obs_marker.points[k].z = dpath[k][2];
+    obs_marker.points[k].x = path[k][0];
+    obs_marker.points[k].y = path[k][1];
+    obs_marker.points[k].z = path[k][2];
   }
 
   marker_publisher_.publish(obs_marker);
@@ -1083,10 +1083,7 @@ void VisualizeArm::visualizeBasicStates(const std::vector<std::vector<double> > 
   
   //check if the list is empty
   if(states.empty())
-  {
-    ROS_DEBUG("[visualizeBasicStates] There are no states in the %s states list.", name.c_str());
-    return;
-  }
+    ROS_DEBUG("[visualizeBasicStates] There are no states in the %s states list. Publishing an empty message.", name.c_str());
 
   //if there are too many states, rviz will crash and burn when drawing
   if(states.size() > 50000)
@@ -1200,6 +1197,37 @@ void VisualizeArm::visualizeDetailedStates(const std::vector<std::vector<double>
   
   ROS_DEBUG("[visualizeDetailedStates] published %d markers for %s states", (int)marker_array.markers.size(), name.c_str());
   marker_array_publisher_.publish(marker_array);
+}
+
+void VisualizeArm::visualizeLine(const std::vector<geometry_msgs::Point> points, std::string ns, int id, int hue, double thickness)
+{
+  double r=0,g=0,b=0;
+  visualization_msgs::Marker marker;
+
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
+
+  marker.header.stamp = ros::Time::now();
+  marker.header.frame_id = reference_frame_;
+  marker.ns = ns;
+  marker.id = id;
+  marker.type = visualization_msgs::Marker::LINE_STRIP;
+  marker.action = visualization_msgs::Marker::ADD;
+  marker.points = points;
+  marker.scale.x = thickness;
+  marker.scale.y = thickness;
+  marker.scale.z = thickness;
+  
+  for(size_t i = 0; i < points.size(); ++i)
+  {
+    marker.colors[i].r = r;
+    marker.colors[i].g = g;
+    marker.colors[i].b = b;
+    marker.colors[i].a = 0.5;
+  }
+
+  marker.lifetime = ros::Duration(120.0);
+
+  marker_publisher_.publish(marker);
 }
 
 /*

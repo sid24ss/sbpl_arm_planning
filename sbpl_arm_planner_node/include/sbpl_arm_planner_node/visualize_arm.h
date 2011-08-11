@@ -69,7 +69,7 @@ class VisualizeArm
     void visualizeArmConfiguration(double color_num, const std::vector<double> &jnt_pos);
 
     /* \brief visualize the arm of the pr2 in specified color (color: 1-360) */
-    void visualizeArmMeshes(double color_num, std::vector<geometry_msgs::PoseStamped> &poses);
+    void visualizeArmMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses);
 
     /* \brief visualize a pose (sphere, arrow, string of text) */
     void visualizePose(const std::vector<double> &pose, std::string text);
@@ -88,7 +88,7 @@ class VisualizeArm
     /* \brief visualize cuboids */
     void visualizeObstacles(const std::vector<std::vector<double> > &obstacles);
    
-    void visualize3DPath(std::vector<std::vector<double> > &dpath);
+    void visualize3DPath(std::vector<std::vector<double> > &path, std::vector<double> &color, std::string text);
 
     /* \brief parse a CSV file - note: no comma at end of last line! */
     bool parseCSVFile(std::string filename, int num_cols, std::vector<std::vector<double> > &data);
@@ -120,7 +120,7 @@ class VisualizeArm
     void visualizeGripperConfiguration(double color_num, const std::vector<double> &jnt_pos);
 
     /* \brief display the gripper meshes (called by visualizeGripperConfiguration) */
-    void visualizeGripperMeshes(double color_num, std::vector<geometry_msgs::PoseStamped> &poses);
+    void visualizeGripperMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses);
 
     /* \brief display a list of states (xyz coordinates) (intended for use with sbpl) */
     void visualizeBasicStates(const std::vector<std::vector<double> > &states, const std::vector<double> &color, std::string name, double size);
@@ -129,13 +129,14 @@ class VisualizeArm
     void visualizeDetailedStates(const std::vector<std::vector<double> > &states, const std::vector<std::vector<double> >&color, std::string name, double size);
 
     /* \brief display a sphere */
-    void visualizeSphere(std::vector<double> pose, int color, std::string text, double radius);
+    void visualizeSphere(std::vector<double> pose, int hue, std::string text, double radius);
     
     /* \brief display a list of spheres of the same radius and color */
-    void visualizeSpheres(const std::vector<std::vector<double> > &pose, int color, std::string text, double radius);
-
+    void visualizeSpheres(const std::vector<std::vector<double> > &pose, int hue, std::string text, double radius);
 
     void visualizeAttachedObject(const std::vector<double> angles);
+
+    void visualizeLine(const std::vector<geometry_msgs::Point> points, std::string ns, int id, int hue, double thickness);
 
     /* DOESN'T WORK */
     //void clearAllVisualizations();
