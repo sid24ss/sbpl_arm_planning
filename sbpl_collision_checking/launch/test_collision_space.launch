@@ -1,6 +1,6 @@
 <launch>
 
-  <node pkg="topic_tools" type="throttle" name="throttle_joint_states" args="messages joint_states 10.0" />
+  <node pkg="topic_tools" type="throttle" name="throttle_joint_states" args="messages joint_states 20.0" />
 
   <node pkg="sbpl_collision_checking" type="testCollisionSpace" name="test_collision_space" output="screen" respawn="false" >
 

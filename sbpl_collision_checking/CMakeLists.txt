@@ -25,6 +25,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_library(sbpl_collision_checking src/sbpl_collision_model.cpp src/sbpl_collision_space.cpp)
+target_link_libraries(sbpl_collision_checking sbpl_arm_planner)
 
 rosbuild_add_executable(testCollisionSpace src/test_sbpl_collision_space.cpp)
 target_link_libraries(testCollisionSpace sbpl_collision_checking sbpl_arm_planner_node)

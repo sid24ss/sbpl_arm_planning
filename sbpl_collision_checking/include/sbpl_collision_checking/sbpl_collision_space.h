@@ -45,10 +45,13 @@
 
 using namespace std;
 
-#ifndef _SBPL_COLLISION_SPACE_
-#define _SBPL_COLLISION_SPACE_
+#ifndef _NEW_SBPL_COLLISION_SPACE_
+#define _NEW_SBPL_COLLISION_SPACE_
 
 /** @brief coords - used to pass around lists of valid cells */
+namespace sbpl_collision_checking
+{
+
 typedef struct
 {
   short unsigned int x;
@@ -57,9 +60,6 @@ typedef struct
   bool bIsObstacle;
 } CELL3V;
 
-namespace sbpl_arm_planner
-{
-
 class SBPLCollisionSpace
 {
   public:
@@ -67,7 +67,7 @@ class SBPLCollisionSpace
      * @param a pointer to the arm object used for planning
      * @param a pointer to an occupancy grid used for planning
     */
-    SBPLCollisionSpace(OccupancyGrid* grid);
+    SBPLCollisionSpace(sbpl_arm_planner::OccupancyGrid* grid);
 
     /** \brief destructor */
     ~SBPLCollisionSpace(){};
@@ -151,13 +151,13 @@ class SBPLCollisionSpace
 
     void setJointPosition(std::string name, double position);
 
-    sbpl_arm_planner::Sphere collision_sphere_;
+    std::vector<sbpl_collision_checking::Sphere> collision_spheres_;
 
   private:
 
     /** NEW **/
 
-    SBPLCollisionModel model_;
+    sbpl_collision_checking::SBPLCollisionModel model_;
 
     double resolution_;
 
@@ -180,7 +180,7 @@ class SBPLCollisionSpace
     std::string attached_object_frame_;
 
     /** @brief occupancy grid used by planner */
-    OccupancyGrid* grid_;
+    sbpl_arm_planner::OccupancyGrid* grid_;
 
     /** @brief the file for dumping debug output */
     FILE* fOut_;

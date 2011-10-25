@@ -103,8 +103,6 @@ class TestSBPLCollisionSpace
     std::string reference_frame_;
     std::string map_frame_;
     std::string arm_name_;
-    std::string left_arm_description_filename_;
-    std::string right_arm_description_filename_;
     std::vector<std::string> ljoint_names_;
     std::vector<std::string> rjoint_names_;
     std::map<std::string, mapping_msgs::CollisionObject> object_map_;
@@ -116,7 +114,7 @@ class TestSBPLCollisionSpace
 
     /* planner & environment */
     double resolution_;
-    sbpl_arm_planner::SBPLCollisionSpace* cspace_;
+    sbpl_collision_checking::SBPLCollisionSpace* cspace_;
     sbpl_arm_planner::OccupancyGrid* grid_;
     sbpl_arm_planner::VisualizeArm* laviz_;
     sbpl_arm_planner::VisualizeArm* raviz_;

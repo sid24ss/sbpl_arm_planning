@@ -33,9 +33,9 @@
 
 #define SMALL_NUM  0.00000001     // to avoid division overflow
 
-namespace sbpl_arm_planner {
+namespace sbpl_collision_checking {
 
-SBPLCollisionSpace::SBPLCollisionSpace(OccupancyGrid* grid)
+SBPLCollisionSpace::SBPLCollisionSpace(sbpl_arm_planner::OccupancyGrid* grid)
 {
   grid_ = grid;
   fOut_ = stdout;
@@ -102,8 +102,11 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
   unsigned char dist_temp=100;
   dist = 100;
   KDL::Vector v;
+  Sphere s;
   int x,y,z;
+  bool in_collision = false;
 
+  ROS_DEBUG("[cspace] Computing FK...");
   // compute foward kinematics
   if(!model_.computeDefaultGroupFK(angles, frames_))
   {
@@ -111,6 +114,9 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
     return false;
   }
 
+  collision_spheres_.clear(); // just for demo
+
+  ROS_DEBUG("[cspace] Checking spheres...");
   // transform the spheres into their new positions, check collisions
   for(size_t i = 0; i < spheres_.size(); ++i)
   {
@@ -134,9 +140,13 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
     if((dist_temp = grid_->getCell(x,y,z)) <= int((spheres_[i]->radius + padding_) / grid_->getResolution() + 0.5))
     {
       dist = dist_temp;
-      collision_sphere_ = *(spheres_[i]);   // for debugging only
-      collision_sphere_.v = v;
-      return false;
+
+      // for collision space demo only - remove 
+      in_collision = true;
+      s = *(spheres_[i]); 
+      s.v = v;
+      collision_spheres_.push_back(s);
+      //return false;
     }
 
     ROS_DEBUG("x: %d y: %d z: %d radius: %0.3f (%d)  dist: %d (dist_min: %d)", x, y, z, spheres_[i]->radius,  int(spheres_[i]->radius / grid_->getResolution() + 0.5), grid_->getCell(x,y,z), int(dist));
@@ -153,6 +163,10 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
 
   if(object_attached_ && dist_temp < dist)
       dist = dist_temp;
+
+  // temporarily just for debugging
+  if(in_collision)
+    return false;
 
   return true;
 }

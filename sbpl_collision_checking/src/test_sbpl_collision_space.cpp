@@ -60,8 +60,6 @@ TestSBPLCollisionSpace::~TestSBPLCollisionSpace()
 bool TestSBPLCollisionSpace::init()
 {
   //planner
-  node_handle_.param<std::string>("planner/left_arm_description_file", left_arm_description_filename_, "");
-  node_handle_.param<std::string>("planner/right_arm_description_file", right_arm_description_filename_, "");
   node_handle_.param<std::string>("reference_frame", reference_frame_, std::string("base_footprint"));
   node_handle_.param<std::string>("left_fk_service_name", left_fk_service_name_, "pr2_left_arm_kinematics/get_fk");
   node_handle_.param<std::string>("left_ik_service_name", left_ik_service_name_, "pr2_left_arm_kinematics/get_ik");
@@ -104,10 +102,10 @@ bool TestSBPLCollisionSpace::init()
   resolution_ = 0.01;
 
   ROS_INFO("[test] Creating the grid.");
-  grid_ = new sbpl_arm_planner::OccupancyGrid(2.0, 2.0, 2.4, resolution_, -0.5, -0.8, -0.05);
+  grid_ = new sbpl_arm_planner::OccupancyGrid(1.8, 1.4, 1.8, resolution_, -0.5, -0.85, 0.00);
   
   ROS_INFO("[test] Creating the collision space."); 
-  cspace_ = new sbpl_arm_planner::SBPLCollisionSpace(grid_);
+  cspace_ = new sbpl_collision_checking::SBPLCollisionSpace(grid_);
 
   ROS_INFO("[test] Initializing the collision space for the right_arm.");
   cspace_->init("right_arm");
@@ -121,8 +119,8 @@ bool TestSBPLCollisionSpace::init()
   collision_map_filter_->registerCallback(boost::bind(&TestSBPLCollisionSpace::collisionMapCallback, this, _1));
 
   joint_states_subscriber_ = root_handle_.subscribe("joint_states", 1, &TestSBPLCollisionSpace::jointStatesCallback,this);
-  ROS_INFO("Initialization complete.");
 
+  ROS_INFO("[test] Initialization complete.");
   return true;
 }
 
@@ -138,18 +136,18 @@ void TestSBPLCollisionSpace::jointStatesCallback(const sensor_msgs::JointStateCo
   double dist_m;
   unsigned char dist = 100;
 
-  //laviz_->deleteVisualizations("text", 2);
-  //laviz_->deleteVisualizations("left_arm_model_0", 70);
+  ROS_DEBUG("[test] joint_states callback");
+
   //raviz_->deleteVisualizations("right_arm_model_0", 70);
-  raviz_->deleteVisualizations("collision-sphere", 2);
+  raviz_->deleteVisualizations("collision", 10);
 
   geometry_msgs::Pose pose;
   pose.position.x = 0.0;
   pose.position.y = 0.0;
   pose.position.z = 1.6;
 
-  if(colmap_mutex_.try_lock())
-  {
+  //if(colmap_mutex_.try_lock())
+  //{
     rangles_[0] = state->position[17];
     rangles_[1] = state->position[18];
     rangles_[2] = state->position[16];
@@ -166,6 +164,8 @@ void TestSBPLCollisionSpace::jointStatesCallback(const sensor_msgs::JointStateCo
     langles_[5] = state->position[33];
     langles_[6] = state->position[34];
 
+    ROS_DEBUG("[test] joint_states callback - setting joint positions");
+
     // torso_lift_link
     cspace_->setJointPosition(state->name[12], state->position[12]);
     
@@ -174,11 +174,13 @@ void TestSBPLCollisionSpace::jointStatesCallback(const sensor_msgs::JointStateCo
     
     // r_gripper_r_finger_link
     cspace_->setJointPosition(state->name[25], state->position[25]);
+  
+    ROS_DEBUG("[test] joint_states callback - checking for collisions");
 
     if(!cspace_->checkCollision(rangles_, true, false, dist))
     {
       dist_m = double(int(dist)*resolution_);
-      ROS_INFO("dist = %0.3fm (%d cells)  COLLISION", dist_m, int(dist));
+      ROS_INFO("dist = %0.3fm  COLLISION (%d spheres)", dist_m, int(cspace_->collision_spheres_.size()));
       in_collision = true;
       //printf("%s\n", cspace_->code_.c_str());
       //raviz_->visualizeText(pose, cspace_->code_, "text",0,320);
@@ -186,28 +188,33 @@ void TestSBPLCollisionSpace::jointStatesCallback(const sensor_msgs::JointStateCo
     else
     {
       dist_m = double(int(dist)*resolution_);
-      ROS_INFO("dist = %0.3fm (%d cells)", dist_m, int(dist));
+      ROS_INFO("dist = %0.3fm", dist_m);
       //raviz_->visualizeText(pose, "No Collision", "text",0,100);
     }
-    colmap_mutex_.unlock();
+  /*  colmap_mutex_.unlock();
   }
   else
     ROS_INFO("couldn't get the colmap mutex");
-
-  std::vector<std::vector<double> > path(1,std::vector<double> (7,0));
-  //path[0] = langles_;
-  //laviz_->visualizeCollisionModel(path, *lcspace_, 1);
+  */
+  ROS_DEBUG("[test] joint_states callback - visualizing");
+  std::vector<std::vector<double> > path(1,std::vector<double> (7,0)), rspheres;
   path[0] = rangles_;
-  raviz_->visualizeCollisionModel(path, *cspace_, 1, 140);
+  cspace_->getCollisionCylinders(rangles_, rspheres);
+  raviz_->visualizeSpheres(rspheres, 140, 0.8, "right_arm_spheres");
 
   if(in_collision)
   {
-    std::vector<double> csphere(3,0);
-    csphere[0] = cspace_->collision_sphere_.v.x();
-    csphere[1] = cspace_->collision_sphere_.v.y();
-    csphere[2] = cspace_->collision_sphere_.v.z();
-    raviz_->visualizeSphere(csphere, 260, "collision", cspace_->collision_sphere_.radius+0.008);
+    std::vector<std::vector<double> > csphere(cspace_->collision_spheres_.size(),std::vector<double> (4,0));
+    for(size_t i = 0; i < cspace_->collision_spheres_.size(); ++i)
+    {
+      csphere[i][0] = cspace_->collision_spheres_[i].v.x();
+      csphere[i][1] = cspace_->collision_spheres_[i].v.y();
+      csphere[i][2] = cspace_->collision_spheres_[i].v.z();
+      csphere[i][3] = cspace_->collision_spheres_[i].radius + 0.004;
+    }
+    raviz_->visualizeSpheres(csphere, 260, 1.0, "collision");
   }
+  ROS_DEBUG("[test] joint_states callback done");
 }
 
 void TestSBPLCollisionSpace::collisionMapCallback(const mapping_msgs::CollisionMapConstPtr &collision_map)
@@ -219,6 +226,7 @@ void TestSBPLCollisionSpace::updateMapFromCollisionMap(const mapping_msgs::Colli
 {
   ROS_DEBUG("map callback");
 
+  /*
   ROS_DEBUG("[updateMapFromCollisionMap] trying to get colmap_mutex_");
   if(colmap_mutex_.try_lock())
   {
@@ -229,7 +237,7 @@ void TestSBPLCollisionSpace::updateMapFromCollisionMap(const mapping_msgs::Colli
       ROS_WARN("collision_map_occ is in %s not in %s", collision_map->header.frame_id.c_str(), reference_frame_.c_str());
       ROS_DEBUG("the collision map has %i cubic obstacles", int(collision_map->boxes.size()));
     }
-
+  */
     // add collision map msg
     grid_->updateFromCollisionMap(*collision_map);
 
@@ -238,13 +246,13 @@ void TestSBPLCollisionSpace::updateMapFromCollisionMap(const mapping_msgs::Colli
   
     cspace_->putCollisionObjectsInGrid();
 
-    map_frame_ = collision_map->header.frame_id; 
-
-    colmap_mutex_.unlock();
-    ROS_DEBUG("[updateMapFromCollisionMap] released colmap_mutex_ mutex.");
+    //map_frame_ = collision_map->header.frame_id; 
+    
+    //colmap_mutex_.unlock();
+    //ROS_DEBUG("[updateMapFromCollisionMap] released colmap_mutex_ mutex.");
 
     //visualizeCollisionObjects();
-
+  /*
     grid_->visualize();
     return;
   }
@@ -253,7 +261,8 @@ void TestSBPLCollisionSpace::updateMapFromCollisionMap(const mapping_msgs::Colli
     ROS_DEBUG("[updateMapFromCollisionMap] failed trying to get colmap_mutex_ mutex");
     return;
   }
-  ROS_DEBUG("leaving map callback");
+  */
+  ROS_INFO("leaving map callback");
 }
 
 void TestSBPLCollisionSpace::collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object)
