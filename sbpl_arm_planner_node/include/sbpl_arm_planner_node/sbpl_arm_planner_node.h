@@ -46,6 +46,7 @@
 #include <kdl/chainjnttojacsolver.hpp>
 #include <angles/angles.h>
 #include <sbpl_arm_planner_node/visualize_arm.h>
+#include <sbpl_arm_planner/robarm3d/environment_robarm3d.h>
 
 /** Messages **/
 #include <geometry_msgs/Pose.h>

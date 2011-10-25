@@ -57,9 +57,10 @@ void HSVtoRGB( double *r, double *g, double *b, double h, double s, double v )
 VisualizeArm::VisualizeArm(std::string arm_name) : ph_("~"), arm_name_(arm_name)
 {
   num_joints_ = 7;
-  reference_frame_ = "torso_lift_link";
+  reference_frame_ = "base_footprint";
   chain_root_name_ = "torso_lift_link";
   chain_tip_name_ = "_gripper_r_finger_tip_link";
+  chain2_tip_name_ = "_gripper_l_finger_tip_link";
 
   srand (time(NULL));
 
@@ -99,6 +100,7 @@ VisualizeArm::VisualizeArm(std::string arm_name) : ph_("~"), arm_name_(arm_name)
   fk_service_name_ = "pr2_" + side_full_ + "_arm_kinematics/get_fk";
   ik_service_name_ = "pr2_" + side_full_ + "_arm_kinematics/get_ik";
   chain_tip_name_ = side_ + chain_tip_name_;
+  chain2_tip_name_ = side_ + chain2_tip_name_;
 
   // arm meshes
   pr2_arm_meshes_.push_back("package://pr2_description/meshes/shoulder_v0/shoulder_yaw.stl");
@@ -127,7 +129,7 @@ VisualizeArm::VisualizeArm(std::string arm_name) : ph_("~"), arm_name_(arm_name)
     ROS_INFO("Waiting for the joint_trajectory_action server");
 */
   marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 500);
-  marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 500);
+  marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
   display_trajectory_publisher_ = nh_.advertise<motion_planning_msgs::DisplayTrajectory>("arm_viz", 200);
 }
 
@@ -401,8 +403,8 @@ bool VisualizeArm::computeFKforVisualization(const std::vector<double> &jnt_pos,
   request.fk_link_names.push_back(link_names_[6]);
   request.fk_link_names.push_back(link_names_[6]);
 
-  ros::service::waitForService("pr2_right_arm_kinematics/get_fk");
-  ros::ServiceClient client = nh_.serviceClient<kinematics_msgs::GetPositionFK>("pr2_right_arm_kinematics/get_fk");
+  ros::service::waitForService(fk_service_name_);
+  ros::ServiceClient client = nh_.serviceClient<kinematics_msgs::GetPositionFK>(fk_service_name_);
 
   ROS_DEBUG("[computeFKforVisualization] about to call service...");
   if(client.call(request, response))
@@ -464,7 +466,7 @@ bool VisualizeArm::initKDLChain()
   ROS_DEBUG("[initKDLChain] the arm chain has %d segments with %d joints", chain_.getNrOfSegments(), chain_.getNrOfJoints());
 
   //added 7/4/2010
-  if (!kdl_tree_.getChain(chain_root_name_, "r_gripper_l_finger_tip_link", gripper_l_chain_))
+  if (!kdl_tree_.getChain(chain_root_name_, chain2_tip_name_, gripper_l_chain_))
   {
     printf("Error: could not fetch the KDL chain for the desired manipulator. Exiting.\n"); 
     return false;
@@ -587,7 +589,7 @@ void VisualizeArm::visualizeTrajectoryFile(std::string filename, int throttle)
 {
   std::vector<std::vector<double> > traj;
   if(!parseCSVFile(filename, num_joints_, traj))
-    printf("[visualizeTrajectoryFile] Parsing %s failed.\n",filename.c_str());
+    printf("[aviz] Parsing %s failed.\n",filename.c_str());
 
   visualizeArmConfigurations(traj,throttle);
 }
@@ -610,7 +612,7 @@ void VisualizeArm::visualizeJointTrajectoryMsg(trajectory_msgs::JointTrajectory 
       traj[i][j] = traj_msg.points[i].positions[j];
   }
 
-  ROS_INFO("[visualizeJointTrajectoryMsg] Visualizing trajectory of length %d with the throttle set to %d.",int(traj.size()),throttle);
+  ROS_INFO("[aviz] Visualizing trajectory of length %d with the throttle set to %d.",int(traj.size()),throttle);
 
   visualizeArmConfigurations(traj,throttle);
 }
@@ -863,12 +865,45 @@ void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pos
   marker_publisher_.publish(marker);
 }
 
+void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pose, int color, std::string text, std::vector<double> &radius)
+{
+  double r=0,g=0,b=0;
+  visualization_msgs::Marker marker;
+
+  HSVtoRGB(&r, &g, &b, color, 1.0, 1.0);
+
+  for(size_t i = 0; i < pose.size(); ++i)
+  {
+    marker.header.stamp = ros::Time::now();
+    marker.header.frame_id = reference_frame_;
+    marker.ns = text;
+    marker.type = visualization_msgs::Marker::SPHERE;
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.scale.x = radius[i]*2.0;
+    marker.scale.y = radius[i]*2.0;
+    marker.scale.z = radius[i]*2.0;
+    marker.color.r = r;
+    marker.color.g = g;
+    marker.color.b = b;
+    marker.color.a = 0.6;
+    marker.lifetime = ros::Duration(180.0);
+    marker.id = i;
+
+    marker.pose.position.x = pose[i][0];
+    marker.pose.position.y = pose[i][1];
+    marker.pose.position.z = pose[i][2];
+
+    marker_publisher_.publish(marker);
+    usleep(100);
+  }
+}
+
 void VisualizeArm::visualizeArmMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses)
 {
   double r,g,b;
   marker_array_.markers.clear();
   marker_array_.markers.resize(pr2_arm_meshes_.size());
-  ros::Time time = ros::Time::now();
+  ros::Time time = ros::Time();
 
   HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
 
@@ -876,7 +911,7 @@ void VisualizeArm::visualizeArmMeshes(double hue, std::vector<geometry_msgs::Pos
   {
     marker_array_.markers[i].header.stamp = time;
     marker_array_.markers[i].header.frame_id = reference_frame_;
-    marker_array_.markers[i].ns = "arm_mesh_" + boost::lexical_cast<std::string>(hue);
+    marker_array_.markers[i].ns = side_full_ + "_arm_" + boost::lexical_cast<std::string>(hue);
     marker_array_.markers[i].type = visualization_msgs::Marker::MESH_RESOURCE;
     marker_array_.markers[i].id = i;
     marker_array_.markers[i].action = visualization_msgs::Marker::ADD;
@@ -902,17 +937,23 @@ void VisualizeArm::visualizeGripperConfiguration(double color_num, const std::ve
 
   poses.resize(4);
 
+  //HACK: Trying to make sure the gripper is always closed
+  std::vector<double> jnt_pos2(jnt_pos);
+  jnt_pos2.push_back(0.0);
+  jnt_pos2.push_back(0.0);
+  jnt_pos2.push_back(0.0);
+
   //r_upper_finger
-  computeFKwithKDL(jnt_pos,11,poses[0].pose);
+  computeFKwithKDL(jnt_pos2,11,poses[0].pose);
 
   //r_gripper_finger_tip_r
-  computeFKwithKDL(jnt_pos,12,poses[1].pose);
+  computeFKwithKDL(jnt_pos2,12,poses[1].pose);
 
   //l_upper_finger
-  computeFKwithKDL(jnt_pos,-11,poses[2].pose);
+  computeFKwithKDL(jnt_pos2,-11,poses[2].pose);
 
   //r_gripper_finger_tip_l
-  computeFKwithKDL(jnt_pos,-12,poses[3].pose);
+  computeFKwithKDL(jnt_pos2,-12,poses[3].pose);
 
   visualizeGripperMeshes(color_num, poses);
 }
@@ -929,7 +970,7 @@ void VisualizeArm::visualizeGripperMeshes(double hue, std::vector<geometry_msgs:
   {
     marker_array_.markers[i].header.stamp = ros::Time::now();
     marker_array_.markers[i].header.frame_id = chain_root_name_;
-    marker_array_.markers[i].ns = "gripper_mesh_" + boost::lexical_cast<std::string>(hue);
+    marker_array_.markers[i].ns = side_full_ + "_gripper_" + boost::lexical_cast<std::string>(hue);
     marker_array_.markers[i].type = visualization_msgs::Marker::MESH_RESOURCE;
     marker_array_.markers[i].id = i;
     marker_array_.markers[i].action = visualization_msgs::Marker::ADD;
@@ -984,7 +1025,7 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
     {
       marker_array.markers[j].header.frame_id = reference_frame_;
       marker_array.markers[j].header.stamp = ros::Time::now();
-      marker_array.markers[j].ns = "arm_collision_model_" + boost::lexical_cast<std::string>(i);
+      marker_array.markers[j].ns = side_full_ + "_arm_model_" + boost::lexical_cast<std::string>(i);
       marker_array.markers[j].id = j;
       marker_array.markers[j].type = visualization_msgs::Marker::SPHERE;
       marker_array.markers[j].action =  visualization_msgs::Marker::ADD;
@@ -1009,6 +1050,75 @@ void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double>
     if(cylinders.size() > 0)
       marker_array_publisher_.publish(marker_array);
   }
+}
+
+void VisualizeArm::visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle, int hue)
+{
+  std::vector<std::vector<double> > cylinders;
+  visualization_msgs::MarkerArray marker_array;
+  double r,g,b;
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
+
+  for(int i = 0; i < int(path.size()); ++i)
+  {
+    if(i % throttle != 0)
+    {
+      if(i != 0 && i != int(path.size())-1)
+        continue;
+    }
+  
+    cylinders.resize(0);
+    if(!cspace.getCollisionCylinders(path[i], cylinders))
+      ROS_WARN("[visualizeCollisionModel] Cannot display arm collision model.");
+
+    ROS_DEBUG("[visualizeCollisionModel] waypoint #%d contains %d cylinders.", i, (int)cylinders.size());
+    marker_array.markers.resize(cylinders.size());
+
+    for(int j = 0; j < int(cylinders.size()); ++j)
+    {
+      marker_array.markers[j].header.frame_id = reference_frame_;
+      marker_array.markers[j].header.stamp = ros::Time::now();
+      marker_array.markers[j].ns = side_full_ + "_arm_model_" + boost::lexical_cast<std::string>(i);
+      marker_array.markers[j].id = j;
+      marker_array.markers[j].type = visualization_msgs::Marker::SPHERE;
+      marker_array.markers[j].action =  visualization_msgs::Marker::ADD;
+      marker_array.markers[j].scale.x = cylinders[j][3] * 2;
+      marker_array.markers[j].scale.y = cylinders[j][3] * 2;
+      marker_array.markers[j].scale.z = cylinders[j][3] * 2;
+      
+
+      marker_array.markers[j].color.r = r;
+      marker_array.markers[j].color.g = g;
+      marker_array.markers[j].color.b = b;
+      marker_array.markers[j].color.a = 0.9;
+      marker_array.markers[j].lifetime = ros::Duration(360.0);
+
+      marker_array.markers[j].pose.position.x = cylinders[j][0];
+      marker_array.markers[j].pose.position.y = cylinders[j][1];
+      marker_array.markers[j].pose.position.z = cylinders[j][2];
+
+      ROS_DEBUG("[visualizeCollisionModel]           center: %0.3f %0.3f %0.3f radius: %0.3fm", cylinders[j][0], cylinders[j][1], cylinders[j][2],cylinders[j][3]);
+    }
+    
+    if(cylinders.size() > 0)
+      marker_array_publisher_.publish(marker_array);
+  }
+}
+
+void VisualizeArm::deleteVisualizations(std::string ns, int max_id)
+{
+  marker_array_.markers.clear();
+  marker_array_.markers.resize(max_id);
+
+  for(int j = 0; j < max_id; j++)
+  {
+    marker_array_.markers[j].header.stamp = ros::Time::now();
+    marker_array_.markers[j].header.frame_id = reference_frame_;
+    marker_array_.markers[j].ns = ns;
+    marker_array_.markers[j].action = visualization_msgs::Marker::DELETE;
+    marker_array_.markers[j].id = j;
+  }
+  marker_array_publisher_.publish(marker_array_);
 }
 
 void VisualizeArm::visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle)
@@ -1083,7 +1193,10 @@ void VisualizeArm::visualizeBasicStates(const std::vector<std::vector<double> > 
   
   //check if the list is empty
   if(states.empty())
-    ROS_DEBUG("[visualizeBasicStates] There are no states in the %s states list. Publishing an empty message.", name.c_str());
+  {
+    ROS_DEBUG("[aviz] There are no states in the %s states list.", name.c_str());
+    return;
+  }
 
   //if there are too many states, rviz will crash and burn when drawing
   if(states.size() > 50000)
@@ -1110,7 +1223,7 @@ void VisualizeArm::visualizeBasicStates(const std::vector<std::vector<double> > 
   marker.color.g = color[1];
   marker.color.b = color[2];
   marker.color.a = color[3];
-  marker.lifetime = ros::Duration(120.0);
+  marker.lifetime = ros::Duration(360.0);
 
   unsigned int m_ind = 0;
   for(unsigned int i = 0; i < states.size(); i=i+inc)
@@ -1137,21 +1250,21 @@ void VisualizeArm::visualizeDetailedStates(const std::vector<std::vector<double>
   //check if the list is empty
   if(states.empty())
   {
-    ROS_INFO("[visualizeDetailedStates] There are no states in the %s states list", name.c_str());
+    ROS_INFO("[aviz] There are no states in the %s states list", name.c_str());
     return;
   } 
   else
-    ROS_INFO("[visualizeDetailedStates] There are %i states in the %s states list.",int(states.size()),name.c_str());
+    ROS_INFO("[aviz] There are %i states in the %s states list.",int(states.size()),name.c_str());
     
   if(color.size()<2)
   {
-    ROS_INFO("[visualizeDetailedStates] Not enough colors specified.");
+    ROS_INFO("[aviz] Not enough colors specified.");
     return;
   } 
   
   if(color[0].size() < 4 || color[1].size() < 4)
   {
-    ROS_INFO("[visualizeDetailedStates] RGBA must be specified for each color.");
+    ROS_INFO("[aviz] RGBA must be specified for each color.");
     return;
   } 
   
@@ -1186,7 +1299,7 @@ void VisualizeArm::visualizeDetailedStates(const std::vector<std::vector<double>
     marker_array.markers[mind].color.g = scaled_color[1];
     marker_array.markers[mind].color.b = scaled_color[2];
     marker_array.markers[mind].color.a = 1;
-    marker_array.markers[mind].lifetime = ros::Duration(90.0);
+    marker_array.markers[mind].lifetime = ros::Duration(180.0);
     
     marker_array.markers[mind].pose.position.x = states[i][0];
     marker_array.markers[mind].pose.position.y = states[i][1];
@@ -1195,7 +1308,7 @@ void VisualizeArm::visualizeDetailedStates(const std::vector<std::vector<double>
     ++mind;
   } 
   
-  ROS_DEBUG("[visualizeDetailedStates] published %d markers for %s states", (int)marker_array.markers.size(), name.c_str());
+  ROS_DEBUG("[aviz] published %d markers for %s states", (int)marker_array.markers.size(), name.c_str());
   marker_array_publisher_.publish(marker_array);
 }
 
@@ -1214,18 +1327,107 @@ void VisualizeArm::visualizeLine(const std::vector<geometry_msgs::Point> points,
   marker.action = visualization_msgs::Marker::ADD;
   marker.points = points;
   marker.scale.x = thickness;
-  marker.scale.y = thickness;
-  marker.scale.z = thickness;
+  marker.pose.position.x = 0.0;
+  marker.pose.position.y = 0.0;
+  marker.pose.position.z = 0.0;
   
-  for(size_t i = 0; i < points.size(); ++i)
+  marker.color.r = r;
+  marker.color.g = g;
+  marker.color.b = b;
+  marker.color.a = 0.5;
+  marker.lifetime = ros::Duration(180.0);
+
+  ROS_INFO("Visualizing a line with %d points", int(points.size()));
+  marker_publisher_.publish(marker);
+}
+
+void VisualizeArm::visualizeText(geometry_msgs::Pose pose, std::string text, std::string ns, int id, int hue)
+{
+  double r=0,g=0,b=0;
+  visualization_msgs::Marker marker;
+
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
+
+  marker.header.stamp = ros::Time::now();
+  marker.header.frame_id = reference_frame_;
+  marker.ns = ns;
+  marker.id = id;
+  marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+  marker.action = visualization_msgs::Marker::ADD;
+  marker.scale.x = 0.2;
+  marker.scale.y = 0.2;
+  marker.scale.z = 0.2;
+  marker.pose = pose;
+  
+  marker.color.r = r;
+  marker.color.g = g;
+  marker.color.b = b;
+  marker.color.a = 1.0;
+  marker.text = text;
+  marker.lifetime = ros::Duration(10.0);
+
+  marker_publisher_.publish(marker);
+}
+
+void VisualizeArm::visualizeText(geometry_msgs::Pose pose, std::string text, std::string ns, int id, std::vector<double> color, double size)
+{
+  visualization_msgs::Marker marker;
+
+  if(color.size() < 4)
+    color.resize(4,1);
+
+  marker.header.stamp = ros::Time::now();
+  marker.header.frame_id = reference_frame_;
+  marker.ns = ns;
+  marker.id = id;
+  marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+  marker.action = visualization_msgs::Marker::ADD;
+  marker.scale.x = size;
+  marker.scale.y = size;
+  marker.scale.z = size;
+  marker.pose = pose;
+  
+  marker.color.r = color[0];
+  marker.color.g = color[1];
+  marker.color.b = color[2];
+  marker.color.a = color[3];
+  marker.text = text;
+  marker.lifetime = ros::Duration(360.0);
+
+  marker_publisher_.publish(marker);
+}
+
+void VisualizeArm::visualizeCube(geometry_msgs::PoseStamped pose, int color, std::string ns, int id, std::vector<double> dim)
+{
+  double r=0,g=0,b=0;
+  visualization_msgs::Marker marker;
+
+  if(dim.size() < 3)
   {
-    marker.colors[i].r = r;
-    marker.colors[i].g = g;
-    marker.colors[i].b = b;
-    marker.colors[i].a = 0.5;
+    ROS_INFO("[aviz] Three dimensions are needed to visualize a cube.");
+    if(dim.size() > 1)
+      dim.resize(3,dim[0]);
+    else
+      return;
   }
 
-  marker.lifetime = ros::Duration(120.0);
+  HSVtoRGB(&r, &g, &b, color, 1.0, 1.0);
+
+  marker.header.stamp = ros::Time::now();
+  marker.header.frame_id = pose.header.frame_id;
+  marker.ns = ns;
+  marker.id = id;
+  marker.type = visualization_msgs::Marker::CUBE;
+  marker.action = visualization_msgs::Marker::ADD;
+  marker.pose = pose.pose;
+  marker.scale.x = dim[0];
+  marker.scale.y = dim[1];
+  marker.scale.z = dim[2];
+  marker.color.r = r;
+  marker.color.g = g;
+  marker.color.b = b;
+  marker.color.a = 1.0;
+  marker.lifetime = ros::Duration(180.0);
 
   marker_publisher_.publish(marker);
 }

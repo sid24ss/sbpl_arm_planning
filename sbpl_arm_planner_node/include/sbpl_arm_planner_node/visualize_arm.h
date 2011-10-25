@@ -27,8 +27,7 @@
 #include <kdl/chain.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/treefksolverpos_recursive.hpp>
-
-#include <sbpl_arm_planner/robarm3d/environment_robarm3d.h>
+#include <sbpl_arm_planner/sbpl_collision_space.h>
 
 typedef actionlib::SimpleActionClient< pr2_controllers_msgs::JointTrajectoryAction > TrajClient;
 
@@ -69,7 +68,7 @@ class VisualizeArm
     void visualizeArmConfiguration(double color_num, const std::vector<double> &jnt_pos);
 
     /* \brief visualize the arm of the pr2 in specified color (color: 1-360) */
-    void visualizeArmMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses);
+    void visualizeArmMeshes(double color_num, std::vector<geometry_msgs::PoseStamped> &poses);
 
     /* \brief visualize a pose (sphere, arrow, string of text) */
     void visualizePose(const std::vector<double> &pose, std::string text);
@@ -112,6 +111,8 @@ class VisualizeArm
 
     /* \brief display the spherical collision model of each waypoint in a path */
     void visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle);
+    
+    void visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle, int hue);
 
     /* \brief display the spherical collision model of each waypoint in a joint trajectory msg */
     void visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle);
@@ -138,8 +139,15 @@ class VisualizeArm
 
     void visualizeLine(const std::vector<geometry_msgs::Point> points, std::string ns, int id, int hue, double thickness);
 
-    /* DOESN'T WORK */
-    //void clearAllVisualizations();
+    void visualizeText(geometry_msgs::Pose pose, std::string text, std::string ns, int id, int hue);
+
+    void visualizeText(geometry_msgs::Pose pose, std::string text, std::string ns, int id, std::vector<double> color, double size);
+
+    void visualizeCube(geometry_msgs::PoseStamped pose, int color, std::string ns, int id, std::vector<double> dim);
+
+    void visualizeSpheres(const std::vector<std::vector<double> > &pose, int color, std::string text, std::vector<double> &radius);
+
+    void deleteVisualizations(std::string ns, int max_id);
 
   private:
 
@@ -184,6 +192,7 @@ class VisualizeArm
     std::string ik_service_name_;
     std::string chain_root_name_;
     std::string chain_tip_name_;
+    std::string chain2_tip_name_;
 
     std::vector<double> start_config_;
     std::vector<double> goal_pose_;
