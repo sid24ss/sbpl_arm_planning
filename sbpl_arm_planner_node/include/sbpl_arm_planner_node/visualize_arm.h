@@ -135,6 +135,8 @@ class VisualizeArm
     /* \brief display a list of spheres of the same radius and color */
     void visualizeSpheres(const std::vector<std::vector<double> > &pose, int hue, std::string text, double radius);
 
+    void visualizeSpheres(const std::vector<std::vector<double> > &spheres, int hue, double alpha, std::string text);
+
     void visualizeAttachedObject(const std::vector<double> angles);
 
     void visualizeLine(const std::vector<geometry_msgs::Point> points, std::string ns, int id, int hue, double thickness);

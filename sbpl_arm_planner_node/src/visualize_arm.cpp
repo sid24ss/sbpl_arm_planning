@@ -128,8 +128,8 @@ VisualizeArm::VisualizeArm(std::string arm_name) : ph_("~"), arm_name_(arm_name)
   while(!traj_client_->waitForServer(ros::Duration(5.0)))
     ROS_INFO("Waiting for the joint_trajectory_action server");
 */
-  marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 500);
-  marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 1000);
+  marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 500, true);
+  marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 500, true);
   display_trajectory_publisher_ = nh_.advertise<motion_planning_msgs::DisplayTrajectory>("arm_viz", 200);
 }
 
@@ -896,6 +896,39 @@ void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &pos
     marker_publisher_.publish(marker);
     usleep(100);
   }
+}
+
+void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &spheres, int hue, double alpha, std::string text)
+{
+  visualization_msgs::MarkerArray marker_array;
+  double r,g,b;
+  HSVtoRGB(&r, &g, &b, hue, 1.0, 1.0);
+
+  marker_array.markers.resize(spheres.size());
+  for(int j = 0; j < int(spheres.size()); ++j)
+  {
+    marker_array.markers[j].header.frame_id = reference_frame_;
+    marker_array.markers[j].header.stamp = ros::Time::now();
+    marker_array.markers[j].ns = text;
+    marker_array.markers[j].id = j;
+    marker_array.markers[j].type = visualization_msgs::Marker::SPHERE;
+    marker_array.markers[j].action =  visualization_msgs::Marker::ADD;
+    marker_array.markers[j].scale.x = spheres[j][3] * 2;
+    marker_array.markers[j].scale.y = spheres[j][3] * 2;
+    marker_array.markers[j].scale.z = spheres[j][3] * 2;
+    marker_array.markers[j].color.r = r;
+    marker_array.markers[j].color.g = g;
+    marker_array.markers[j].color.b = b;
+    marker_array.markers[j].color.a = alpha;
+    marker_array.markers[j].lifetime = ros::Duration(360.0);
+
+    marker_array.markers[j].pose.position.x = spheres[j][0];
+    marker_array.markers[j].pose.position.y = spheres[j][1];
+    marker_array.markers[j].pose.position.z = spheres[j][2];
+  }
+
+  if(spheres.size() > 0)
+    marker_array_publisher_.publish(marker_array);
 }
 
 void VisualizeArm::visualizeArmMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses)
