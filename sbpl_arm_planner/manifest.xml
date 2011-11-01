@@ -14,6 +14,7 @@
 
 	<depend package="roscpp"/>
   <depend package="sbpl" /> <!--everything-->
+  <depend package="sbpl_collision_checking" /> <!--everything-->
 	<depend package="angles" />
   <depend package="kdl" /> <!--sbpl_arm_model-->
   <depend package="kdl_parser" /> <!--sbpl_arm_model-->

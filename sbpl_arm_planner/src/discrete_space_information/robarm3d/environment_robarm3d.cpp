@@ -756,7 +756,7 @@ bool EnvironmentROBARM3D::initGeneral()
   grid_ = new OccupancyGrid(prms_.sizeX_,prms_.sizeY_,prms_.sizeZ_, prms_.resolution_,prms_.originX_,prms_.originY_,prms_.originZ_);
 
   //create the collision space
-  cspace_ = new SBPLCollisionSpace(arm_, grid_);
+  cspace_ = new SBPLCollisionSpace(grid_);
 
   //create the rpysolver
   rpysolver_ = new RPYSolver(arm_, cspace_);

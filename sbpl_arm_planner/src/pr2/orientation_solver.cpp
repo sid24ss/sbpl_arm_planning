@@ -430,8 +430,8 @@ SET_ANGLES_AGAIN: //GoTO label, temporary, do not continue use of this
     goal_joint_config[4+my_count]+=hand_rotations[1+my_count];
 
     //check for collisions
-    //if(!cspace_->checkCollision(goal_joint_config, verbose_, false, dist))
-    if(!cspace_->checkLinkForCollision(goal_joint_config, link_num, verbose_, dist))
+    if(!cspace_->checkCollision(goal_joint_config, verbose_, false, dist))
+    //if(!cspace_->checkLinkForCollision(goal_joint_config, link_num, verbose_, dist))
     {
       num_invalid_solution_++;
       return false;
@@ -445,7 +445,8 @@ SET_ANGLES_AGAIN: //GoTO label, temporary, do not continue use of this
     }
 
     //check for collisions along the path
-    if(!cspace_->checkLinkPathForCollision(start, goal_joint_config, link_num, verbose_, dist))
+    if(!cspace_->checkPathForCollision(start, goal_joint_config, verbose_, dist))
+    //if(!cspace_->checkLinkPathForCollision(start, goal_joint_config, link_num, verbose_, dist))
     {
       //try rotating in the opposite direction
       if(try_both_rotations)
