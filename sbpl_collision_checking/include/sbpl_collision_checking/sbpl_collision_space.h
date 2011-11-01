@@ -153,6 +153,8 @@ class SBPLCollisionSpace
 
     std::vector<sbpl_arm_planner::Sphere> collision_spheres_;
 
+    void setPlanningJoints(const std::vector<std::string> &joint_names);
+
   private:
 
     /** NEW **/

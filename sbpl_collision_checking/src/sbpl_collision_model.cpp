@@ -214,21 +214,17 @@ void SBPLCollisionModel::readGroups()
 {
   XmlRpc::XmlRpcValue all_groups;
 
-  std::string group_name = "/test_collision_space/groups";  //replace this
+  std::string group_name = "groups";  //replace this
 
   if(!ph_.hasParam(group_name)) 
   {
     ROS_WARN_STREAM("No groups for planning specified in " << group_name);
     return;
   }
-
-  nh_.getParam(group_name, all_groups);
+  ph_.getParam(group_name, all_groups);
 
   if(all_groups.getType() != XmlRpc::XmlRpcValue::TypeArray) 
-  {
     ROS_WARN("Groups is not an array.");
-    return;
-  }
 
   if(all_groups.size() == 0) 
   {

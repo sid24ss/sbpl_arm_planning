@@ -66,6 +66,11 @@ void SBPLCollisionSpace::setDebugFile(FILE* file_ptr)
   fOut_ = file_ptr;
 }
 
+void SBPLCollisionSpace::setPlanningJoints(const std::vector<std::string> &joint_names)
+{
+  planning_joints_ = joint_names;
+}
+
 bool SBPLCollisionSpace::init(std::string group_name)
 {
   group_name_ = group_name;

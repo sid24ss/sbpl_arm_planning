@@ -35,10 +35,9 @@ clock_t starttime;
 using namespace std;
 
 /** Initializers -------------------------------------------------------------*/
-TestSBPLCollisionSpace::TestSBPLCollisionSpace() : node_handle_("~"),collision_map_subscriber_(root_handle_,"collision_map_occ",1), collision_map_filter_(NULL),grid_(NULL),laviz_(NULL),raviz_(NULL)
+TestSBPLCollisionSpace::TestSBPLCollisionSpace() : node_handle_("~"),collision_map_subscriber_(root_handle_,"collision_map_occ",1), collision_map_filter_(NULL),grid_(NULL),aviz_(NULL)
 {
-  langles_.resize(7,0);
-  rangles_.resize(7,0);
+  angles_.resize(7,0);
 
   ljoint_names_.resize(7);
   rjoint_names_.resize(7);
@@ -46,10 +45,8 @@ TestSBPLCollisionSpace::TestSBPLCollisionSpace() : node_handle_("~"),collision_m
 
 TestSBPLCollisionSpace::~TestSBPLCollisionSpace()
 {
-  if(laviz_ != NULL)
-    delete laviz_;
-  if(raviz_ != NULL)
-    delete raviz_;
+  if(aviz_ != NULL)
+    delete aviz_;
   if(grid_ != NULL)
     delete grid_;
 
@@ -65,10 +62,16 @@ bool TestSBPLCollisionSpace::init()
   node_handle_.param<std::string>("left_ik_service_name", left_ik_service_name_, "pr2_left_arm_kinematics/get_ik");
   node_handle_.param<std::string>("right_fk_service_name", right_fk_service_name_, "pr2_right_arm_kinematics/get_fk");
   node_handle_.param<std::string>("right_ik_service_name", right_fk_service_name_, "pr2_right_arm_kinematics/get_ik");
+  node_handle_.param<std::string>("arm_name", arm_name_, "right_arm");
 
-  node_handle_.param<std::string>("robot/arm_name", arm_name_, "right_arm");
-  node_handle_.param ("robot/num_joints", num_joints_, 7);
-  
+  node_handle_.param("collision_space/resolution",resolution_,0.02);
+  node_handle_.param("collision_space/occupancy_grid/origin_x",originX_,-0.6);
+  node_handle_.param("collision_space/occupancy_grid/origin_y",originY_,-1.15);
+  node_handle_.param("collision_space/occupancy_grid/origin_z",originZ_,-0.05);
+  node_handle_.param("collision_space/occupancy_grid/size_x",sizeX_,1.6);
+  node_handle_.param("collision_space/occupancy_grid/size_y",sizeY_,1.8);
+  node_handle_.param("collision_space/occupancy_grid/size_z",sizeZ_,1.4);
+
   //pr2 specific
   ljoint_names_[0] = "l_shoulder_pan_joint";
   ljoint_names_[1] = "l_shoulder_lift_joint";
@@ -94,18 +97,21 @@ bool TestSBPLCollisionSpace::init()
   resolution_ = 0.01;
 
   ROS_INFO("[test] Creating the grid.");
-  grid_ = new sbpl_arm_planner::OccupancyGrid(1.8, 1.4, 1.8, resolution_, -0.5, -0.85, 0.00);
+  grid_ = new sbpl_arm_planner::OccupancyGrid(sizeX_, sizeY_, sizeZ_, resolution_, originX_, originY_, originZ_);
   
   ROS_INFO("[test] Creating the collision space."); 
   cspace_ = new sbpl_arm_planner::SBPLCollisionSpace(grid_);
 
-  ROS_INFO("[test] Initializing the collision space for the right_arm.");
-  cspace_->init("right_arm");
+  if(arm_name_.compare("right_arm") == 0)
+    cspace_->setPlanningJoints(rjoint_names_);
+  else
+    cspace_->setPlanningJoints(ljoint_names_);
 
-  laviz_ = new sbpl_arm_planner::VisualizeArm(std::string("left_arm"));
-  raviz_ = new sbpl_arm_planner::VisualizeArm(std::string("right_arm"));
-  laviz_->setReferenceFrame(reference_frame_);
-  raviz_->setReferenceFrame(reference_frame_);
+  ROS_INFO("[test] Initializing the collision space for the %s.", arm_name_.c_str());
+  cspace_->init(arm_name_);
+
+  aviz_ = new sbpl_arm_planner::VisualizeArm(arm_name_);
+  aviz_->setReferenceFrame(reference_frame_);
 
   collision_map_filter_ = new tf::MessageFilter<mapping_msgs::CollisionMap>(collision_map_subscriber_,tf_,reference_frame_,1);
   collision_map_filter_->registerCallback(boost::bind(&TestSBPLCollisionSpace::collisionMapCallback, this, _1));
@@ -130,63 +136,66 @@ void TestSBPLCollisionSpace::jointStatesCallback(const sensor_msgs::JointStateCo
 
   ROS_DEBUG("[test] joint_states callback");
 
-  //raviz_->deleteVisualizations("right_arm_model_0", 70);
-  raviz_->deleteVisualizations("collision", 10);
+  //aviz_->deleteVisualizations("right_arm_model_0", 70);
+  aviz_->deleteVisualizations("collision", 20);
 
   geometry_msgs::Pose pose;
   pose.position.x = 0.0;
   pose.position.y = 0.0;
   pose.position.z = 1.6;
 
-  rangles_[0] = state->position[17];
-  rangles_[1] = state->position[18];
-  rangles_[2] = state->position[16];
-  rangles_[3] = state->position[20];
-  rangles_[4] = state->position[19];
-  rangles_[5] = state->position[21];
-  rangles_[6] = state->position[22];
-
-  langles_[0] = state->position[29];
-  langles_[1] = state->position[30];
-  langles_[2] = state->position[28];
-  langles_[3] = state->position[32];
-  langles_[4] = state->position[31];
-  langles_[5] = state->position[33];
-  langles_[6] = state->position[34];
-
-  ROS_DEBUG("[test] joint_states callback - setting joint positions");
-
   // torso_lift_link
   cspace_->setJointPosition(state->name[12], state->position[12]);
 
-  // r_gripper_l_finger_link
-  cspace_->setJointPosition(state->name[24], state->position[24]);
+  if(arm_name_.compare("right_arm") == 0)
+  {
+    angles_[0] = state->position[17];
+    angles_[1] = state->position[18];
+    angles_[2] = state->position[16];
+    angles_[3] = state->position[20];
+    angles_[4] = state->position[19];
+    angles_[5] = state->position[21];
+    angles_[6] = state->position[22];
 
-  // r_gripper_r_finger_link
-  cspace_->setJointPosition(state->name[25], state->position[25]);
+    // r_gripper_l_finger_link
+    cspace_->setJointPosition(state->name[24], state->position[24]);
 
-  ROS_DEBUG("[test] joint_states callback - checking for collisions");
+    // r_gripper_r_finger_link
+    cspace_->setJointPosition(state->name[25], state->position[25]);
+  }
+  else
+  {
+    angles_[0] = state->position[29];
+    angles_[1] = state->position[30];
+    angles_[2] = state->position[28];
+    angles_[3] = state->position[32];
+    angles_[4] = state->position[31];
+    angles_[5] = state->position[33];
+    angles_[6] = state->position[34];
 
-  if(!cspace_->checkCollision(rangles_, true, false, dist))
+    // l_gripper_l_finger_link
+    cspace_->setJointPosition(state->name[36], state->position[36]);
+
+    // l_gripper_r_finger_link
+    cspace_->setJointPosition(state->name[37], state->position[37]);
+  }
+
+  if(!cspace_->checkCollision(angles_, true, false, dist))
   {
     dist_m = double(int(dist)*resolution_);
     ROS_INFO("dist = %0.3fm  COLLISION (%d spheres)", dist_m, int(cspace_->collision_spheres_.size()));
     in_collision = true;
-    //printf("%s\n", cspace_->code_.c_str());
-    //raviz_->visualizeText(pose, cspace_->code_, "text",0,320);
   }
   else
   {
     dist_m = double(int(dist)*resolution_);
     ROS_INFO("dist = %0.3fm", dist_m);
-    //raviz_->visualizeText(pose, "No Collision", "text",0,100);
   }
 
-  ROS_DEBUG("[test] joint_states callback - visualizing");
-  std::vector<std::vector<double> > path(1,std::vector<double> (7,0)), rspheres;
-  path[0] = rangles_;
-  cspace_->getCollisionCylinders(rangles_, rspheres);
-  raviz_->visualizeSpheres(rspheres, 140, 0.8, "right_arm_spheres");
+  std::vector<std::vector<double> > path(1,std::vector<double> (7,0)), spheres;
+  path[0] = angles_;
+  cspace_->getCollisionCylinders(angles_, spheres);
+  aviz_->visualizeSpheres(spheres, 140, 0.8, arm_name_ + "_spheres");
 
   if(in_collision)
   {
@@ -198,7 +207,7 @@ void TestSBPLCollisionSpace::jointStatesCallback(const sensor_msgs::JointStateCo
       csphere[i][2] = cspace_->collision_spheres_[i].v.z();
       csphere[i][3] = cspace_->collision_spheres_[i].radius + 0.004;
     }
-    raviz_->visualizeSpheres(csphere, 260, 1.0, "collision");
+    aviz_->visualizeSpheres(csphere, 260, 1.0, "collision");
   }
   ROS_DEBUG("[test] joint_states callback done");
 }
@@ -210,45 +219,8 @@ void TestSBPLCollisionSpace::collisionMapCallback(const mapping_msgs::CollisionM
 
 void TestSBPLCollisionSpace::updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map)
 {
-  ROS_DEBUG("map callback");
-
-  /*
-  ROS_DEBUG("[updateMapFromCollisionMap] trying to get colmap_mutex_");
-  if(colmap_mutex_.try_lock())
-  {
-    ROS_DEBUG("[updateMapFromCollisionMap] locked colmap_mutex_");
-
-    if(collision_map->header.frame_id.compare(reference_frame_) != 0)
-    {
-      ROS_WARN("collision_map_occ is in %s not in %s", collision_map->header.frame_id.c_str(), reference_frame_.c_str());
-      ROS_DEBUG("the collision map has %i cubic obstacles", int(collision_map->boxes.size()));
-    }
-  */
-    // add collision map msg
-    grid_->updateFromCollisionMap(*collision_map);
-
-    // add self collision blocks
-    //cspace_->addArmCuboidsToGrid(0);
-  
-    cspace_->putCollisionObjectsInGrid();
-
-    //map_frame_ = collision_map->header.frame_id; 
-    
-    //colmap_mutex_.unlock();
-    //ROS_DEBUG("[updateMapFromCollisionMap] released colmap_mutex_ mutex.");
-
-    //visualizeCollisionObjects();
-  /*
-    grid_->visualize();
-    return;
-  }
-  else
-  {
-    ROS_DEBUG("[updateMapFromCollisionMap] failed trying to get colmap_mutex_ mutex");
-    return;
-  }
-  */
-  ROS_INFO("leaving map callback");
+  grid_->updateFromCollisionMap(*collision_map);
+  cspace_->putCollisionObjectsInGrid();
 }
 
 void TestSBPLCollisionSpace::collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object)
@@ -293,7 +265,7 @@ void TestSBPLCollisionSpace::visualizeCollisionObjects()
   }
 
   ROS_DEBUG("[visualizeCollisionObjects] Displaying %d known collision object voxels.", int(points.size()));
-  raviz_->visualizeBasicStates(points, color, "known_objects", 0.01);
+  aviz_->visualizeBasicStates(points, color, "known_objects", 0.01);
 }
 
 int main(int argc, char **argv)

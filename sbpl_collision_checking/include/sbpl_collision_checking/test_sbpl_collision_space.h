@@ -101,17 +101,25 @@ class TestSBPLCollisionSpace
     std::vector<std::string> rjoint_names_;
     std::map<std::string, mapping_msgs::CollisionObject> object_map_;
 
-    std::vector<double> langles_;
-    std::vector<double> rangles_;
+    std::vector<double> angles_;
 
     bool verbose_;
+
+    /** \brief size of collision space */
+    double sizeX_;
+    double sizeY_;
+    double sizeZ_;
+
+    /** \brief origin of collision space */
+    double originX_;
+    double originY_;
+    double originZ_;
 
     /* planner & environment */
     double resolution_;
     sbpl_arm_planner::SBPLCollisionSpace* cspace_;
     sbpl_arm_planner::OccupancyGrid* grid_;
-    sbpl_arm_planner::VisualizeArm* laviz_;
-    sbpl_arm_planner::VisualizeArm* raviz_;
+    sbpl_arm_planner::VisualizeArm* aviz_;
     KDL::Frame kdl_transform_;
 
     boost::mutex colmap_mutex_;
