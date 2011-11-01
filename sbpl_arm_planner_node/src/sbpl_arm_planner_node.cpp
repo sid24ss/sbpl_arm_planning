@@ -615,8 +615,8 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
         if(visualize_trajectory_)
           aviz_->visualizeJointTrajectoryMsg(res.trajectory.joint_trajectory, throttle_);
 
-        if(visualize_collision_model_trajectory_)
-          aviz_->visualizeCollisionModelFromJointTrajectoryMsg(res.trajectory.joint_trajectory, *cspace_, throttle_);
+        //if(visualize_collision_model_trajectory_)
+        //  aviz_->visualizeCollisionModelFromJointTrajectoryMsg(res.trajectory.joint_trajectory, *cspace_, throttle_);
 
         if(use_research_heuristic_)
           visualizeElbowPoses();

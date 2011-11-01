@@ -33,6 +33,7 @@
   <depend package="planning_models" />
 	<depend package="sbpl_arm_planner" />
 
+  <depend package="visualize_arm" />
   <!-- for aviz -->
   <depend package="pr2_controllers_msgs"/>
   <depend package="actionlib"/>

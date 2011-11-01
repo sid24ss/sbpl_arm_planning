@@ -45,7 +45,7 @@
 #include <kdl/frames.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <angles/angles.h>
-#include <sbpl_arm_planner_node/visualize_arm.h>
+#include <visualize_arm/visualize_arm.h>
 #include <sbpl_arm_planner/robarm3d/environment_robarm3d.h>
 
 /** Messages **/
