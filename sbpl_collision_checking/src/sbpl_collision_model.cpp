@@ -1,8 +1,9 @@
 #include <sbpl_collision_checking/sbpl_collision_model.h>
 
-using namespace sbpl_collision_checking;
+namespace sbpl_arm_planner
+{
 
-bool sortSphere(sbpl_collision_checking::Sphere* a, sbpl_collision_checking::Sphere* b)
+bool sortSphere(sbpl_arm_planner::Sphere* a, sbpl_arm_planner::Sphere* b)
 {
   return a->priority < b->priority;
 }
@@ -721,3 +722,4 @@ int main(int argc, char **argv)
 }
 */
 
+}

@@ -33,7 +33,8 @@
 
 #define SMALL_NUM  0.00000001     // to avoid division overflow
 
-namespace sbpl_collision_checking {
+namespace sbpl_arm_planner 
+{
 
 SBPLCollisionSpace::SBPLCollisionSpace(sbpl_arm_planner::OccupancyGrid* grid)
 {
@@ -180,7 +181,7 @@ bool SBPLCollisionSpace::checkLinkForCollision(const std::vector<double> &angles
 
   if(link_num >= arm_->num_links_)
   {
-    SBPL_WARN("[checkLinkInCollision] %d is not a valid link index. There are %d links.", link_num, arm_->num_links_);
+    ROS_WARN("[checkLinkInCollision] %d is not a valid link index. There are %d links.", link_num, arm_->num_links_);
     return false;
   }
   
@@ -192,7 +193,7 @@ bool SBPLCollisionSpace::checkLinkForCollision(const std::vector<double> &angles
   if(!grid_->isInBounds(jnts[link_num][0],jnts[link_num][1],jnts[link_num][2]))
   {
     if(verbose)
-      SBPL_DEBUG("End of link %d is out of bounds. (%d %d %d)", link_num, jnts[link_num][0],jnts[link_num][1],jnts[link_num][2]);
+      ROS_DEBUG("End of link %d is out of bounds. (%d %d %d)", link_num, jnts[link_num][0],jnts[link_num][1],jnts[link_num][2]);
     return false;
   }
 
@@ -203,7 +204,7 @@ bool SBPLCollisionSpace::checkLinkForCollision(const std::vector<double> &angles
   if(dist <= arm_->getLinkRadiusCells(link_num))
   {
     if(verbose)
-      SBPL_DEBUG("Link %d: {%d %d %d} -> {%d %d %d} with radius %0.2f is in collision.",link_num,jnts[link_num][0],jnts[link_num][1],jnts[link_num][2],jnts[link_num+1][0],jnts[link_num+1][1],jnts[link_num+1][2],arm_->getLinkRadius(link_num));
+      ROS_DEBUG("Link %d: {%d %d %d} -> {%d %d %d} with radius %0.2f is in collision.",link_num,jnts[link_num][0],jnts[link_num][1],jnts[link_num][2],jnts[link_num+1][0],jnts[link_num+1][1],jnts[link_num+1][2],arm_->getLinkRadius(link_num));
     return false;
   }
 
@@ -211,7 +212,7 @@ bool SBPLCollisionSpace::checkLinkForCollision(const std::vector<double> &angles
   if(!isValidAttachedObject(angles, dist_temp, jnts[0], jnts[1]))
   {
     if(verbose)
-      SBPL_DEBUG("Attached object is in collision.");
+      ROS_DEBUG("Attached object is in collision.");
     dist = dist_temp;
     return false;
   }
@@ -219,7 +220,7 @@ bool SBPLCollisionSpace::checkLinkForCollision(const std::vector<double> &angles
   if(dist_temp < dist)
   {
     if(verbose)
-      SBPL_DEBUG("Attached object is the closest thing to the nearest obstacle with dist=%d", int(dist_temp));
+      ROS_DEBUG("Attached object is the closest thing to the nearest obstacle with dist=%d", int(dist_temp));
     dist = dist_temp;
   }
 */
@@ -252,11 +253,11 @@ bool SBPLCollisionSpace::checkPathForCollision(const std::vector<double> &start,
   /*
   if(verbose)
   {
-    SBPL_FPRINTF(fOut_,"      interpolated_path: %d waypoints\n",path.size());
-    SBPL_FPRINTF(fOut_,"           %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f --> %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", start_norm[0],start_norm[1],start_norm[2],start_norm[3],start_norm[4],start_norm[5],start_norm[6], end_norm[0],end_norm[1],end_norm[2],end_norm[3],end_norm[4],end_norm[5],end_norm[6]);
+    ROS_FPRINTF(fOut_,"      interpolated_path: %d waypoints\n",path.size());
+    ROS_FPRINTF(fOut_,"           %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f --> %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", start_norm[0],start_norm[1],start_norm[2],start_norm[3],start_norm[4],start_norm[5],start_norm[6], end_norm[0],end_norm[1],end_norm[2],end_norm[3],end_norm[4],end_norm[5],end_norm[6]);
 
     for(int i = 0; i < int(path.size()); ++i)
-        SBPL_FPRINTF(fOut_,"           %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", path[i][0],path[i][1],path[i][2],path[i][3],path[i][4],path[i][5],path[i][6]);
+        ROS_FPRINTF(fOut_,"           %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", path[i][0],path[i][1],path[i][2],path[i][3],path[i][4],path[i][5],path[i][6]);
   }
   */
 
@@ -506,14 +507,14 @@ void SBPLCollisionSpace::addArmCuboidsToGrid()
 /*
   std::vector<std::vector<double> > cuboids = arm_->getCollisionCuboids();
 
-  SBPL_DEBUG("[SBPLCollisionSpace] received %d cuboids\n",int(cuboids.size()));
+  ROS_DEBUG("[SBPLCollisionSpace] received %d cuboids\n",int(cuboids.size()));
 
   for(unsigned int i = 0; i < cuboids.size(); i++)
   {
     if(cuboids[i].size() == 6)
       grid_->addCollisionCuboid(cuboids[i][0],cuboids[i][1],cuboids[i][2],cuboids[i][3],cuboids[i][4],cuboids[i][5]);
     else
-      SBPL_DEBUG("[addArmCuboidsToGrid] Self-collision cuboid #%d has an incomplete description.\n", i);
+      ROS_DEBUG("[addArmCuboidsToGrid] Self-collision cuboid #%d has an incomplete description.\n", i);
   }
 */
 }
@@ -583,7 +584,7 @@ void SBPLCollisionSpace::getInterpolatedPath(const std::vector<double> &start, c
   //check if both input configurations have same size
   if(start.size() != end.size())
   {
-    SBPL_WARN("[getInterpolatedPath] The start and end configurations have different sizes.\n");
+    ROS_WARN("[getInterpolatedPath] The start and end configurations have different sizes.\n");
     return;
   }
 
@@ -613,7 +614,7 @@ void SBPLCollisionSpace::removeAttachedObject()
 {
   object_attached_ = false;
   object_points_.clear();
-  SBPL_INFO("[removeAttachedObject] Removed attached object.");
+  ROS_INFO("[removeAttachedObject] Removed attached object.");
 }
 
 void SBPLCollisionSpace::attachSphereToGripper(std::string frame, geometry_msgs::Pose pose, double radius)
@@ -622,13 +623,13 @@ void SBPLCollisionSpace::attachSphereToGripper(std::string frame, geometry_msgs:
   attached_object_frame_ = frame;
   model_.getFrameInfo(attached_object_frame_, group_name_, attached_object_chain_num_, attached_object_segment_num_);
   
-  SBPL_INFO("[addSphereToGripper] Pose of Sphere: %0.3f %0.3f %0.3f radius: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius); 
+  ROS_INFO("[addSphereToGripper] Pose of Sphere: %0.3f %0.3f %0.3f radius: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius); 
   attached_object_radius_ = radius / grid_->getResolution();
   
   object_points_.resize(1);
   tf::PoseMsgToKDL(pose, object_points_[0]);
 
-  SBPL_DEBUG("[addSphereToGripper] Added collision sphere.  xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
+  ROS_DEBUG("[addSphereToGripper] Added collision sphere.  xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
 }
 
 void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msgs::Pose pose, double radius, double length)
@@ -637,7 +638,7 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   attached_object_frame_ = frame;
   model_.getFrameInfo(attached_object_frame_, group_name_, attached_object_chain_num_, attached_object_segment_num_);
   
-  SBPL_DEBUG("[addCylinderToGripper] Cylinder: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius, length); 
+  ROS_DEBUG("[addCylinderToGripper] Cylinder: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius, length); 
 
   attached_object_radius_ = radius / grid_->getResolution();
 
@@ -652,8 +653,8 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   object_points_[0].p.data[2] -= length/2.0;
   object_points_[1].p.data[2] += length/2.0;
 
-  SBPL_DEBUG("[addCylinderToGripper] Added cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
-  SBPL_DEBUG("[addCylinderToGripper] Added cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), radius, attached_object_radius_);
+  ROS_DEBUG("[addCylinderToGripper] Added cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
+  ROS_DEBUG("[addCylinderToGripper] Added cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), radius, attached_object_radius_);
 }
 
 void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices)
@@ -672,7 +673,7 @@ void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geom
   attached_object_frame_ = frame;
   model_.getFrameInfo(attached_object_frame_, group_name_, attached_object_chain_num_, attached_object_segment_num_);
   
-  SBPL_INFO("[addMeshToGripper] Mesh: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, cyl.radius, cyl.length); 
+  ROS_INFO("[addMeshToGripper] Mesh: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, cyl.radius, cyl.length); 
 
   attached_object_radius_ = cyl.radius / grid_->getResolution();
 
@@ -690,9 +691,9 @@ void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geom
   //object_points_[0].p.data[2] -= cyl.length/2.0;
   //object_points_[1].p.data[2] += cyl.length/2.0;
 
-  SBPL_INFO("BEFORE TRANSFORMATION"); 
-  SBPL_INFO("[addMeshToGripper] Added bounding cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), cyl.radius, attached_object_radius_);
-  SBPL_INFO("[addMeshToGripper] Added bounding cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), cyl.radius, attached_object_radius_);
+  ROS_INFO("BEFORE TRANSFORMATION"); 
+  ROS_INFO("[addMeshToGripper] Added bounding cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), cyl.radius, attached_object_radius_);
+  ROS_INFO("[addMeshToGripper] Added bounding cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), cyl.radius, attached_object_radius_);
  
   tf::TransformTFToKDL(cyl.pose, cyl_pose); 
 //  object_points_[0] = object_points_[0]*cyl_pose;
@@ -701,9 +702,9 @@ void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geom
   object_points_[0].p.data[2] -= cyl.length/2.0;
   object_points_[1].p.data[2] += cyl.length/2.0;
  
-  SBPL_INFO("AFTER TRANSFORMATION"); 
-  SBPL_INFO("[addMeshToGripper] Added bounding cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), cyl.radius, attached_object_radius_);
-  SBPL_INFO("[addMeshToGripper] Added bounding cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), cyl.radius, attached_object_radius_);
+  ROS_INFO("AFTER TRANSFORMATION"); 
+  ROS_INFO("[addMeshToGripper] Added bounding cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), cyl.radius, attached_object_radius_);
+  ROS_INFO("[addMeshToGripper] Added bounding cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), cyl.radius, attached_object_radius_);
 }
 
 bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles, unsigned char &dist, std::vector<int> j1, std::vector<int> j2)
@@ -805,7 +806,7 @@ bool SBPLCollisionSpace::isValidPoint(double &x, double &y, double &z, short uns
 
   grid_->worldToGrid(x,y,z,xyz_c[0], xyz_c[1], xyz_c[2]);
  
-  SBPL_DEBUG("world: %0.3f %0.3f %0.3f  grid: %d %d %d  dist: %u radius: %u",x, y, z, xyz_c[0], xyz_c[1], xyz_c[2], grid_->getCell(xyz_c[0],xyz_c[1],xyz_c[2]), radius);
+  ROS_DEBUG("world: %0.3f %0.3f %0.3f  grid: %d %d %d  dist: %u radius: %u",x, y, z, xyz_c[0], xyz_c[1], xyz_c[2], grid_->getCell(xyz_c[0],xyz_c[1],xyz_c[2]), radius);
 
   if((dist = grid_->getCell(xyz_c[0],xyz_c[1],xyz_c[2])) <= radius)
     return false;

@@ -44,9 +44,9 @@
 #include <kdl/frames.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <angles/angles.h>
-#include <sbpl_arm_planner/occupancy_grid.h>
+#include <sbpl_collision_checking/occupancy_grid.h>
 #include <sbpl_collision_checking/sbpl_collision_space.h>
-#include <sbpl_arm_planner_node/visualize_arm.h>
+#include <visualize_arm/visualize_arm.h>
 
 /** Messages **/
 #include <geometry_msgs/Pose.h>
@@ -89,12 +89,6 @@ class TestSBPLCollisionSpace
     std::string right_ik_service_name_;
 
     /* params */
-    bool visualize_expanded_states_;
-    bool visualize_heuristic_;
-    bool visualize_goal_;
-    bool print_path_;
-    bool visualize_trajectory_;
-    bool visualize_collision_model_trajectory_;
     int throttle_;
     int num_joints_;
 
@@ -114,7 +108,7 @@ class TestSBPLCollisionSpace
 
     /* planner & environment */
     double resolution_;
-    sbpl_collision_checking::SBPLCollisionSpace* cspace_;
+    sbpl_arm_planner::SBPLCollisionSpace* cspace_;
     sbpl_arm_planner::OccupancyGrid* grid_;
     sbpl_arm_planner::VisualizeArm* laviz_;
     sbpl_arm_planner::VisualizeArm* raviz_;

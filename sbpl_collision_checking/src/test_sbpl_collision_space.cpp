@@ -89,14 +89,6 @@ bool TestSBPLCollisionSpace::init()
   //collision space
   node_handle_.param<std::string>("collision_space/collision_map_topic", collision_map_topic_, "collision_map_occ");
 
-  //visualizations
-  node_handle_.param ("visualizations/goal", visualize_goal_, true);
-  node_handle_.param ("visualizations/expanded_states",visualize_expanded_states_,true);
-  node_handle_.param ("visualizations/heuristic", visualize_heuristic_, true);
-  node_handle_.param ("visualizations/trajectory", visualize_trajectory_, false);
-  node_handle_.param ("visualizations/collision_model_trajectory", visualize_collision_model_trajectory_, false);
-  node_handle_.param ("visualizations/trajectory_throttle", throttle_, 4);
-
   map_frame_ = "/base_footprint";
 
   resolution_ = 0.01;
@@ -105,7 +97,7 @@ bool TestSBPLCollisionSpace::init()
   grid_ = new sbpl_arm_planner::OccupancyGrid(1.8, 1.4, 1.8, resolution_, -0.5, -0.85, 0.00);
   
   ROS_INFO("[test] Creating the collision space."); 
-  cspace_ = new sbpl_collision_checking::SBPLCollisionSpace(grid_);
+  cspace_ = new sbpl_arm_planner::SBPLCollisionSpace(grid_);
 
   ROS_INFO("[test] Initializing the collision space for the right_arm.");
   cspace_->init("right_arm");
@@ -146,56 +138,50 @@ void TestSBPLCollisionSpace::jointStatesCallback(const sensor_msgs::JointStateCo
   pose.position.y = 0.0;
   pose.position.z = 1.6;
 
-  //if(colmap_mutex_.try_lock())
-  //{
-    rangles_[0] = state->position[17];
-    rangles_[1] = state->position[18];
-    rangles_[2] = state->position[16];
-    rangles_[3] = state->position[20];
-    rangles_[4] = state->position[19];
-    rangles_[5] = state->position[21];
-    rangles_[6] = state->position[22];
+  rangles_[0] = state->position[17];
+  rangles_[1] = state->position[18];
+  rangles_[2] = state->position[16];
+  rangles_[3] = state->position[20];
+  rangles_[4] = state->position[19];
+  rangles_[5] = state->position[21];
+  rangles_[6] = state->position[22];
 
-    langles_[0] = state->position[29];
-    langles_[1] = state->position[30];
-    langles_[2] = state->position[28];
-    langles_[3] = state->position[32];
-    langles_[4] = state->position[31];
-    langles_[5] = state->position[33];
-    langles_[6] = state->position[34];
+  langles_[0] = state->position[29];
+  langles_[1] = state->position[30];
+  langles_[2] = state->position[28];
+  langles_[3] = state->position[32];
+  langles_[4] = state->position[31];
+  langles_[5] = state->position[33];
+  langles_[6] = state->position[34];
 
-    ROS_DEBUG("[test] joint_states callback - setting joint positions");
+  ROS_DEBUG("[test] joint_states callback - setting joint positions");
 
-    // torso_lift_link
-    cspace_->setJointPosition(state->name[12], state->position[12]);
-    
-    // r_gripper_l_finger_link
-    cspace_->setJointPosition(state->name[24], state->position[24]);
-    
-    // r_gripper_r_finger_link
-    cspace_->setJointPosition(state->name[25], state->position[25]);
-  
-    ROS_DEBUG("[test] joint_states callback - checking for collisions");
+  // torso_lift_link
+  cspace_->setJointPosition(state->name[12], state->position[12]);
 
-    if(!cspace_->checkCollision(rangles_, true, false, dist))
-    {
-      dist_m = double(int(dist)*resolution_);
-      ROS_INFO("dist = %0.3fm  COLLISION (%d spheres)", dist_m, int(cspace_->collision_spheres_.size()));
-      in_collision = true;
-      //printf("%s\n", cspace_->code_.c_str());
-      //raviz_->visualizeText(pose, cspace_->code_, "text",0,320);
-    }
-    else
-    {
-      dist_m = double(int(dist)*resolution_);
-      ROS_INFO("dist = %0.3fm", dist_m);
-      //raviz_->visualizeText(pose, "No Collision", "text",0,100);
-    }
-  /*  colmap_mutex_.unlock();
+  // r_gripper_l_finger_link
+  cspace_->setJointPosition(state->name[24], state->position[24]);
+
+  // r_gripper_r_finger_link
+  cspace_->setJointPosition(state->name[25], state->position[25]);
+
+  ROS_DEBUG("[test] joint_states callback - checking for collisions");
+
+  if(!cspace_->checkCollision(rangles_, true, false, dist))
+  {
+    dist_m = double(int(dist)*resolution_);
+    ROS_INFO("dist = %0.3fm  COLLISION (%d spheres)", dist_m, int(cspace_->collision_spheres_.size()));
+    in_collision = true;
+    //printf("%s\n", cspace_->code_.c_str());
+    //raviz_->visualizeText(pose, cspace_->code_, "text",0,320);
   }
   else
-    ROS_INFO("couldn't get the colmap mutex");
-  */
+  {
+    dist_m = double(int(dist)*resolution_);
+    ROS_INFO("dist = %0.3fm", dist_m);
+    //raviz_->visualizeText(pose, "No Collision", "text",0,100);
+  }
+
   ROS_DEBUG("[test] joint_states callback - visualizing");
   std::vector<std::vector<double> > path(1,std::vector<double> (7,0)), rspheres;
   path[0] = rangles_;

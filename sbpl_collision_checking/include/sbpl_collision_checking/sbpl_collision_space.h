@@ -31,8 +31,8 @@
 #include <ros/ros.h>
 #include <vector>
 #include <resource_retriever/retriever.h>
-#include <sbpl_arm_planner/bresenham.h>
-#include <sbpl_arm_planner/occupancy_grid.h>
+#include <sbpl_collision_checking/bresenham.h>
+#include <sbpl_collision_checking/occupancy_grid.h>
 #include <sbpl_collision_checking/sbpl_collision_model.h>
 #include <geometric_shapes/shapes.h>
 #include <geometric_shapes/bodies.h>
@@ -45,11 +45,11 @@
 
 using namespace std;
 
-#ifndef _NEW_SBPL_COLLISION_SPACE_
-#define _NEW_SBPL_COLLISION_SPACE_
+#ifndef _SBPL_COLLISION_SPACE_
+#define _SBPL_COLLISION_SPACE_
 
 /** @brief coords - used to pass around lists of valid cells */
-namespace sbpl_collision_checking
+namespace sbpl_arm_planner
 {
 
 typedef struct
@@ -151,13 +151,13 @@ class SBPLCollisionSpace
 
     void setJointPosition(std::string name, double position);
 
-    std::vector<sbpl_collision_checking::Sphere> collision_spheres_;
+    std::vector<sbpl_arm_planner::Sphere> collision_spheres_;
 
   private:
 
     /** NEW **/
 
-    sbpl_collision_checking::SBPLCollisionModel model_;
+    sbpl_arm_planner::SBPLCollisionModel model_;
 
     double resolution_;
 

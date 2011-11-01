@@ -45,7 +45,7 @@
 #ifndef _SBPL_COLLISION_MODEL_
 #define _SBPL_COLLISION_MODEL_
 
-namespace sbpl_collision_checking
+namespace sbpl_arm_planner
 {
 
   struct Sphere
