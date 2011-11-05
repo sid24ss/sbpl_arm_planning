@@ -41,9 +41,7 @@ SBPLCollisionSpace::SBPLCollisionSpace(sbpl_arm_planner::OccupancyGrid* grid)
   grid_ = grid;
   fOut_ = stdout;
   object_attached_ = false;
-
-  padding_ = 0.03;
-
+  padding_ = 0.00;
   num_planning_joints_ = 7;
 
   // size of increments for when doing path interpolation
@@ -66,9 +64,18 @@ void SBPLCollisionSpace::setDebugFile(FILE* file_ptr)
   fOut_ = file_ptr;
 }
 
+void SBPLCollisionSpace::setPadding(double padding)
+{
+  padding_ = padding;
+}
+
 void SBPLCollisionSpace::setPlanningJoints(const std::vector<std::string> &joint_names)
 {
   planning_joints_ = joint_names;
+
+  //TODO: should call setOrderOfJointPositions() ?
+  //TODO: set inc_ vector
+  //TODO: set num_planning_joints_
 }
 
 bool SBPLCollisionSpace::init(std::string group_name)
@@ -179,6 +186,8 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
 
 bool SBPLCollisionSpace::checkLinkForCollision(const std::vector<double> &angles, int link_num, bool verbose, unsigned char &dist)
 {
+  ROS_ERROR("[cspace] checkLinkForCollision() is commented out.");
+
 /*
   unsigned char dist_temp = 0;
   std::vector<std::vector<int> > jnts;

@@ -155,6 +155,8 @@ class SBPLCollisionSpace
 
     void setPlanningJoints(const std::vector<std::string> &joint_names);
 
+    void setPadding(double padding);
+  
   private:
 
     /** NEW **/

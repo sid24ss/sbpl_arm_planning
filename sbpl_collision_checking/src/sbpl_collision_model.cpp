@@ -214,7 +214,7 @@ void SBPLCollisionModel::readGroups()
 {
   XmlRpc::XmlRpcValue all_groups;
 
-  std::string group_name = "groups";  //replace this
+  std::string group_name = "groups";
 
   if(!ph_.hasParam(group_name)) 
   {
