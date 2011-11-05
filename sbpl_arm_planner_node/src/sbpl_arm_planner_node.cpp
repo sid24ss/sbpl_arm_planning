@@ -47,6 +47,8 @@ SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subsc
   attached_object_frame_ = "r_gripper_r_finger_tip_link";
   allocated_time_ = 10.0;
   env_resolution_ = 0.02;
+
+  cspace_ = NULL;
 }
 
 SBPLArmPlannerNode::~SBPLArmPlannerNode()
@@ -133,6 +135,8 @@ bool SBPLArmPlannerNode::init()
 
   collision_object_subscriber_ = root_handle_.subscribe("collision_object", 3, &SBPLArmPlannerNode::collisionObjectCallback, this);
   object_subscriber_ = root_handle_.subscribe("attached_collision_object", 3, &SBPLArmPlannerNode::attachedObjectCallback,this);
+
+  joint_states_subscriber_ = root_handle_.subscribe("joint_states", 1, &SBPLArmPlannerNode::jointStatesCallback,this);
 
   // main planning service
   planning_service_ = root_handle_.advertiseService("/sbpl_planning/plan_path", &SBPLArmPlannerNode::planKinematicPath,this);
@@ -243,6 +247,50 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
     ROS_DEBUG("[updateMapFromCollisionMap] failed trying to get colmap_mutex_ mutex");
     return;
   }
+}
+
+void SBPLArmPlannerNode::jointStatesCallback(const sensor_msgs::JointStateConstPtr &state)
+{
+  if(cspace_ == NULL)
+    return;
+
+  std::vector<double> angles(7,0);
+
+  // torso_lift_link
+  cspace_->setJointPosition(state->name[12], state->position[12]);
+
+  if(arm_name_.compare("right_arm") == 0)
+  {
+    // r_gripper_l_finger_link & r_gripper_r_finger_link
+    cspace_->setJointPosition(state->name[24], state->position[24]);
+    cspace_->setJointPosition(state->name[25], state->position[25]);
+
+    // right arm - pr2 specific
+    angles[0] = state->position[17];
+    angles[1] = state->position[18];
+    angles[2] = state->position[16];
+    angles[3] = state->position[20];
+    angles[4] = state->position[19];
+    angles[5] = state->position[21];
+    angles[6] = state->position[22];
+  }
+  else
+  {
+    // l_gripper_l_finger_link & l_gripper_r_finger_link
+    cspace_->setJointPosition(state->name[36], state->position[36]);
+    cspace_->setJointPosition(state->name[37], state->position[37]);
+
+    // left arm - pr2 specific
+    angles[0] = state->position[29];
+    angles[1] = state->position[30];
+    angles[2] = state->position[28];
+    angles[3] = state->position[32];
+    angles[4] = state->position[31];
+    angles[5] = state->position[33];
+    angles[6] = state->position[34];
+  }
+
+  visualizeCollisionModel(angles);
 }
 
 void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedCollisionObjectConstPtr &attached_object)
@@ -617,7 +665,7 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
 
         //if(visualize_collision_model_trajectory_)
         //  aviz_->visualizeCollisionModelFromJointTrajectoryMsg(res.trajectory.joint_trajectory, *cspace_, throttle_);
-
+          
         if(use_research_heuristic_)
           visualizeElbowPoses();
 
@@ -1123,6 +1171,13 @@ void SBPLArmPlannerNode::printPath(FILE* fOut, const std::vector<std::vector<dou
   for(unsigned int i = 0; i < path.size(); i++)
     fprintf(fOut, "state %3d: %2.3f %2.3f %2.3f %2.3f %2.3f %2.3f %2.3f",i,path[i][0],path[i][1],path[i][2],path[i][3],path[i][4],path[i][5],path[i][6]);
   fprintf(fOut,"---------------------------------");
+}
+
+void SBPLArmPlannerNode::visualizeCollisionModel(const std::vector<double> &angles)
+{
+  std::vector<std::vector<double> > spheres;
+  cspace_->getCollisionCylinders(angles, spheres);
+  aviz_->visualizeSpheres(spheres, 140, 0.8, arm_name_ + "_model");
 }
 
 /* Node

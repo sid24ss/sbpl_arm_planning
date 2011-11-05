@@ -81,6 +81,7 @@ namespace sbpl_arm_planner
       ros::NodeHandle node_handle_, root_handle_;
       ros::ServiceServer planning_service_;
       ros::Subscriber object_subscriber_;
+      ros::Subscriber joint_states_subscriber_;
       message_filters::Subscriber<mapping_msgs::CollisionMap> collision_map_subscriber_;
       tf::MessageFilter<mapping_msgs::CollisionMap> *collision_map_filter_;
 
@@ -178,6 +179,8 @@ namespace sbpl_arm_planner
 
       void attachedObjectCallback(const mapping_msgs::AttachedCollisionObjectConstPtr &attached_object);
 
+      void jointStatesCallback(const sensor_msgs::JointStateConstPtr &state);
+
       void attachObject(const mapping_msgs::CollisionObject &obj);
 
       /** \brief Plan a path to a cartesian goal(s) */
@@ -234,6 +237,8 @@ namespace sbpl_arm_planner
 
       /** \brief Visualize voxels occupying known collision objects */
       void visualizeCollisionObjects();
+      
+      void visualizeCollisionModel(const std::vector<double> &angles);
   };
 }
 
