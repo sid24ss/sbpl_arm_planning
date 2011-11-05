@@ -4,6 +4,8 @@
 
     <rosparam command="load" file="$(find sbpl_arm_planner)/config/pr2_left_arm.yaml" />
 
+    <rosparam command="load" file="$(find sbpl_collision_checking)/config/pr2_left_arm_model.yaml" />
+
     <param name="planner/arm_description_file" value="$(find sbpl_arm_planner)/config/pr2_left_arm.cfg" />
     <param name="planner/motion_primitive_file" value="$(find sbpl_arm_planner)/config/pr2.mprim" />
 
