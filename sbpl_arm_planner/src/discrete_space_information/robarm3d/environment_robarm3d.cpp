@@ -1125,6 +1125,18 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     return false;
   }
 
+  // temporary hack - should be returned to the new cspace
+  std::vector<std::vector<double> > cuboids = arm_->getCollisionCuboids();
+  ROS_INFO("[env] received %d cuboids\n",int(cuboids.size()));
+
+  for(size_t i = 0; i < cuboids.size(); i++)
+  {
+    if(cuboids[i].size() == 6)
+      grid_->addCollisionCuboid(cuboids[i][0],cuboids[i][1],cuboids[i][2],cuboids[i][3],cuboids[i][4],cuboids[i][5]);
+    else
+      ROS_INFO("[env] Self-collision cuboid #%d has an incomplete description.\n", i);
+  }
+
   // Check if an IK solution exists for the goal pose before we do the search
   // we plan even if there is no solution
   std::vector<double> pose(7,0);
