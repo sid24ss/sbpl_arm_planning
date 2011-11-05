@@ -47,8 +47,8 @@ SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subsc
   attached_object_frame_ = "r_gripper_r_finger_tip_link";
   allocated_time_ = 10.0;
   env_resolution_ = 0.02;
-
   cspace_ = NULL;
+  map_frame_ = "base_link";
 }
 
 SBPLArmPlannerNode::~SBPLArmPlannerNode()
@@ -124,8 +124,6 @@ bool SBPLArmPlannerNode::init()
   node_handle_.param ("visualizations/collision_model_trajectory", visualize_collision_model_trajectory_, false);
   node_handle_.param ("visualizations/trajectory_throttle", throttle_, 4);
 
-  map_frame_ = "base_link";
-
   //initialize planner
   if(!initializePlannerAndEnvironment())
     return false;
@@ -180,7 +178,7 @@ bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
   cspace_ = sbpl_arm_env_.getCollisionSpace();
 
   //sad excuse for self-collision checking
-  cspace_->addArmCuboidsToGrid();
+  //cspace_->addArmCuboidsToGrid();
 
   grid_ = sbpl_arm_env_.getOccupancyGrid();
 
@@ -200,7 +198,7 @@ bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
   aviz_ = new VisualizeArm(arm_name_);
   aviz_->setReferenceFrame(reference_frame_);
 
-  ROS_INFO("Initialized sbpl planning environment.");
+  ROS_DEBUG("Initialized sbpl arm planning environment.");
   return true;
 }
 
@@ -212,10 +210,10 @@ void SBPLArmPlannerNode::collisionMapCallback(const mapping_msgs::CollisionMapCo
 
 void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map)
 {
-  ROS_DEBUG("[updateMapFromCollisionMap] trying to get colmap_mutex_");
+  ROS_DEBUG("[node] trying to get colmap_mutex_");
   if(colmap_mutex_.try_lock())
   {
-    ROS_DEBUG("[updateMapFromCollisionMap] locked colmap_mutex_");
+    ROS_DEBUG("[node] locked colmap_mutex_");
 
     if(collision_map->header.frame_id.compare(reference_frame_) != 0)
     {
@@ -227,7 +225,7 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
     grid_->updateFromCollisionMap(*collision_map);
 
     // add self collision blocks
-    cspace_->addArmCuboidsToGrid();
+    //cspace_->addArmCuboidsToGrid();
   
     cspace_->putCollisionObjectsInGrid();
 
@@ -235,7 +233,7 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
     setArmToMapTransform(map_frame_);
 
     colmap_mutex_.unlock();
-    ROS_DEBUG("[updateMapFromCollisionMap] released colmap_mutex_ mutex.");
+    ROS_DEBUG("[node] released colmap_mutex_ mutex.");
 
     visualizeCollisionObjects();
 
@@ -244,7 +242,7 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
   }
   else
   {
-    ROS_DEBUG("[updateMapFromCollisionMap] failed trying to get colmap_mutex_ mutex");
+    ROS_DEBUG("[node] failed trying to get colmap_mutex_ mutex");
     return;
   }
 }
