@@ -120,6 +120,25 @@ void SBPLArmPlannerParams::initFromParamServer()
   nh.param("collision_space/occupancy_grid/size_x",sizeX_,1.6);
   nh.param("collision_space/occupancy_grid/size_y",sizeY_,1.8);
   nh.param("collision_space/occupancy_grid/size_z",sizeZ_,1.4);
+
+  nh.param<std::string>("collision_space/group_name",group_name_,"");
+
+  XmlRpc::XmlRpcValue joints_param;
+  nh.getParam("planning_joints", joints_param);
+
+  if(joints_param.getType() != XmlRpc::XmlRpcValue::TypeArray)
+    ROS_DEBUG("Planning joints list is not an array.");
+
+  std::string joint_list = std::string(joints_param);
+  std::stringstream joint_name_stream(joint_list);
+  while(joint_name_stream.good() && !joint_name_stream.eof())
+  {
+    std::string jname;
+    joint_name_stream >> jname;
+    if(jname.size() == 0)
+      continue;
+    planning_joints_.push_back(jname);
+  }
 }
 
 bool SBPLArmPlannerParams::initFromParamFile(std::string param_file)

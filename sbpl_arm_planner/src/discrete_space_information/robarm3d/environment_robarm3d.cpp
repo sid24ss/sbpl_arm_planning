@@ -758,6 +758,12 @@ bool EnvironmentROBARM3D::initGeneral()
   //create the collision space
   cspace_ = new SBPLCollisionSpace(grid_);
 
+  cspace_->setPlanningJoints(prms_.planning_joints_);
+
+  cspace_->setPadding(0.02);
+
+  cspace_->init(prms_.group_name_);
+
   //create the rpysolver
   rpysolver_ = new RPYSolver(arm_, cspace_);
 
@@ -784,12 +790,6 @@ bool EnvironmentROBARM3D::initGeneral()
     arm_->printArmDescription(std::string("sbpl_arm"));
     prms_.printParams(std::string("sbpl_arm"));
     prms_.printMotionPrims(std::string("sbpl_arm"));
-  }
-
-  if(prms_.verbose_)
-  {
-    arm_->printArmDescription(std::string("sbpl_arm"));
-    prms_.printParams(std::string("sbpl_arm"));
   }
 
   //set heuristic function pointer
@@ -1930,6 +1930,8 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID)
   //distance to closest goal in meters
   grid_->gridToWorld(FromHashEntry->xyz[0],FromHashEntry->xyz[1],FromHashEntry->xyz[2],FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
   edist_to_goal_m = getDistToClosestGoal(FromEndEff_m, &closest_goal);
+
+  //ROS_ERROR("heur_xyz: %0.3f %0.3f %0.3f", FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
 
   //get distance heuristic
   if(prms_.use_dijkstra_heuristic_)

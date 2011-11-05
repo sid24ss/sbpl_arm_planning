@@ -37,6 +37,8 @@
 #include <ros/ros.h>
 #include <angles/angles.h>
 #include <sbpl/config.h>
+#include <sstream>
+#include <boost/algorithm/string.hpp>
 
 #define DEG2RAD(d) ((d)*(M_PI/180.0))
 #define RAD2DEG(r) ((r)*(180.0/M_PI))
@@ -216,6 +218,9 @@ class SBPLArmPlannerParams
     int cost_per_second_;
     double time_per_cell_;
     std::vector<double> joint_vel_;
+
+    std::string group_name_;
+    std::vector<std::string> planning_joints_;
 };
 
 }
