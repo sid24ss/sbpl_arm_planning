@@ -21,12 +21,12 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-rosbuild_add_executable(sbpl_planner_node src/sbpl_arm_planner_node.cpp)
+rosbuild_add_executable(sbpl_arm_planner_node src/sbpl_arm_planner_node.cpp)
 
 rosbuild_add_executable(attachObject src/attach_object_to_right_gripper.cpp)
 
 rosbuild_add_executable(addObjectsToMap src/add_objects_to_map.cpp)
 
-target_link_libraries(sbpl_planner_node sbpl_arm_planner)
-target_link_libraries(sbpl_planner_node visualize_arm)
+target_link_libraries(sbpl_arm_planner_node sbpl_arm_planner)
+target_link_libraries(sbpl_arm_planner_node visualize_arm)
 
