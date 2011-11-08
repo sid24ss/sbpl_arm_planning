@@ -27,8 +27,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __SBPL_ARM_PLANNER_PARAMS_H_
-#define __SBPL_ARM_PLANNER_PARAMS_H_
+#ifndef _SBPL_ARM_PLANNER_PARAMS_H_
+#define _SBPL_ARM_PLANNER_PARAMS_H_
 
 #include <iostream>
 #include <string>
