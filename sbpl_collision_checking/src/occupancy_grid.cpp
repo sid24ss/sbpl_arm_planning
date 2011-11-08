@@ -52,13 +52,13 @@ OccupancyGrid::OccupancyGrid()
   grid_size_[1] = world_size_[1] / grid_resolution_;
   grid_size_[2] = world_size_[2] / grid_resolution_;
 
-  prop_distance_ = 0.60;
+  prop_distance_ = 0.30;
 
   grid_ = new distance_field::PropagationDistanceField(world_size_[0], world_size_[1], world_size_[2], grid_resolution_, origin_[0], origin_[1], origin_[2], prop_distance_);
 
   grid_->reset();
 
-  reference_frame_="base_link";
+  reference_frame_="base_footprint";
 }
 
 OccupancyGrid::OccupancyGrid(double dim_x, double dim_y, double dim_z, double resolution, double origin_x, double origin_y, double origin_z)
@@ -103,7 +103,7 @@ void OccupancyGrid::setWorldSize(double dim_x, double dim_y, double dim_z)
   world_size_[1] = dim_y;
   world_size_[2] = dim_z;
 
-  ROS_INFO("[OccupancyGrid] Set internal world dimensions but not distance field\n");
+  ROS_INFO("[grid] Set internal world dimensions but not distance field\n");
 }
 
 void OccupancyGrid::getWorldSize(double &dim_x, double &dim_y, double &dim_z)
@@ -141,15 +141,14 @@ void OccupancyGrid::updateFromCollisionMap(const mapping_msgs::CollisionMap &col
 {
   if(collision_map.boxes.empty())
   {
-    ROS_INFO("[updateFromCollisionMap] collision map received is empty.");
+    ROS_INFO("[grid] collision map received is empty.");
     return;
   }
 
   reference_frame_ = collision_map.header.frame_id;
 
-  ROS_DEBUG("[OccupancyGrid] Resetting grid and updating from collision map");
+  ROS_DEBUG("[grid] Resetting grid and updating from collision map");
   grid_->reset();
-  //grid_->addPointsToField(cuboid_points_);
   grid_->addCollisionMapToField(collision_map);
 }
 
@@ -172,7 +171,7 @@ void OccupancyGrid::addCollisionCuboid(double origin_x, double origin_y, double 
 
   grid_->addPointsToField(cuboid_points_);
 
-  ROS_DEBUG("[addCollisionCuboid] Added %d points for collision cuboid (origin: %0.2f %0.2f %0.2f  size: %0.2f %0.2f %0.2f).", num_points, origin_x, origin_y, origin_z, size_x, size_y, size_z);
+  ROS_DEBUG("[grid] Added %d points for collision cuboid (origin: %0.2f %0.2f %0.2f  size: %0.2f %0.2f %0.2f).", num_points, origin_x, origin_y, origin_z, size_x, size_y, size_z);
 }
 
 void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<btVector3> &voxels)

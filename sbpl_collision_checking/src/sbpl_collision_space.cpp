@@ -107,10 +107,15 @@ bool SBPLCollisionSpace::init(std::string group_name)
 
   model_.printGroups();
 
+  // visualizer for debugging
+  aviz_ = new VisualizeArm(group_name_);
+  std::string frame = "base_footprint";
+  aviz_->setReferenceFrame(frame);
+
   return true;
 }
 
-bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool verbose, bool check_mesh, unsigned char &dist)
+bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool verbose, bool visualize, unsigned char &dist)
 {
   unsigned char dist_temp=100;
   dist = 100;
@@ -171,11 +176,20 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
   if(!isValidAttachedObject(angles, dist_temp))
   {
     dist = dist_temp;
-    return false;
+    ROS_WARN("[cspace] Attached object is in collision.");
+
+    in_collision = true;
+    //return false;
   }
 
   if(object_attached_ && dist_temp < dist)
       dist = dist_temp;
+
+  if(visualize)
+  {
+    visualizeCollisionModel(angles,"model");
+    visualizeCollisions(angles,"collisions");
+  }
 
   // temporarily just for debugging
   if(in_collision)
@@ -559,6 +573,7 @@ bool SBPLCollisionSpace::getCollisionCylinders(const std::vector<double> &angles
     cylinders.push_back(xyzr);
   }
 
+  /*
   // get spheres of the object
   if(object_attached_)
   {
@@ -572,6 +587,7 @@ bool SBPLCollisionSpace::getCollisionCylinders(const std::vector<double> &angles
       cylinders.push_back(xyzr);
     }
   }
+  */
 
   return true;
 }
@@ -628,7 +644,7 @@ void SBPLCollisionSpace::removeAttachedObject()
 {
   object_attached_ = false;
   object_points_.clear();
-  ROS_INFO("[removeAttachedObject] Removed attached object.");
+  ROS_INFO("[cspace] Removed attached object.");
 }
 
 void SBPLCollisionSpace::attachSphereToGripper(std::string frame, geometry_msgs::Pose pose, double radius)
@@ -637,13 +653,14 @@ void SBPLCollisionSpace::attachSphereToGripper(std::string frame, geometry_msgs:
   attached_object_frame_ = frame;
   model_.getFrameInfo(attached_object_frame_, group_name_, attached_object_chain_num_, attached_object_segment_num_);
   
-  ROS_INFO("[addSphereToGripper] Pose of Sphere: %0.3f %0.3f %0.3f radius: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius); 
-  attached_object_radius_ = radius / grid_->getResolution();
+  ROS_INFO("[cspace] [attached_object] Attaching sphere.  pose: %0.3f %0.3f %0.3f radius: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius); 
+  ROS_INFO("[cspace] [attached_object] frame: %s  group: %s  chain: %d  segment: %d", attached_object_frame_.c_str(), group_name_.c_str(), attached_object_chain_num_, attached_object_segment_num_); 
+  attached_object_radius_ = radius / grid_->getResolution() + 0.5;
   
   object_points_.resize(1);
   tf::PoseMsgToKDL(pose, object_points_[0]);
 
-  ROS_DEBUG("[addSphereToGripper] Added collision sphere.  xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
+  ROS_INFO("[cspace] [attached_object] Added collision sphere.  xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
 }
 
 void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msgs::Pose pose, double radius, double length)
@@ -652,9 +669,9 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   attached_object_frame_ = frame;
   model_.getFrameInfo(attached_object_frame_, group_name_, attached_object_chain_num_, attached_object_segment_num_);
   
-  ROS_DEBUG("[addCylinderToGripper] Cylinder: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius, length); 
-
-  attached_object_radius_ = radius / grid_->getResolution();
+  ROS_INFO("[cspace] [attached_object] Attaching cylinder. pose: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, radius, length); 
+  ROS_INFO("[cspace] [attached_object] frame: %s  group: %s  chain: %d  segment: %d", attached_object_frame_.c_str(), group_name_.c_str(), attached_object_chain_num_, attached_object_segment_num_); 
+  attached_object_radius_ = radius / grid_->getResolution() + 0.5;
 
   if(attached_object_radius_ < 1)
     attached_object_radius_ = 1;
@@ -667,8 +684,8 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   object_points_[0].p.data[2] -= length/2.0;
   object_points_[1].p.data[2] += length/2.0;
 
-  ROS_DEBUG("[addCylinderToGripper] Added cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
-  ROS_DEBUG("[addCylinderToGripper] Added cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), radius, attached_object_radius_);
+  ROS_INFO("[cspace] [attached_object] Added cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), radius, attached_object_radius_);
+  ROS_INFO("[cspace] [attached_object] Added cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), radius, attached_object_radius_);
 }
 
 void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices)
@@ -774,6 +791,10 @@ bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles
   unsigned char dist_temp = 0;
   KDL::Vector p_base,p1,p2;
   std::vector<int> q1(3,0), q2(3,0);
+  
+  // for debugging
+  Sphere s;
+  attached_collision_spheres_.clear();
 
   if(!object_attached_)
     return true;
@@ -787,7 +808,17 @@ bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles
     p_base = frames_[attached_object_chain_num_][attached_object_segment_num_] * object_points_[i].p;
 
     if(!isValidPoint(p_base.data[0],p_base.data[1],p_base.data[2],attached_object_radius_,dist))
-      return false;
+    {
+      ROS_INFO("[cspace] Attached object point is in collision. xyz: %0.3f %0.3f %0.3f radius: %d cells (dist: %d cells).", p_base.data[0],p_base.data[1],p_base.data[2],attached_object_radius_,int(dist));
+
+      // for debugging
+      s.v.x(p_base.data[0]);
+      s.v.y(p_base.data[1]);
+      s.v.z(p_base.data[2]);
+      s.radius = attached_object_radius_ * grid_->getResolution();
+      attached_collision_spheres_.push_back(s);
+      //return false;
+    }
   }
 
   // check if the cylinder between the points is valid
@@ -803,7 +834,7 @@ bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles
 
     if(dist_temp <= attached_object_radius_)
     { 
-      dist = dist_temp;
+      dist = dist_temp; 
       return false;
     }
 
@@ -848,6 +879,7 @@ bool SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, st
     xyz[i][0] = p_base.data[0];
     xyz[i][1] = p_base.data[1];
     xyz[i][2] = p_base.data[2];
+    xyz[i][3] = attached_object_radius_ * grid_->getResolution();
   }
 
   // check if the cylinder between the points is valid
@@ -865,6 +897,7 @@ bool SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, st
     for(size_t j = 0; j < cells.size();j++)
     {
       grid_->gridToWorld(cells[j][0],cells[j][1],cells[j][2],point[0],point[1],point[2]);
+      point[3] = attached_object_radius_ * grid_->getResolution();
       xyz.push_back(point);
     }
   }
@@ -992,7 +1025,7 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
       ROS_DEBUG("[%s] occupies %d voxels.",object.id.c_str(), int(object_voxel_map_[object.id].size()));
     }
     else
-      ROS_WARN("[addCollisionObject] Collision objects of type %d are not yet supported.", object.shapes[i].type);
+      ROS_WARN("[cspace] Collision objects of type %d are not yet supported.", object.shapes[i].type);
   }
 
   // add this object to list of objects that get added to grid
@@ -1006,7 +1039,7 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
     known_objects_.push_back(object.id);
 
   grid_->addPointsToField(object_voxel_map_[object.id]);
-  ROS_DEBUG("[addCollisionObject] Just added %s to the distance field.", object.id.c_str());
+  ROS_DEBUG("[cspace] Just added %s to the distance field.", object.id.c_str());
 }
 
 void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObject &object)
@@ -1016,7 +1049,7 @@ void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObje
     if(known_objects_[i].compare(object.id) == 0)
     {
       known_objects_.erase(known_objects_.begin() + i);
-      ROS_DEBUG("[removeCollisionObject] Removing %s from list of known objects.", object.id.c_str());
+      ROS_INFO("[cspace] Removing %s from list of known collision objects.", object.id.c_str());
     }
   }
 }
@@ -1024,16 +1057,17 @@ void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObje
 void SBPLCollisionSpace::removeAllCollisionObjects()
 {
   known_objects_.clear();
+  ROS_INFO("[cspace] Clearing list of known collision objects.");
 }
 
 void SBPLCollisionSpace::putCollisionObjectsInGrid()
 {
-  ROS_DEBUG("[putCollisionObjectsInGrid] Should we reset first?");
+  ROS_DEBUG("[cspace] Should we reset first?");
 
   for(size_t i = 0; i < known_objects_.size(); ++i)
   {
     grid_->addPointsToField(object_voxel_map_[known_objects_[i]]);
-    ROS_DEBUG("[putCollisionObjectsInGrid] Added %s to grid with %d voxels.",known_objects_[i].c_str(), int(object_voxel_map_[known_objects_[i]].size()));
+    ROS_INFO("[cspace] Added %s to grid with %d voxels.",known_objects_[i].c_str(), int(object_voxel_map_[known_objects_[i]].size()));
   }
 }
 
@@ -1072,6 +1106,95 @@ void SBPLCollisionSpace::setJointPosition(std::string name, double position)
 {
   ROS_DEBUG("[cspace] Setting %s joint position = %0.3f.", name.c_str(), position);
   model_.setJointPosition(name, position);
+}
+
+void SBPLCollisionSpace::visualizeCollisionModel(const std::vector<double> &angles, std::string text)
+{
+  std::vector<std::vector<double> > spheres;
+  // arm
+  getCollisionCylinders(angles, spheres);
+  aviz_->visualizeSpheres(spheres, 210, 0.5, text);
+  ROS_DEBUG("[cspace] Visualizing %d spheres of the robot's collision model.", int(spheres.size()));
+
+  // attached object
+  spheres.clear();
+  getAttachedObject(angles, spheres);
+  if(spheres.size() > 0)
+  {
+    aviz_->visualizeSpheres(spheres, 210, 0.5, text+" (object)");
+    ROS_DEBUG("[node] Visualizing %d attached_object spheres if its collision model.", int(spheres.size()));
+  }
+  else
+    ROS_DEBUG("[node] No attached object.");
+}
+
+void SBPLCollisionSpace::visualizeCollisions(const std::vector<double> &angles, std::string text)
+{
+  std::vector<double> s(4,0);
+  std::vector<std::vector<double> > spheres;
+  // arm
+  for(size_t i = 0; i < collision_spheres_.size(); ++i)
+  {
+    s[0] = collision_spheres_[i].v.x();
+    s[1] = collision_spheres_[i].v.y();
+    s[2] = collision_spheres_[i].v.z();
+    s[3] = collision_spheres_[i].radius;
+    spheres.push_back(s);
+  }
+  if(spheres.size() > 0)
+  {
+    aviz_->visualizeSpheres(spheres, 50, 0.6, text);
+    ROS_INFO("[cspace] Visualizing %d spheres in collision.", int(spheres.size()));
+  }
+
+  // attached object
+  spheres.clear();
+  for(size_t i = 0; i < attached_collision_spheres_.size(); ++i)
+  {
+    s[0] = attached_collision_spheres_[i].v.x();
+    s[1] = attached_collision_spheres_[i].v.y();
+    s[2] = attached_collision_spheres_[i].v.z();
+    s[3] = attached_collision_spheres_[i].radius;
+
+    visualizeVoxels(s[0],s[1],s[2],s[3],"voxels near object-" + boost::lexical_cast<std::string>(i)); 
+    spheres.push_back(s);
+  }
+  if(spheres.size() > 0)
+  {
+    aviz_->visualizeSpheres(spheres, 50, 0.6, text+" (object)");
+    ROS_INFO("[node] Visualizing %d attached_object spheres in collision.", int(spheres.size()));
+  }
+  else
+    ROS_DEBUG("[node] No attached object.");
+}
+
+void SBPLCollisionSpace::visualizeVoxels(double x_center, double y_center, double z_center, double radius, std::string text)
+{
+  int x_c, y_c, z_c, radius_c;
+  std::vector<double> v(3,0);
+  std::vector<std::vector<double> > voxels;
+ 
+  grid_->worldToGrid(x_center, y_center, z_center, x_c, y_c, z_c);
+
+  radius_c = radius/grid_->getResolution() + 0.5;
+  
+  for(int z = z_c-radius_c; z < z_c+radius_c; ++z)
+  {
+    for(int y = y_c-radius_c; y < y_c+radius_c; ++y)
+    {
+      for(int x = x_c-radius_c; x < x_c+radius_c; ++x)
+      {
+        if(grid_->getCell(x,y,z) == 0)
+        {
+          grid_->gridToWorld(x, y, z, v[0], v[1], v[2]);
+          voxels.push_back(v);
+        }
+      }
+    }
+  }
+  aviz_->visualizeSpheres(voxels, 218, text, grid_->getResolution());
+  ROS_INFO("[cspace] Visualizing cells centered around cell %d %d %d with radius %d cells", x_c, y_c, z_c, radius_c);
+  ROS_INFO("[cspace] Visualizing %d voxel spheres around %0.3f %0.3f %0.3f with radius %0.3fm", int(voxels.size()), x_center, y_center, z_center, radius);
 }
 
 }
