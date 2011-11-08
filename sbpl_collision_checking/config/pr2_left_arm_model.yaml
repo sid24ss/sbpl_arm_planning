@@ -17,7 +17,7 @@ groups:
       root: l_upper_arm_roll_link
       spheres: s0 s1 s2 
     - name: forearm
-      root: l_elbow_flex_link
+      root: l_forearm_roll_link
       spheres: s3 s4 s5 s6
     - name: gripper
       root: l_wrist_roll_link
@@ -40,7 +40,7 @@ groups:
 s0: {x: 0.18, y: 0.0, z: 0.01, radius: 0.08, priority: 4}
 s1: {x: 0.28, y: 0.00, z: -0.03, radius: 0.06, priority: 3}
 s2: {x: 0.40, y: 0.0, z: 0.01, radius: 0.09, priority: 1}
-s3: {x: 0.12, y: 0.0, z: 0.02, radius: 0.07, priority: 2}
+s3: {x: 0.12, y: 0.0, z: 0.01, radius: 0.07, priority: 2}
 s4: {x: 0.19, y: 0.0, z: -0.01, radius: 0.06, priority: 3}
 s5: {x: 0.25, y: 0.0, z: -0.01, radius: 0.06, priority: 3}
 s6: {x: 0.32, y: 0.0, z: -0.01, radius: 0.06, priority: 3}

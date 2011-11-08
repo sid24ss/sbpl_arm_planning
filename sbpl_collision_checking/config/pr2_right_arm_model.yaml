@@ -17,7 +17,7 @@ groups:
       root: r_upper_arm_roll_link
       spheres: s0 s1 s2 
     - name: forearm
-      root: r_elbow_flex_link
+      root: r_forearm_roll_link
       spheres: s3 s4 s5 s6
     - name: gripper
       root: r_wrist_roll_link
@@ -30,17 +30,17 @@ groups:
       spheres: s12 s13 #s14
     - name: right_finger_tip
       root: r_gripper_r_finger_tip_link
-      spheres: s16
+      spheres: s16 s18
     - name: left_finger_tip
       root: r_gripper_l_finger_tip_link
-      spheres: s17
+      spheres: s17 s19
 
 
 
 s0: {x: 0.18, y: 0.0, z: 0.01, radius: 0.08, priority: 4}
 s1: {x: 0.28, y: 0.00, z: -0.03, radius: 0.06, priority: 3}
 s2: {x: 0.40, y: 0.0, z: 0.01, radius: 0.09, priority: 1}
-s3: {x: 0.12, y: 0.0, z: 0.02, radius: 0.07, priority: 2}
+s3: {x: 0.12, y: 0.0, z: 0.01, radius: 0.07, priority: 2}
 s4: {x: 0.19, y: 0.0, z: -0.01, radius: 0.06, priority: 3}
 s5: {x: 0.25, y: 0.0, z: -0.01, radius: 0.06, priority: 3}
 s6: {x: 0.32, y: 0.0, z: -0.01, radius: 0.06, priority: 3}
@@ -53,5 +53,7 @@ s12: {x: 0.04, y: -0.03, z: 0.00, radius: 0.03, priority: 1}
 s13: {x: 0.08, y: -0.0175, z: 0.00, radius: 0.02, priority: 1}
 s14: {x: 0.11, y: -0.005, z: 0.00, radius: 0.02, priority: 1}
 s15: {x: 0.08, y: 0.0, z: 0.00, radius: 0.16, priority: 5}
-s16: {x: 0.01, y: 0.005, z: 0.00, radius: 0.02, priority: 1}
-s17: {x: 0.01, y: -0.005, z: 0.00, radius: 0.02, priority: 1}
+s16: {x: 0.015, y: 0.005, z: 0.00, radius: 0.03, priority: 1}
+s17: {x: 0.015, y: -0.005, z: 0.00, radius: 0.03, priority: 1}
+s18: {x: 0.025, y: 0.005, z: 0.00, radius: 0.02, priority: 1}
+s19: {x: 0.025, y: -0.005, z: 0.00, radius: 0.02, priority: 1}
