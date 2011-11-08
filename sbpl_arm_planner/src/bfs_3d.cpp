@@ -27,7 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \author Benjamin Cohen, Maxim Likhachev */
+/** \author Benjamin Cohen, Mike Philips, Maxim Likhachev */
 
 #include <sbpl_arm_planner/bfs_3d.h>
 
@@ -212,13 +212,16 @@ bool BFS3D::runBFS()
   dist_length_ =  (dimX_-1) + (dimY_-1)*(dimX_) + (dimZ_-1)*(dimX_)*(dimY_) + 1;
   dist_.resize(dist_length_);
 
+  search3DwithFifo();
+  
+/* Uncomment this if using a queue:
+ 
   State3D*** statespace3D;
-  //create3DStateSpace(&statespace3D);
+  create3DStateSpace(&statespace3D);
+  search3DwithQueue(statespace3D);
+  delete3DStateSpace(&statespace3D);
+*/
 
-  //search3DwithQueue(statespace3D);
-  search3DwithFifo(statespace3D);
-
-  //delete3DStateSpace(&statespace3D);
 #if DEBUG_TIME
   SBPL_DEBUG("completed in %.3f seconds.\n", double(clock()-currenttime) / CLOCKS_PER_SEC);
 #endif
@@ -230,10 +233,9 @@ int dx[DIRECTIONS3D] = { 1,  1,  1,  0,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0
 int dy[DIRECTIONS3D] = { 1,  0, -1,  1,  0, -1, -1,  0,  1,    1,  0, -1,  1, -1, -1,  0,  1,    1,  0, -1,  1,  0, -1, -1,  0,  1};
 int dz[DIRECTIONS3D] = {-1, -1, -1, -1, -1, -1, -1, -1, -1,    0,  0,  0,  0,  0,  0,  0,  0,    1,  1,  1,  1,  1,  1,  1,  1,  1};
 
-void BFS3D::search3DwithFifo(State3D*** statespace)
+/* Mike Philips */
+void BFS3D::search3DwithFifo()
 {
-  clock_t t0 = clock();
-
   for(int x=0; x<dimX_; x++){
     for(int y=0; y<dimY_; y++){
       for(int z=0; z<dimZ_; z++){

@@ -29,6 +29,9 @@
 
 /** \Author: Benjamin Cohen /bcohen@willowgarage.com **/
 
+#ifndef _BFS3D_
+#define _BFS3D_
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -41,9 +44,6 @@
 #include <distance_field/propagation_distance_field.h>
 
 using namespace std;
-
-#ifndef _BFS3D_
-#define _BFS3D_
 
 #define SMALL_NUM  0.00000001  
 #define INFINITE_COST 1000000000 
@@ -176,7 +176,7 @@ class BFS3D
     void create3DStateSpace(State3D**** statespace3D);
     void delete3DStateSpace(State3D**** statespace3D);
     inline int xyzToIndex(int x, int y, int z);
-    void search3DwithFifo(State3D*** statespace);
+    void search3DwithFifo();
     void search3DwithQueue(State3D*** statespace);
     bool isGoal(const std::vector<int> &state);
     bool isValidCell(const int x, const int y, const int z);
