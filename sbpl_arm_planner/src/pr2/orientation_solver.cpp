@@ -375,7 +375,7 @@ bool RPYSolver::isOrientationFeasible(const double* rpy, std::vector<double> &st
   std::vector<double>endeff_pose(6,0);
   std::vector<double>goal_joint_config(7,0);
 
-  int link_num = 2; //added 6/15/11
+  //int link_num = 2; //added 6/15/11
 
   //get pose of forearm link
   if(!arm_->computeFK(start,FOREARM_ROLL,forearm_pose))

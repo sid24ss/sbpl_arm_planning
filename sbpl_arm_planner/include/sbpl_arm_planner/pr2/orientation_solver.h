@@ -6,15 +6,15 @@
  * 4/14/2010
 */
 
+#ifndef _ORIENTATION_SOLVER_
+#define _ORIENTATION_SOLVER_
+
 #include <stdio.h>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <sbpl_arm_planner/sbpl_arm_model.h>
 #include <sbpl_collision_checking/sbpl_collision_space.h>
-
-#ifndef _ORIENTATION_SOLVER_
-#define _ORIENTATION_SOLVER_
 
 using namespace std;
 

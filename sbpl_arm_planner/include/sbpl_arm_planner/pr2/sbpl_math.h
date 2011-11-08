@@ -5,11 +5,11 @@
   ---14/04/2010---
 */
 
-#include <math.h>
-#include <vector>
-
 #ifndef _SBPL_MATH_
 #define _SBPL_MATH_
+
+#include <math.h>
+#include <vector>
 
 /* Basic Operations */
 void multiply(double*, double*, int, int, double*, int);
