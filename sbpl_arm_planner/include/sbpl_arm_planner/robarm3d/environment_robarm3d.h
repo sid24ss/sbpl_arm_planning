@@ -29,6 +29,9 @@
 
 /** \Author: Benjamin Cohen /bcohen@willowgarage.com **/
 
+#ifndef _ENVIRONMENT_ROBARM3D_H_
+#define _ENVIRONMENT_ROBARM3D_H_
+
 #include <time.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -39,20 +42,17 @@
 #include <string>
 #include <list>
 #include <algorithm>
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <angles/angles.h>
 #include <sbpl/headers.h>
 #include <sbpl_arm_planner/bfs_3d.h>
-#include <sbpl_collision_checking/sbpl_collision_space.h>
 #include <sbpl_arm_planner/sbpl_arm_planner_params.h>
 #include <sbpl_arm_planner/pr2/sbpl_math.h>
 #include <sbpl_arm_planner/pr2/orientation_solver.h>
 #include <sbpl_arm_planner/pr2/pr2_workspace.h>
-#include <boost/thread.hpp>
-#include <boost/thread/mutex.hpp>
-
-#ifndef __ENVIRONMENT_ROBARM3D_H_
-#define __ENVIRONMENT_ROBARM3D_H_
+#include <sbpl_collision_checking/sbpl_collision_space.h>
 
 namespace sbpl_arm_planner
 {
@@ -272,7 +272,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
      * @param a 2D vector of joint angles
      * @return true if successful, false otherwise
     */
-    bool isPathValid(const std::vector<std::vector<double> > path);
+    //bool isPathValid(const std::vector<std::vector<double> > path);
 
     /**
      * @brief Check if a certain joint configuration is valid using the current occupancy grid.
@@ -310,7 +310,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
      * occupancy grid with.
      * @param a collision map
     */
-    void updateOccupancyGridFromCollisionMap(const mapping_msgs::CollisionMap &collision_map);
+    //void updateOccupancyGridFromCollisionMap(const mapping_msgs::CollisionMap &collision_map);
 
     /** 
      * @brief For debugging. Print out the IK stats and return the IK
@@ -326,11 +326,6 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
      * expanded during the search (when using ARA*)
     */
     void getExpandedStates(std::vector<std::vector<double> >* ara_states);
-
-    /**
-     * @brief Visualize the occupancy grid in rviz.
-    */
-    void visualizeOccupancyGrid();
 
     void setReferenceFrameTransform(KDL::Frame f, std::string &name);
 
@@ -348,7 +343,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
      * @param path
      * @param increment to interpolate by
     */
-    bool interpolatePathToGoal(std::vector<std::vector<double> > &path, double inc);
+    //bool interpolatePathToGoal(std::vector<std::vector<double> > &path, double inc);
 
     /** 
      * @brief compute possible elbow positions based on end effector goal 

@@ -207,6 +207,7 @@ bool EnvironmentROBARM3D::InitializeEnv(const char* sEnvFile)
     else
       SBPL_DEBUG("[InitializeEnv] Obstacle #%d has an incomplete obstacle description. Not adding obstacle it to grid.", i);
   }
+  grid_->visualize();
 
   //initialize the angles of the start states
   if(!setStartConfiguration(EnvROBARMCfg.start_configuration))
@@ -760,7 +761,7 @@ bool EnvironmentROBARM3D::initGeneral()
 
   cspace_->setPlanningJoints(prms_.planning_joints_);
 
-  cspace_->setPadding(0.02);
+  cspace_->setPadding(0.00);
 
   cspace_->init(prms_.group_name_);
 
@@ -1082,6 +1083,18 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
   if(int(angles.size()) < arm_->num_joints_)
     return false;
 
+  // temporary hack - should be returned to the new cspace
+  std::vector<std::vector<double> > cuboids = arm_->getCollisionCuboids();
+  ROS_INFO("[env] received %d cuboids.",int(cuboids.size()));
+  for(size_t i = 0; i < cuboids.size(); i++)
+  {
+    if(cuboids[i].size() == 6)
+      grid_->addCollisionCuboid(cuboids[i][0],cuboids[i][1],cuboids[i][2],cuboids[i][3],cuboids[i][4],cuboids[i][5]);
+    else
+      ROS_INFO("[env] Self-collision cuboid #%d has an incomplete description.", int(i));
+  }
+  grid_->visualize();
+
   //get joint positions of starting configuration
   if(!arm_->getPlanningJointPose(angles, pose))
     SBPL_WARN("Unable to compute forward kinematics for initial robot state. Attempting to plan anyway.");
@@ -1091,8 +1104,22 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
     SBPL_WARN("Starting configuration violates the joint limits. Attempting to plan anyway.");
 
   //check if the start configuration is in collision but plan anyway
-  if(!cspace_->checkCollision(angles, true, false, dist))
-    SBPL_WARN("The starting configuration is in collision. Attempting to plan anyway. (distance to nearest obstacle %0.2fm)", double(dist)*grid_->getResolution());
+  if(!cspace_->checkCollision(angles, true, true, dist))
+  {
+    SBPL_WARN("[env] The starting configuration is in collision. Attempting to plan anyway. (distance to nearest obstacle %0.2fm)", double(dist)*grid_->getResolution());
+    if(cspace_->collision_spheres_.size() > 0)
+    {
+      ROS_WARN("[env] Spheres in Collision:");
+      for(size_t i = 0; i < cspace_->collision_spheres_.size(); ++i)
+        ROS_WARN("[env] [%d] xyz: %0.3f %0.3f %0.3f  rad: %0.3f", int(i), cspace_->collision_spheres_[i].v.x(),cspace_->collision_spheres_[i].v.y(),cspace_->collision_spheres_[i].v.z(),cspace_->collision_spheres_[i].radius);
+    }
+    if(cspace_->attached_collision_spheres_.size() > 0)
+    {
+      ROS_WARN("[env] Attached Spheres in Collision:");
+      for(size_t i = 0; i < cspace_->attached_collision_spheres_.size(); ++i)
+        ROS_WARN("[env] [%d] xyz: %0.3f %0.3f %0.3f  rad: %0.3f", int(i), cspace_->attached_collision_spheres_[i].v.x(),cspace_->attached_collision_spheres_[i].v.y(),cspace_->attached_collision_spheres_[i].v.z(),cspace_->attached_collision_spheres_[i].radius);
+    }
+  }
 
   //get arm position in environment
   anglesToCoord(angles, EnvROBARM.startHashEntry->coord);
@@ -1124,10 +1151,10 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     SBPL_ERROR("[setGoalPosition] No goal constraint set.");
     return false;
   }
-
+/*
   // temporary hack - should be returned to the new cspace
   std::vector<std::vector<double> > cuboids = arm_->getCollisionCuboids();
-  ROS_INFO("[env] received %d cuboids\n",int(cuboids.size()));
+  ROS_INFO("[env] received %d cuboids",int(cuboids.size()));
 
   for(size_t i = 0; i < cuboids.size(); i++)
   {
@@ -1136,7 +1163,8 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     else
       ROS_INFO("[env] Self-collision cuboid #%d has an incomplete description.\n", i);
   }
-
+  grid_->visualize();
+*/
   // Check if an IK solution exists for the goal pose before we do the search
   // we plan even if there is no solution
   std::vector<double> pose(7,0);
@@ -1244,38 +1272,38 @@ bool EnvironmentROBARM3D::precomputeHeuristics()
   dij_goal[1] = EnvROBARMCfg.EndEffGoals[0].xyz[1];
   dij_goal[2] = EnvROBARMCfg.EndEffGoals[0].xyz[2];
 
-  SBPL_DEBUG("[precomputeHeuristics] Dijkstra Goal: %d %d %d",dij_goal[0],dij_goal[1],dij_goal[2]); 
+  SBPL_DEBUG("[env] Dijkstra Goal: %d %d %d",dij_goal[0],dij_goal[1],dij_goal[2]); 
 
   //set the goal for h_endeff
   if(!dijkstra_->setGoal(dij_goal))
   {
-    SBPL_ERROR("[precomputeHeuristics] Failed to set goal for Dijkstra search.");
+    SBPL_ERROR("[env] Failed to set goal for Dijkstra search.");
     return false;
   }
 
   //precompute h_elbow
   if(prms_.use_research_heuristic_)
   {
-    SBPL_DEBUG("[precomputeHeuristics] Spawning a new thread to compute elbow heuristic.");
+    SBPL_DEBUG("[env] Spawning a new thread to compute elbow heuristic.");
     heuristic_thread_ = new boost::thread(boost::bind(&EnvironmentROBARM3D::precomputeElbowHeuristic, this));
   }
 
   //precompute h_endeff
   if(!dijkstra_->runBFS())
   {
-    SBPL_ERROR("Executing the BFS for the end-effector heuristic failed. Exiting.");
+    SBPL_ERROR("[env] Executing the BFS for the end-effector heuristic failed. Exiting.");
     return false;
   }
 
   //kill the elbow heuristic thread 
   if(prms_.use_research_heuristic_)
   {
-    SBPL_DEBUG("[precomputeHeuristics] Attempting to get the heuristic mutex.");
+    SBPL_DEBUG("[env] Attempting to get the heuristic mutex.");
     heuristic_mutex_.lock();
-    SBPL_DEBUG("[precomputeHeuristics] Got the heuristic mutex. Now killing the thread.");    
+    SBPL_DEBUG("[env] Got the heuristic mutex. Now killing the thread.");    
     if(!elbow_heuristic_completed_)
     {
-      SBPL_ERROR("[precomputeHeuristics] elbow heuristic failed.");
+      SBPL_ERROR("[env] elbow heuristic failed.");
       if(heuristic_thread_ != NULL)
       {
         heuristic_thread_->join();
@@ -1294,7 +1322,7 @@ bool EnvironmentROBARM3D::precomputeHeuristics()
     heuristic_mutex_.unlock();
   }
 
-  SBPL_DEBUG("Completed heuristic pre-computation");
+  SBPL_DEBUG("[env] Completed heuristic pre-computation");
   return true;
 }
 
@@ -1323,7 +1351,7 @@ bool EnvironmentROBARM3D::precomputeElbowHeuristic()
   grid_->worldToGrid(xyzrpy[0],xyzrpy[1],xyzrpy[2],shoulder[0],shoulder[1],shoulder[2]);
   if(!getElbowCellsAtGoal(shoulder, goal, arm_->getLinkRadius(0), arm_->getLinkRadius(1), elbow_cells))
   {
-    SBPL_WARN("[precomputeElbowHeuristic] No elbow cells returned. Exiting.\n");
+    SBPL_WARN("[env] No elbow cells returned. Exiting.\n");
     elbow_heuristic_completed_ = false;
     heuristic_mutex_.unlock();
     return false;
@@ -1339,7 +1367,7 @@ bool EnvironmentROBARM3D::precomputeElbowHeuristic()
 
   if(!elbow_dijkstra_->setGoals(elbow_shorts))
   {
-    SBPL_ERROR("[setGoalPosition] Failed to set goal for the h_elbow computation.\n");
+    SBPL_ERROR("[env] Failed to set goal for the h_elbow computation.\n");
     elbow_heuristic_completed_ = false;
     heuristic_mutex_.unlock();
     return false;
@@ -1355,7 +1383,7 @@ bool EnvironmentROBARM3D::precomputeElbowHeuristic()
   elbow_heuristic_completed_ = true;
   heuristic_mutex_.unlock();
 
-  SBPL_DEBUG("[precomputeElbowHeuristic] Exiting.\n");
+  SBPL_DEBUG("[env] Exiting.\n");
   return true;
 }
 
@@ -1485,7 +1513,7 @@ void EnvironmentROBARM3D::computeCostPerCell()
     //starting at zeroed angles, find end effector position after each action
     if(!arm_->getPlanningJointPose(angles, pose))
     {
-      SBPL_WARN("Failed to compute cost per cell because forward kinematics is returning an error.");
+      SBPL_WARN("[env] Failed to compute cost per cell because forward kinematics is returning an error.");
       return;
     }
 
@@ -1504,7 +1532,7 @@ void EnvironmentROBARM3D::computeCostPerCell()
 
   prms_.cost_per_meter_ = int(prms_.cost_per_cell_ / gridcell_size);
 
-  SBPL_DEBUG("[computeCostPerCell] cost per cell: %d cost per meter: %d",prms_.cost_per_cell_,prms_.cost_per_meter_);
+  SBPL_DEBUG("[env] cost per cell: %d cost per meter: %d",prms_.cost_per_cell_,prms_.cost_per_meter_);
 }
 
 double EnvironmentROBARM3D::getDistToClosestGoal(double *xyz, int* goal_num)
@@ -1535,25 +1563,13 @@ int EnvironmentROBARM3D::getDijkstraDistToGoal(short unsigned int x, short unsig
   return int(dijkstra_->getDist(endeff_cc[0],endeff_cc[1],endeff_cc[2]));
 }
 
-void EnvironmentROBARM3D::updateOccupancyGridFromCollisionMap(const mapping_msgs::CollisionMap &collision_map)
-{
-  if(collision_map.boxes.empty())
-  {
-    SBPL_ERROR("[updateOccupancyGridFromCollisionMap] collision map received is empty.");
-    return;
-  }
-  else
-    SBPL_DEBUG("[updateOccupancyGridFromCollisionMap] updating distance field with collision map with %d boxes.", int(collision_map.boxes.size()));
-
-  grid_->updateFromCollisionMap(collision_map);
-}
-
 bool EnvironmentROBARM3D::isValidJointConfiguration(const std::vector<double> angles)
 {
   unsigned char dist;
   return cspace_->checkCollision(angles,prms_.verbose_, false, dist);
 }
 
+/*
 bool EnvironmentROBARM3D::isPathValid(const std::vector<std::vector<double> > path)
 {
   unsigned char dist;
@@ -1563,13 +1579,14 @@ bool EnvironmentROBARM3D::isPathValid(const std::vector<std::vector<double> > pa
   {
     if(!cspace_->checkCollision(path[i], false, false, dist))
     {
-      SBPL_ERROR("[isPathValid] Waypoint #%d in path is invalid.", i);
+      SBPL_ERROR("[env] Waypoint #%d in path is invalid.", i);
       return false;
     }
   }
   return true;
 }
-
+*/
+/*
 bool EnvironmentROBARM3D::interpolatePathToGoal(std::vector<std::vector<double> > &path, double inc)
 {
   unsigned int i = 0, completed_joints = 0, pind = path.size() - 2;
@@ -1634,6 +1651,7 @@ bool EnvironmentROBARM3D::interpolatePathToGoal(std::vector<std::vector<double> 
   }
   return true;
 }
+*/
 
 std::vector<std::vector<double> > EnvironmentROBARM3D::getShortestPath()
 {
@@ -1726,11 +1744,6 @@ void EnvironmentROBARM3D::debugAdaptiveMotionPrims()
       }
     }
   }
-}
-
-void EnvironmentROBARM3D::visualizeOccupancyGrid()
-{
-  grid_->visualize();
 }
 
 void EnvironmentROBARM3D::setReferenceFrameTransform(KDL::Frame f, std::string &name)
