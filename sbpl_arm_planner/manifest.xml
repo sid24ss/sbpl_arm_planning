@@ -13,19 +13,17 @@
   <url>http://www.ros.org/wiki/sbpl_arm_planner</url>
 
 	<depend package="roscpp"/>
-  <depend package="sbpl" /> <!--everything-->
-  <depend package="sbpl_collision_checking" /> <!--everything-->
+  <depend package="sbpl" />
+  <depend package="sbpl_collision_checking" />
 	<depend package="angles" />
-  <depend package="kdl" /> <!--sbpl_arm_model-->
-  <depend package="kdl_parser" /> <!--sbpl_arm_model-->
 	<depend package="distance_field" />
-  <depend package="urdf" /> <!--sbpl_arm_model-->
-  <depend package="pr2_arm_kinematics"/> <!--sbpl_arm_model-->
-  <depend package="resource_retriever"/>
-	<depend package="bullet" />
+
+  <!-- sbpl_arm_model -->
+  <depend package="kdl" />
+  <depend package="kdl_parser" />
+  <depend package="urdf" />
+  <depend package="pr2_arm_kinematics"/>
 	<depend package="tf" />
-  <depend package="mapping_msgs" /> <!--add_object_to_map-->
-  <depend package="geometric_shapes" /> <!--sbpl_collision_space -->
 
   <export>
       <cpp cflags="-I${prefix}/include  -O3 -g" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lsbpl_arm_planner"/>
