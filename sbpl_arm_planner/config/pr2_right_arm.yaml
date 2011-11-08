@@ -1,6 +1,6 @@
 planner:
   epsilon: 100
-  verbose: false
+  verbose: true
   use_dijkstra_heuristic: true
   use_research_heuristic: false
   use_uniform_obstacle_cost: false
@@ -26,7 +26,7 @@ visualizations:
   expanded_states: false
   trajectory: false
   collision_model_trajectory: false
-  trajectory_throttle: 1
+  trajectory_throttle: 3
 
 collision_space:
   group_name: right_arm
