@@ -49,6 +49,18 @@ SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subsc
   env_resolution_ = 0.02;
   cspace_ = NULL;
   map_frame_ = "base_link";
+
+  stats_.resize(9);
+  stats_field_names_.resize(9);
+  stats_field_names_[0] = "initial solution planning time";
+  stats_field_names_[1] = "initial epsilon";
+  stats_field_names_[2] = "initial solution expansions";
+  stats_field_names_[3] = "final epsilon planning time";
+  stats_field_names_[4] = "final epsilon";
+  stats_field_names_[5] = "solution epsilon";
+  stats_field_names_[6] = "expansions";
+  stats_field_names_[7] = "solution cost";
+  stats_field_names_[8] = "path length";
 }
 
 SBPLArmPlannerNode::~SBPLArmPlannerNode()
@@ -757,7 +769,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   if(b_ret && (solution_state_ids_v.size() > 0))
   {
     ROS_DEBUG("[plan] A path was returned with %d waypoints.", int(solution_state_ids_v.size()));
-    ROS_INFO("Initial Epsilon: %0.3f   Final Epsilon: %0.3f", planner_->get_initial_eps(),planner_->get_final_epsilon());
+    ROS_INFO("[plan] Initial Epsilon: %0.3f   Final Epsilon: %0.3f", planner_->get_initial_eps(),planner_->get_final_epsilon());
     arm_path.resize(solution_state_ids_v.size()+1);
     for(size_t i=0; i < solution_state_ids_v.size(); i++)
     {       
@@ -783,7 +795,24 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
       }
       ROS_DEBUG("%i: %.4f %.4f %.4f %.4f %.4f %.4f %.4f", int(i), arm_path[i].positions[0],arm_path[i].positions[1],arm_path[i].positions[2],arm_path[i].positions[3],arm_path[i].positions[4],arm_path[i].positions[5],arm_path[i].positions[6]);
     }
+
+    // planner stats    
+    stats_[0] = planner_->get_initial_eps_planning_time();
+    stats_[1] = planner_->get_initial_eps();
+    stats_[2] = planner_->get_n_expands_init_solution();
+    stats_[3] = planner_->get_final_eps_planning_time();
+    stats_[4] = planner_->get_final_epsilon();
+    stats_[5] = planner_->get_solution_eps();
+    stats_[6] = planner_->get_n_expands();
+    stats_[7] = solution_cost;
+    stats_[8] = arm_path.size();
+    
+    ROS_INFO("\n%50s","-- Planning Statistics --");
+    for(size_t i = 0; i < stats_.size(); ++i)
+      ROS_INFO("%44s: %0.2f", stats_field_names_[i].c_str(), stats_[i]);
+    ROS_INFO("\n");
   }
+
   return b_ret;
 }
 

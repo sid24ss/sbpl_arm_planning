@@ -139,7 +139,9 @@ namespace sbpl_arm_planner
       std::string arm_description_filename_;
       std::string mprims_filename_;
       std::string attached_object_frame_;
+      std::vector<std::string> stats_field_names_;
       std::vector<std::string> joint_names_;
+      std::vector<double> stats_;
       std::vector<std::vector<double> > dpath_;
       std::map<std::string, mapping_msgs::CollisionObject> object_map_;
 
