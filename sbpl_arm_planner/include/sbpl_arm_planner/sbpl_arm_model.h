@@ -27,6 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _SBPL_ARM_MODEL_
+#define _SBPL_ARM_MODEL_
+
 #include <string>
 #include <map>
 #include <vector>
@@ -42,9 +45,6 @@
 #include <pr2_arm_kinematics/pr2_arm_ik_solver.h>
 
 using namespace std;
-
-#ifndef _SBPL_ARM_MODEL_
-#define _SBPL_ARM_MODEL_
 
 namespace sbpl_arm_planner {
 
