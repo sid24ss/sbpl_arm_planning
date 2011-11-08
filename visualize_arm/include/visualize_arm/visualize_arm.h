@@ -1,5 +1,8 @@
 /* \author Benjamin Cohen */
 
+#ifndef _VISUALIZE_ARM_
+#define _VISUALIZE_ARM_
+
 #include <string>
 #include <fstream>
 #include <stdlib.h>
@@ -10,8 +13,6 @@
 #include <geometry_msgs/Vector3.h>
 
 #include <tf/tf.h>
-#include <move_arm_msgs/MoveArmAction.h>
-#include <move_arm_msgs/utils.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <visualization_msgs/MarkerArray.h>
@@ -27,7 +28,6 @@
 #include <kdl/chain.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/treefksolverpos_recursive.hpp>
-//#include <sbpl_arm_planner/sbpl_collision_space.h>
 
 typedef actionlib::SimpleActionClient< pr2_controllers_msgs::JointTrajectoryAction > TrajClient;
 
@@ -205,3 +205,5 @@ class VisualizeArm
 };
 
 }
+
+#endif

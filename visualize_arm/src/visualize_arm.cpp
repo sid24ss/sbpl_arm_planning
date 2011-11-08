@@ -913,9 +913,9 @@ void VisualizeArm::visualizeSpheres(const std::vector<std::vector<double> > &sph
     marker_array.markers[j].id = j;
     marker_array.markers[j].type = visualization_msgs::Marker::SPHERE;
     marker_array.markers[j].action =  visualization_msgs::Marker::ADD;
-    marker_array.markers[j].scale.x = spheres[j][3] * 2;
-    marker_array.markers[j].scale.y = spheres[j][3] * 2;
-    marker_array.markers[j].scale.z = spheres[j][3] * 2;
+    marker_array.markers[j].scale.x = spheres[j][3] * 2.0;
+    marker_array.markers[j].scale.y = spheres[j][3] * 2.0;
+    marker_array.markers[j].scale.z = spheres[j][3] * 2.0;
     marker_array.markers[j].color.r = r;
     marker_array.markers[j].color.g = g;
     marker_array.markers[j].color.b = b;
