@@ -30,5 +30,7 @@ rosbuild_add_library(sbpl_collision_checking
                                     src/sbpl_collision_model.cpp 
                                     src/sbpl_collision_space.cpp)
 
+target_link_libraries(sbpl_collision_checking visualize_arm)
+
 rosbuild_add_executable(testCollisionSpace src/test_sbpl_collision_space.cpp)
 target_link_libraries(testCollisionSpace sbpl_collision_checking visualize_arm)
