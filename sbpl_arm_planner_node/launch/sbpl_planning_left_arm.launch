@@ -1,5 +1,7 @@
 <launch>
 
+  <node pkg="topic_tools" type="throttle" name="throttle_joint_states" args="messages joint_states 0.25" />
+
   <node pkg="sbpl_arm_planner_node" type="sbpl_arm_planner_node" name="sbpl_left_arm" output="screen" respawn="false" >
 
     <rosparam command="load" file="$(find sbpl_arm_planner)/config/pr2_left_arm.yaml" />
@@ -11,6 +13,8 @@
 
     <remap from="/sbpl_planning/plan_path" to="/sbpl_left_planning/plan_path"/>
     <remap from="visualization_markers" to="sbpl_left_arm_markers"/>
+
+    <remap from="joint_states" to="joint_states_throttle" />
 
   </node>
 

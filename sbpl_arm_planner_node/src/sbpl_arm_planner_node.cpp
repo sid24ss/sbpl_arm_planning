@@ -210,10 +210,10 @@ void SBPLArmPlannerNode::collisionMapCallback(const mapping_msgs::CollisionMapCo
 
 void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map)
 {
-  ROS_DEBUG("[node] trying to get colmap_mutex_");
+  ROS_INFO("[node] trying to get colmap_mutex_");
   if(colmap_mutex_.try_lock())
   {
-    ROS_DEBUG("[node] locked colmap_mutex_");
+    ROS_INFO("[node] locked colmap_mutex_");
 
     if(collision_map->header.frame_id.compare(reference_frame_) != 0)
     {
@@ -221,8 +221,14 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
       ROS_DEBUG("the collision map has %i cubic obstacles", int(collision_map->boxes.size()));
     }
 
-    // add collision map msg
-    grid_->updateFromCollisionMap(*collision_map);
+    // update collision map
+    if(collision_map->boxes.empty())
+      ROS_INFO("[node] Received collision map is empty.");
+    else
+    {
+      grid_->updateFromCollisionMap(*collision_map);
+      cmap_ = *collision_map;
+    }
 
     // add self collision blocks
     //cspace_->addArmCuboidsToGrid();
@@ -242,7 +248,7 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
   }
   else
   {
-    ROS_DEBUG("[node] failed trying to get colmap_mutex_ mutex");
+    ROS_INFO("[node] failed trying to get colmap_mutex_ mutex");
     return;
   }
 }
@@ -299,32 +305,33 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
     if(attached_object->link_name.compare(mapping_msgs::AttachedCollisionObject::REMOVE_ALL_ATTACHED_OBJECTS) == 0 &&
         attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
     {
-      ROS_DEBUG("[attachedObjectCallback] Removing all attached objects.");
+      ROS_DEBUG("[node] Removing all attached objects.");
       attached_object_ = false;
       cspace_->removeAttachedObject();
     }
     // add object
     else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
     {
-      ROS_DEBUG("[attachedObjectCallback] Received a message to ADD an object (%s) with %d shapes.", attached_object->object.id.c_str(), int(attached_object->object.shapes.size()));
-      attachObject(attached_object->object);
+      ROS_DEBUG("[node] Received a message to ADD an object (%s) with %d shapes.", attached_object->object.id.c_str(), int(attached_object->object.shapes.size()));
+      attachObject(attached_object->object, attached_object->link_name);
     }
     // attach object and remove it from collision space
     else if( attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
     {
-      ROS_DEBUG("[attachedObjectCallback] Received a message to ATTACH_AND_REMOVE_AS_OBJECT of object: %s", attached_object->object.id.c_str());
+      ROS_INFO("[node] Received a message to ATTACH_AND_REMOVE_AS_OBJECT of object: %s", attached_object->object.id.c_str());
       
       // have we seen this collision object before?
       if(object_map_.find(attached_object->object.id) != object_map_.end())
       {
-        ROS_DEBUG("[attachedObjectCallback] We have seen this object (%s) before.", attached_object->object.id.c_str());
-        attachObject(object_map_.find(attached_object->object.id)->second);
+        ROS_INFO("[node] We have seen this object (%s) before.", attached_object->object.id.c_str());
+        ROS_WARN("[node] attached objects we have seen before are not handled correctly right now.");
+        attachObject(object_map_.find(attached_object->object.id)->second, attached_object->link_name);
       }
       else
       {
-        ROS_DEBUG("[attachedObjectCallback] We have NOT seen this object (%s) before.", attached_object->object.id.c_str());
+        ROS_INFO("[node] We have NOT seen this object (%s) before.", attached_object->object.id.c_str());
         object_map_[attached_object->object.id] = attached_object->object;
-        attachObject(attached_object->object);
+        attachObject(attached_object->object, attached_object->link_name);
       }
       cspace_->removeCollisionObject(attached_object->object);
     }
@@ -332,13 +339,13 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
     else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
     {
       attached_object_ = false;
-      ROS_DEBUG("[attachedObjectCallback] Removing object (%s) from gripper.", attached_object->object.id.c_str());
+      ROS_DEBUG("[node] Removing object (%s) from gripper.", attached_object->object.id.c_str());
       cspace_->removeAttachedObject();
     }
     else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
     {
       attached_object_ = false;
-      ROS_DEBUG("[attachedObjectCallback] Removing object (%s) from gripper and adding to collision map.", attached_object->object.id.c_str());
+      ROS_DEBUG("[node] Removing object (%s) from gripper and adding to collision map.", attached_object->object.id.c_str());
       cspace_->removeAttachedObject();
       cspace_->addCollisionObject(attached_object->object);
     }
@@ -347,7 +354,8 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
 
     object_mutex_.unlock();
   }
-  visualizeCollisionObjects();
+
+  updateCollisionMap();
 }
 
 void SBPLArmPlannerNode::collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object)
@@ -373,7 +381,7 @@ void SBPLArmPlannerNode::collisionObjectCallback(const mapping_msgs::CollisionOb
   visualizeCollisionObjects();
 }
 
-void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj)
+void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj, std::string link_name)
 {
   geometry_msgs::PoseStamped pose_in, pose_out;
   mapping_msgs::CollisionObject object(obj);
@@ -389,18 +397,18 @@ void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj)
     pose_in.pose = object.poses[i];
     tf_.transformPose(attached_object_frame_, pose_in, pose_out);
     object.poses[i] = pose_out.pose;
-    ROS_DEBUG("[attachObject] Converted shape from %s (%0.2f %0.2f %0.2f) to %s (%0.3f %0.3f %0.3f)", pose_in.header.frame_id.c_str(), pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z, attached_object_frame_.c_str(), pose_out.pose.position.x, pose_out.pose.position.y, pose_out.pose.position.z);
+    ROS_WARN("[node] [attach_object] Converted shape from %s (%0.2f %0.2f %0.2f) to %s (%0.3f %0.3f %0.3f)", pose_in.header.frame_id.c_str(), pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z, attached_object_frame_.c_str(), pose_out.pose.position.x, pose_out.pose.position.y, pose_out.pose.position.z);
 
     if(object.shapes[i].type == geometric_shapes_msgs::Shape::SPHERE)
     {
       ROS_INFO("Attaching a sphere with radius: %0.3fm", object.shapes[i].dimensions[0]);
-      cspace_->attachSphereToGripper(object.header.frame_id, object.poses[i], object.shapes[i].dimensions[0]);
+      cspace_->attachSphereToGripper(link_name, object.poses[i], object.shapes[i].dimensions[0]);
     }
     else if(object.shapes[i].type == geometric_shapes_msgs::Shape::CYLINDER)
     {
       ROS_INFO("Attaching a cylinder with radius: %0.3fm & length %0.3fm", object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
 
-      cspace_->attachCylinderToGripper(object.header.frame_id, object.poses[i], object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
+      cspace_->attachCylinderToGripper(link_name, object.poses[i], object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
     }
     else if(object.shapes[i].type == geometric_shapes_msgs::Shape::MESH)
     {
@@ -413,7 +421,7 @@ void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj)
       std::vector<double> dims(object.shapes[i].dimensions);
       sort(dims.begin(),dims.end());
       ROS_INFO("Attaching a box as a cylinder with length: %0.3fm   radius: %0.3fm", dims[2], dims[1]);
-      cspace_->attachCylinderToGripper(object.header.frame_id, object.poses[i], dims[1], dims[2]);
+      cspace_->attachCylinderToGripper(link_name, object.poses[i], dims[1], dims[2]/2.0);
     }
     else
       ROS_WARN("Currently attaching objects of type '%d' aren't supported.", object.shapes[i].type);
@@ -430,7 +438,16 @@ bool SBPLArmPlannerNode::setStart(const sensor_msgs::JointState &start_state)
 
   std::vector<std::vector<double> > xyz;
 
-  ROS_INFO("start: %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f", sbpl_start[0],sbpl_start[1],sbpl_start[2],sbpl_start[3],sbpl_start[4],sbpl_start[5],sbpl_start[6]);
+  if(attached_object_)
+  {
+    ROS_WARN("SLEEPING FOR 5 SECONDS BEFORE PLANNING");
+    sleep(5);
+  }
+
+  ROS_INFO("[node] start: %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f", sbpl_start[0],sbpl_start[1],sbpl_start[2],sbpl_start[3],sbpl_start[4],sbpl_start[5],sbpl_start[6]);
+
+  //ROS_INFO("[node] Visualizing start configuration.");
+  //aviz_->visualizeArmConfiguration(80, sbpl_start);
 
   if(sbpl_arm_env_.setStartConfiguration(sbpl_start) == 0)
   {
@@ -444,8 +461,8 @@ bool SBPLArmPlannerNode::setStart(const sensor_msgs::JointState &start_state)
     return false;
   }
 
-  if(attached_object_)
-    visualizeAttachedObject(sbpl_start);
+  //if(attached_object_)
+  //  visualizeAttachedObject(sbpl_start);
 
   return true;
 }
@@ -1091,7 +1108,7 @@ void SBPLArmPlannerNode::visualizeAttachedObject(trajectory_msgs::JointTrajector
   
   if(traj_msg.points.empty())
   {
-    ROS_WARN("Trajectory message is empty. Not visualizing anything.");
+    ROS_WARN("[node] Trajectory message is empty. Not visualizing anything.");
     return;
   }
 
@@ -1174,8 +1191,33 @@ void SBPLArmPlannerNode::printPath(FILE* fOut, const std::vector<std::vector<dou
 void SBPLArmPlannerNode::visualizeCollisionModel(const std::vector<double> &angles)
 {
   std::vector<std::vector<double> > spheres;
+  // arm
   cspace_->getCollisionCylinders(angles, spheres);
   aviz_->visualizeSpheres(spheres, 140, 0.8, arm_name_ + "_model");
+  ROS_DEBUG("[node] Visualizing %d %s_model spheres.", int(spheres.size()), arm_name_.c_str());
+  
+  // attached object
+  spheres.clear();
+  cspace_->getAttachedObject(angles, spheres);
+  if(spheres.size() > 0)
+  {
+    aviz_->visualizeSpheres(spheres, 250, 0.8, "attached_object");
+    ROS_DEBUG("[node] Visualizing %d attached_object spheres.", int(spheres.size()));
+  }
+  else
+    ROS_DEBUG("[node] No attached object.");
+}
+
+void SBPLArmPlannerNode::updateCollisionMap()
+{
+  if(!cmap_.boxes.empty())
+    grid_->updateFromCollisionMap(cmap_);
+
+  cspace_->putCollisionObjectsInGrid();
+
+  // visualizations
+  visualizeCollisionObjects();
+  grid_->visualize();
 }
 
 /* Node
