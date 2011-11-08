@@ -28,6 +28,9 @@
  */
 /** \author Benjamin Cohen */
 
+#ifndef _SBPL_COLLISION_MODEL_
+#define _SBPL_COLLISION_MODEL_
+
 #include <ros/ros.h>
 #include <iostream>
 #include <map>
@@ -41,9 +44,6 @@
 #include <kdl/chain.hpp>
 #include <kdl/frames.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
-
-#ifndef _SBPL_COLLISION_MODEL_
-#define _SBPL_COLLISION_MODEL_
 
 namespace sbpl_arm_planner
 {

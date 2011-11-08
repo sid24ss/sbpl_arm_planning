@@ -193,6 +193,7 @@ inline void OccupancyGrid::addPointsToField(const std::vector<btVector3> &points
   grid_->addPointsToField(points);
 }
 
+
 }
 
 #endif

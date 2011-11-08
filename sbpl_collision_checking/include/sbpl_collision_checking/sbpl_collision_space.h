@@ -28,6 +28,9 @@
  */
 /** \author Benjamin Cohen */
 
+#ifndef _SBPL_COLLISION_SPACE_
+#define _SBPL_COLLISION_SPACE_
+
 #include <ros/ros.h>
 #include <vector>
 #include <resource_retriever/retriever.h>
@@ -42,11 +45,9 @@
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
 #include <mapping_msgs/CollisionObject.h>
+#include <visualize_arm/visualize_arm.h>
 
 using namespace std;
-
-#ifndef _SBPL_COLLISION_SPACE_
-#define _SBPL_COLLISION_SPACE_
 
 /** @brief coords - used to pass around lists of valid cells */
 namespace sbpl_arm_planner
@@ -78,7 +79,7 @@ class SBPLCollisionSpace
     bool init(std::string group_name);
 
     /** \brief check joint configuration for collision (0: collision) */
-    bool checkCollision(const std::vector<double> &angles, bool verbose, bool check_mesh, unsigned char &dist);
+    bool checkCollision(const std::vector<double> &angles, bool verbose, bool visualize, unsigned char &dist);
 
     /** \brief check if a specific link is in collision (0: collision) */
     bool checkLinkForCollision(const std::vector<double> &angles, int link_num, bool verbose, unsigned char &dist);
@@ -152,16 +153,26 @@ class SBPLCollisionSpace
     void setJointPosition(std::string name, double position);
 
     std::vector<sbpl_arm_planner::Sphere> collision_spheres_;
+    
+    std::vector<sbpl_arm_planner::Sphere> attached_collision_spheres_;
 
     void setPlanningJoints(const std::vector<std::string> &joint_names);
 
     void setPadding(double padding);
-  
+ 
+    void visualizeCollisionModel(const std::vector<double> &angles, std::string text);
+    
+    void visualizeCollisions(const std::vector<double> &angles, std::string text);
+ 
+    void visualizeVoxels(double x_center, double y_center, double z_center, double radius, std::string text);
+
   private:
 
     /** NEW **/
 
     sbpl_arm_planner::SBPLCollisionModel model_;
+
+    VisualizeArm* aviz_;
 
     double resolution_;
 

@@ -30,6 +30,7 @@
 /** \author Benjamin Cohen */
 
 #ifndef _TEST_SBPL_COLLISION_SPACE_H_
+#define _TEST_SBPL_COLLISION_SPACE_H_
 
 #include <iostream>
 #include <map>
