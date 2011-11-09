@@ -33,6 +33,8 @@
 
 #include <ros/ros.h>
 #include <vector>
+#include <math.h>
+#include <LinearMath/btVector3.h>
 #include <resource_retriever/retriever.h>
 #include <sbpl_collision_checking/bresenham.h>
 #include <sbpl_collision_checking/occupancy_grid.h>
@@ -46,6 +48,7 @@
 #include <tf/transform_listener.h>
 #include <mapping_msgs/CollisionObject.h>
 #include <visualize_arm/visualize_arm.h>
+#include <geometry_msgs/Point.h>
 
 using namespace std;
 
@@ -81,6 +84,8 @@ class SBPLCollisionSpace
     /** \brief check joint configuration for collision (0: collision) */
     bool checkCollision(const std::vector<double> &angles, bool verbose, bool visualize, unsigned char &dist);
 
+    bool checkCollisionWithVisualizations(const std::vector<double> &angles, unsigned char &dist);
+
     /** \brief check if a specific link is in collision (0: collision) */
     bool checkLinkForCollision(const std::vector<double> &angles, int link_num, bool verbose, unsigned char &dist);
 
@@ -115,12 +120,6 @@ class SBPLCollisionSpace
 
     /* \brief attach a cylinder to the gripper */
     void attachCylinderToGripper(std::string frame, geometry_msgs::Pose pose, double radius, double length);
-
-    /* \brief attach a mesh to the gripper (attach a bounding cylinder of that mesh)*/
-    void attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const bodies::BoundingCylinder &cyl);
-    
-    /* \brief attach a mesh to the gripper (attach a bounding cylinder of that mesh)*/
-    void attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices);
 
     /** \brief get the voxels that the attached object occupies */
     bool getAttachedObject(const std::vector<double> &angles, std::vector<std::vector<double> > &xyz);
@@ -166,9 +165,19 @@ class SBPLCollisionSpace
  
     void visualizeVoxels(double x_center, double y_center, double z_center, double radius, std::string text);
 
-  private:
+    bool doesLinkExist(std::string name);
 
-    /** NEW **/
+    void getIntermediatePoints(btVector3 a, btVector3 b, double d, std::vector<btVector3> &points);
+
+    void getIntermediatePoints(KDL::Vector a, KDL::Vector b, double d, std::vector<KDL::Vector> &points);
+
+    void attachCylinder(std::string link, geometry_msgs::Pose pose, double radius, double length);
+
+    int num_collision_checks_;
+    
+    int num_false_collision_checks_;
+
+  private:
 
     sbpl_arm_planner::SBPLCollisionModel model_;
 
@@ -183,16 +192,14 @@ class SBPLCollisionSpace
     std::vector<std::string> planning_joints_;
 
     int num_planning_joints_;
+    
+    tf::TransformListener tf_;
+    
+    std::vector<double> inc_;
 
     std::vector<Sphere*> spheres_;
 
     std::vector<std::vector<KDL::Frame> > frames_;
-
-    int attached_object_segment_num_;
-    
-    int attached_object_chain_num_;
-    
-    std::string attached_object_frame_;
 
     /** @brief occupancy grid used by planner */
     sbpl_arm_planner::OccupancyGrid* grid_;
@@ -200,34 +207,32 @@ class SBPLCollisionSpace
     /** @brief the file for dumping debug output */
     FILE* fOut_;
 
+    /* ---- known collision objects ---- */
+
     /** \brief map from object id to object details */
     std::map<std::string, mapping_msgs::CollisionObject> object_map_;
     
     /** \brief map from object id to list of occupying voxels */
     std::map<std::string, std::vector<btVector3> > object_voxel_map_;
 
+    /** \brief list of names of known objects */
     std::vector<std::string> known_objects_;
 
-    tf::TransformListener tf_;
 
-    std::vector<double> inc_;
-
+    /* ---- attached object ---- */
     bool object_attached_;
-    int attached_object_frame_num_;
     short unsigned int attached_object_radius_;
+    int attached_object_frame_num_;
+    int attached_object_segment_num_;    
+    int attached_object_chain_num_;
+    std::string attached_object_frame_;
+    KDL::Frame attached_object_pose_;
     std::vector<KDL::Frame> object_points_;
-
-
-     /** @brief get the shortest distance between two 3D line segments */
-    double distanceBetween3DLineSegments(std::vector<int> l1a, std::vector<int> l1b,std::vector<int> l2a,std::vector<int> l2b);
-
-    bool getBoundingCylinderOfMesh(std::string mesh_file, shapes::Shape *mesh, bodies::BoundingCylinder &cyl);
-    void getBoundingCylinderOfMesh(const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices, bodies::BoundingCylinder &cyl);
+    std::vector<Sphere> object_spheres_;
 
     bool isValidPoint(double &x, double &y, double &z, short unsigned int &radius, unsigned char &dist);
     bool isValidAttachedObject(const std::vector<double> &angles, unsigned char &dist);
-    bool isValidAttachedObject(const std::vector<double> &angles, unsigned char &dist, std::vector<int> j1, std::vector<int> j2);
-
+    double distanceBetween3DLineSegments(std::vector<int> l1a, std::vector<int> l1b,std::vector<int> l2a,std::vector<int> l2b);
 };
 
 inline bool SBPLCollisionSpace::isValidCell(const int x, const int y, const int z, const int radius)

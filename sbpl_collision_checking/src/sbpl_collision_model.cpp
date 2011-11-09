@@ -546,7 +546,6 @@ bool SBPLCollisionModel::computeDefaultGroupFK(const std::vector<double> &angles
 
 bool SBPLCollisionModel::computeGroupFK(const std::vector<double> &angles, Group* group, std::vector<std::vector<KDL::Frame> > &frames)
 {
-  //ROS_INFO("computeGroupFK");
   frames.resize(group->chains_.size());
   for(int i = 0; i < int(group->frames_.size()); ++i)
   {
@@ -563,7 +562,6 @@ bool SBPLCollisionModel::computeGroupFK(const std::vector<double> &angles, Group
 
 bool SBPLCollisionModel::computeFK(const std::vector<double> &angles, Group* group, int chain, int segment, KDL::Frame &frame)
 {
-  //printf("computeFK\n");
   // sort elements of input angles into proper positions in the JntArray
   //printf("group->angles_to_jntarray_[chain][i]: ");
   for(size_t i = 0; i < angles.size(); ++i)

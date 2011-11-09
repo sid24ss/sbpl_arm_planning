@@ -7,7 +7,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  Release        : w/o debug symbols, w/ optimization
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-set(ROS_BUILD_TYPE RelWithDebInfo)
+set(ROS_BUILD_TYPE Release)
 
 # Add a ROS C++ macro to tell SBPL to use ROS print statements
 add_definitions(-DROS)
@@ -34,3 +34,6 @@ target_link_libraries(sbpl_collision_checking visualize_arm)
 
 rosbuild_add_executable(testCollisionSpace src/test_sbpl_collision_space.cpp)
 target_link_libraries(testCollisionSpace sbpl_collision_checking visualize_arm)
+
+rosbuild_add_executable(benchmarkCC src/benchmark_cc.cpp)
+target_link_libraries(benchmarkCC sbpl_collision_checking)

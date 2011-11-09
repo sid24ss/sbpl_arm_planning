@@ -36,6 +36,11 @@
 namespace sbpl_arm_planner 
 {
 
+double distance(const KDL::Vector &a, const KDL::Vector &b)
+{
+  return sqrt((a.x()-b.x())*(a.x()-b.x()) + (a.y()-b.y())*(a.y()-b.y()) + (a.z()-b.z())*(a.z()-b.z()));
+}
+
 SBPLCollisionSpace::SBPLCollisionSpace(sbpl_arm_planner::OccupancyGrid* grid)
 {
   grid_ = grid;
@@ -43,11 +48,13 @@ SBPLCollisionSpace::SBPLCollisionSpace(sbpl_arm_planner::OccupancyGrid* grid)
   object_attached_ = false;
   padding_ = 0.00;
   num_planning_joints_ = 7;
+  num_collision_checks_ = 0;
+  num_false_collision_checks_ = 0;
 
   // size of increments for when doing path interpolation
   inc_.resize(num_planning_joints_,0.0348);
-  inc_[5] = 0.1392; // 8 degrees
-  inc_[6] = M_PI;
+  inc_[5] = 0.06981;
+  inc_[6] = 0.06981;
 
   ROS_INFO("Setting the planning joints.");
   planning_joints_.push_back("r_shoulder_pan_joint");
@@ -117,6 +124,89 @@ bool SBPLCollisionSpace::init(std::string group_name)
 
 bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool verbose, bool visualize, unsigned char &dist)
 {
+  // 'visualize' is not being used right now
+
+  unsigned char dist_temp=100;
+  dist = 100;
+  KDL::Vector v;
+  int x,y,z;
+
+  // for debugging
+  num_collision_checks_++;
+
+  //clock_t fk_start = clock();
+  // compute foward kinematics
+  if(!model_.computeDefaultGroupFK(angles, frames_))
+  {
+    ROS_ERROR("[cspace] Failed to compute foward kinematics.");
+    return false;
+  }
+  //double fk_time = (clock() - fk_start) / double(CLOCKS_PER_SEC);
+
+  // check attached object
+  if(object_attached_)
+  {
+    for(size_t i = 0; i < object_spheres_.size(); ++i)
+    {
+      v = frames_[object_spheres_[i].kdl_chain][object_spheres_[i].kdl_segment] /* * attached_object_pose_*/ * object_spheres_[i].v;
+
+      grid_->worldToGrid(v.x(), v.y(), v.z(), x, y, z);
+
+      //ROS_INFO("x: %d y: %d z: %d radius: %0.3f (%d)  dist: %d (dist_min: %d)", x, y, z, object_spheres_[i].radius,  int(object_spheres_[i].radius / grid_->getResolution() + 0.5), grid_->getCell(x,y,z), int(dist));
+
+      // check bounds
+      if(!grid_->isInBounds(x, y, z))
+      {
+        if(verbose)
+          ROS_INFO("[cspace] Sphere %d %d %d is out of bounds.", x, y, z);
+        return false;
+      }
+
+      // check for collision with world
+      if((dist_temp = grid_->getCell(x,y,z)) <= int((object_spheres_[i].radius) / grid_->getResolution() + 0.5))
+      {
+        dist = dist_temp;
+        return false;
+      }
+      if(dist_temp < dist)
+        dist = dist_temp;
+    }
+  }
+
+  // check arm
+  //clock_t spheres_start = clock();
+  for(size_t i = 0; i < spheres_.size(); ++i)
+  {
+    v = frames_[spheres_[i]->kdl_chain][spheres_[i]->kdl_segment] * spheres_[i]->v;
+
+    grid_->worldToGrid(v.x(), v.y(), v.z(), x, y, z);
+
+    // check bounds
+    if(!grid_->isInBounds(x, y, z))
+    {
+      if(verbose)
+        ROS_INFO("[cspace] Sphere %d %d %d is out of bounds.", x, y, z);
+      return false;
+    }
+
+    // check for collision with world
+    if((dist_temp = grid_->getCell(x,y,z)) <= int((spheres_[i]->radius + padding_) / grid_->getResolution() + 0.5))
+    {
+      dist = dist_temp;
+      return false;
+    }
+    if(dist_temp < dist)
+      dist = dist_temp;
+  }
+
+  //printf("kinematics: %0.8fsec  spheres: %0.8fsec\n", fk_time, (clock() - spheres_start) / double(CLOCKS_PER_SEC));
+
+  num_false_collision_checks_++;
+  return true;
+}
+
+bool SBPLCollisionSpace::checkCollisionWithVisualizations(const std::vector<double> &angles, unsigned char &dist)
+{
   unsigned char dist_temp=100;
   dist = 100;
   KDL::Vector v;
@@ -124,7 +214,6 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
   int x,y,z;
   bool in_collision = false;
 
-  ROS_DEBUG("[cspace] Computing FK...");
   // compute foward kinematics
   if(!model_.computeDefaultGroupFK(angles, frames_))
   {
@@ -132,9 +221,8 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
     return false;
   }
 
-  collision_spheres_.clear(); // just for demo
+  collision_spheres_.clear();
 
-  ROS_DEBUG("[cspace] Checking spheres...");
   // transform the spheres into their new positions, check collisions
   for(size_t i = 0; i < spheres_.size(); ++i)
   {
@@ -142,14 +230,11 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
 
     grid_->worldToGrid(v.x(), v.y(), v.z(), x, y, z);
 
-    //model_.printFrames(frames_);
-
     ROS_DEBUG("[%2d] chain: %d segment: %2d origin: {%2.2f %2.2f %2.2f}  sphere: {%3.2f %3.2f %2.2f} radius: %2.2f priority: %d", int(i), spheres_[i]->kdl_chain, spheres_[i]->kdl_segment, frames_[spheres_[i]->kdl_chain][spheres_[i]->kdl_segment].p.x(), frames_[spheres_[i]->kdl_chain][spheres_[i]->kdl_segment].p.y(), frames_[spheres_[i]->kdl_chain][spheres_[i]->kdl_segment].p.z(), v.x(), v.y(), v.z(), spheres_[i]->radius, spheres_[i]->priority);
 
     // check bounds
     if(!grid_->isInBounds(x, y, z))
     {
-      if(verbose)
         ROS_INFO("Sphere %d %d %d is out of bounds.", x, y, z);
       return false;
     }
@@ -158,40 +243,68 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
     if((dist_temp = grid_->getCell(x,y,z)) <= int((spheres_[i]->radius + padding_) / grid_->getResolution() + 0.5))
     {
       dist = dist_temp;
-
-      // for collision space demo only - remove 
       in_collision = true;
       s = *(spheres_[i]); 
       s.v = v;
       collision_spheres_.push_back(s);
-      //return false;
     }
 
     ROS_DEBUG("x: %d y: %d z: %d radius: %0.3f (%d)  dist: %d (dist_min: %d)", x, y, z, spheres_[i]->radius,  int(spheres_[i]->radius / grid_->getResolution() + 0.5), grid_->getCell(x,y,z), int(dist));
+    
     if(dist_temp < dist)
       dist = dist_temp;
   }
-
+/*
   //check attached object for collision
   if(!isValidAttachedObject(angles, dist_temp))
   {
     dist = dist_temp;
-    ROS_WARN("[cspace] Attached object is in collision.");
-
     in_collision = true;
-    //return false;
   }
 
   if(object_attached_ && dist_temp < dist)
       dist = dist_temp;
-
-  if(visualize)
+*/
+/*
+  if(in_collision)
   {
     visualizeCollisionModel(angles,"model");
     visualizeCollisions(angles,"collisions");
   }
+*/
 
-  // temporarily just for debugging
+  if(object_attached_)
+  {
+    for(size_t i = 0; i < object_spheres_.size(); ++i)
+    {
+      v = frames_[object_spheres_[i].kdl_chain][object_spheres_[i].kdl_segment] * object_spheres_[i].v;
+
+      grid_->worldToGrid(v.x(), v.y(), v.z(), x, y, z);
+
+      ROS_INFO("[cspace] [%d] x: %d y: %d z: %d radius: %0.3f (%d)  dist: %d (dist_min: %d)", int(i), x, y, z, object_spheres_[i].radius,  int(object_spheres_[i].radius / grid_->getResolution() + 0.5), grid_->getCell(x,y,z), int(dist));
+
+      // check bounds
+      if(!grid_->isInBounds(x, y, z))
+      {
+        ROS_INFO("[cspace] Sphere %d %d %d is out of bounds.", x, y, z);
+        return false;
+      }
+
+      // check for collision with world
+      if((dist_temp = grid_->getCell(x,y,z)) <= int((object_spheres_[i].radius) / grid_->getResolution() + 0.5))
+      {
+        dist = dist_temp;
+        in_collision = true;
+        s = *(spheres_[i]); 
+        s.v = v;
+        collision_spheres_.push_back(s);
+      }
+
+      if(dist_temp < dist)
+        dist = dist_temp;
+    }
+  }
+
   if(in_collision)
     return false;
 
@@ -257,19 +370,20 @@ bool SBPLCollisionSpace::checkLinkForCollision(const std::vector<double> &angles
 
 bool SBPLCollisionSpace::checkPathForCollision(const std::vector<double> &start, const std::vector<double> &end, bool verbose, unsigned char &dist)
 {
-  int inc_cc = 10;
+  int inc_cc = 5;
   unsigned char dist_temp = 0;
   std::vector<double> start_norm(start);
   std::vector<double> end_norm(end);
   std::vector<std::vector<double> > path;
   dist = 100;
 
-  for(size_t i=0; i < start.size(); i++)
+  for(size_t i=0; i < start.size(); ++i)
   {
     start_norm[i] = angles::normalize_angle(start[i]);
     end_norm[i] = angles::normalize_angle(end[i]);
   }
-  
+
+  // upper arm roll
   if(start[2] > 0.85)
     start_norm[2] = start[2] + (2*-M_PI);
 
@@ -277,19 +391,9 @@ bool SBPLCollisionSpace::checkPathForCollision(const std::vector<double> &start,
     end_norm[2] = end[2] + (2*-M_PI);
 
   getInterpolatedPath(start_norm, end_norm, inc_, path);
+  if(path.size() > 4)
+    ROS_WARN("[cspace]  %d waypoints in interpolated path.", int(path.size()));
 
-  /*
-  if(verbose)
-  {
-    ROS_FPRINTF(fOut_,"      interpolated_path: %d waypoints\n",path.size());
-    ROS_FPRINTF(fOut_,"           %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f --> %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", start_norm[0],start_norm[1],start_norm[2],start_norm[3],start_norm[4],start_norm[5],start_norm[6], end_norm[0],end_norm[1],end_norm[2],end_norm[3],end_norm[4],end_norm[5],end_norm[6]);
-
-    for(int i = 0; i < int(path.size()); ++i)
-        ROS_FPRINTF(fOut_,"           %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n", path[i][0],path[i][1],path[i][2],path[i][3],path[i][4],path[i][5],path[i][6]);
-  }
-  */
-
-  // 'optimized' collision check added 8/28/2010
   // try to find collisions that might come later in the path earlier
   if(int(path.size()) > inc_cc)
   {
@@ -584,7 +688,7 @@ bool SBPLCollisionSpace::getCollisionCylinders(const std::vector<double> &angles
       xyzr[1] = object[i][1];
       xyzr[2] = object[i][2];
       xyzr[3] = double(attached_object_radius_) * grid_->getResolution();
-      cylinders.push_back(xyzr);
+      cylinder(xyzr);
     }
   }
   */
@@ -644,6 +748,7 @@ void SBPLCollisionSpace::removeAttachedObject()
 {
   object_attached_ = false;
   object_points_.clear();
+  object_spheres_.clear();
   ROS_INFO("[cspace] Removed attached object.");
 }
 
@@ -688,102 +793,49 @@ void SBPLCollisionSpace::attachCylinderToGripper(std::string frame, geometry_msg
   ROS_INFO("[cspace] [attached_object] Added cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), radius, attached_object_radius_);
 }
 
-void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices)
-{
-  bodies::BoundingCylinder cyl;
-  getBoundingCylinderOfMesh(triangles, vertices, cyl);
-  ROS_INFO("HERE");
-  attachMeshToGripper(frame, pose, cyl);
-}
 
-void SBPLCollisionSpace::attachMeshToGripper(const std::string frame, const geometry_msgs::Pose pose, const bodies::BoundingCylinder &cyl)
+void SBPLCollisionSpace::attachCylinder(std::string link, geometry_msgs::Pose pose, double radius, double length)
 {
-  KDL::Frame cyl_pose;
-
   object_attached_ = true;
-  attached_object_frame_ = frame;
+  attached_object_frame_ = link;
+  tf::PoseMsgToKDL(pose, attached_object_pose_);
+
   model_.getFrameInfo(attached_object_frame_, group_name_, attached_object_chain_num_, attached_object_segment_num_);
   
-  ROS_INFO("[addMeshToGripper] Mesh: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f", pose.position.x,pose.position.y,pose.position.z, cyl.radius, cyl.length); 
-
-  attached_object_radius_ = cyl.radius / grid_->getResolution();
-
+  // discretize radius
+  attached_object_radius_ = radius / grid_->getResolution() + 0.5;
   if(attached_object_radius_ < 1)
     attached_object_radius_ = 1;
 
-  //get pose of cylinder in gripper frame
-  object_points_.resize(2);
-  ROS_INFO("Object Pose-  Position: %0.3f %0.3f %0.3f  Orientation: %0.3f %0.3f %0.3f %0.3f",pose.position.x,pose.position.y,pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+  // compute end points of cylinder
+  KDL::Frame center;
+  tf::PoseMsgToKDL(pose, center);
+  //KDL::Vector top(0.0,0.0,length/2.0), bottom(0.0,0.0,-length/2.0);
+  KDL::Vector top(center.p), bottom(center.p);
+  std::vector<KDL::Vector> points;
 
-  tf::PoseMsgToKDL(pose, object_points_[0]);
-  tf::PoseMsgToKDL(pose, object_points_[1]);
+  top.data[2] += length/2.0; 
+  bottom.data[2] -= length/2.0; 
 
-  //compute the endpoints of the cylinder
-  //object_points_[0].p.data[2] -= cyl.length/2.0;
-  //object_points_[1].p.data[2] += cyl.length/2.0;
-
-  ROS_INFO("BEFORE TRANSFORMATION"); 
-  ROS_INFO("[addMeshToGripper] Added bounding cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), cyl.radius, attached_object_radius_);
-  ROS_INFO("[addMeshToGripper] Added bounding cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), cyl.radius, attached_object_radius_);
- 
-  tf::TransformTFToKDL(cyl.pose, cyl_pose); 
-//  object_points_[0] = object_points_[0]*cyl_pose;
-//  object_points_[1] = object_points_[1]*cyl_pose;
-
-  object_points_[0].p.data[2] -= cyl.length/2.0;
-  object_points_[1].p.data[2] += cyl.length/2.0;
- 
-  ROS_INFO("AFTER TRANSFORMATION"); 
-  ROS_INFO("[addMeshToGripper] Added bounding cylinder.  Bottom: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[0].p.x(), object_points_[0].p.y(), object_points_[0].p.z(), cyl.radius, attached_object_radius_);
-  ROS_INFO("[addMeshToGripper] Added bounding cylinder.     Top: xyz: %0.3f %0.3f %0.3f   radius: %0.3fm (%d cells)", object_points_[1].p.x(), object_points_[1].p.y(), object_points_[1].p.z(), cyl.radius, attached_object_radius_);
-}
-
-bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles, unsigned char &dist, std::vector<int> j1, std::vector<int> j2)
-{
-  // TODO: This function ignores the inputs j1, j2 for now. 
-
-  unsigned char dist_temp = 0;
-  KDL::Vector p_base,p1,p2;
-  std::vector<int> q1(3,0), q2(3,0);
-  dist = 100;
-
-  if(!object_attached_)
-    return true;
-
-  if(!model_.computeDefaultGroupFK(angles, frames_))
-    return false;
-
-  // check if the object points are valid
-  for(size_t i = 0; i < object_points_.size(); i++)
+  // get spheres 
+  getIntermediatePoints(top, bottom, radius, points);
+  object_spheres_.resize(points.size());
+  ROS_INFO("THE SPHERES:");
+  for(size_t i = 0; i < points.size(); ++i)
   {
-    p_base = frames_[attached_object_chain_num_][attached_object_segment_num_] * object_points_[i].p;
+    object_spheres_[i].name = "attached_" + boost::lexical_cast<std::string>(i);
+    object_spheres_[i].v = points[i];
+    object_spheres_[i].radius = radius;
+    object_spheres_[i].kdl_chain = attached_object_chain_num_;
+    object_spheres_[i].kdl_segment = attached_object_segment_num_;
 
-    if(!isValidPoint(p_base.data[0],p_base.data[1],p_base.data[2],attached_object_radius_,dist))
-      return false;
-  }
+    ROS_INFO("[%d] %0.3f %0.3f %0.3f", int(i), object_spheres_[i].v.x(), object_spheres_[i].v.y(), object_spheres_[i].v.z());
+  } 
 
-  // check if the cylinder between the points is valid
-  for(size_t i = 0; i < (object_points_.size()-1); i++)
-  {
-    p1 = frames_[attached_object_chain_num_][attached_object_segment_num_] * object_points_[i].p;
-    p2 = frames_[attached_object_chain_num_][attached_object_segment_num_]* object_points_[i+1].p;
-
-    grid_->worldToGrid(p1.data[0],p1.data[1],p1.data[2],q1[0],q1[1],q1[2]);
-    grid_->worldToGrid(p2.data[0],p2.data[1],p2.data[2],q2[0],q2[1],q2[2]);
-      
-    dist_temp = isValidLineSegment(q1, q2, attached_object_radius_);
-
-    if(dist_temp <= attached_object_radius_)
-    {
-      dist = dist_temp;
-      return false;
-    }
-
-    if(dist_temp < dist)
-      dist = dist_temp;
-  }
-
-  return true;
+  ROS_INFO("[cspace] [attached_object] Attaching cylinder. pose: %0.3f %0.3f %0.3f radius: %0.3f length: %0.3f spheres: %d", pose.position.x,pose.position.y,pose.position.z, radius, length, int(object_spheres_.size())); 
+  ROS_INFO("[cspace] [attached_object]  frame: %s  group: %s  chain: %d  segment: %d", attached_object_frame_.c_str(), group_name_.c_str(), attached_object_chain_num_, attached_object_segment_num_); 
+  ROS_INFO("[cspace] [attached_object]    top: xyz: %0.3f %0.3f %0.3f  radius: %0.3fm (%d cells)", top.x(), top.y(), top.z(), radius, attached_object_radius_);
+  ROS_INFO("[cspace] [attached_object] bottom: xyz: %0.3f %0.3f %0.3f  radius: %0.3fm (%d cells)", bottom.x(), bottom.y(), bottom.z(), radius, attached_object_radius_);
 }
 
 bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles, unsigned char &dist)
@@ -809,7 +861,7 @@ bool SBPLCollisionSpace::isValidAttachedObject(const std::vector<double> &angles
 
     if(!isValidPoint(p_base.data[0],p_base.data[1],p_base.data[2],attached_object_radius_,dist))
     {
-      ROS_INFO("[cspace] Attached object point is in collision. xyz: %0.3f %0.3f %0.3f radius: %d cells (dist: %d cells).", p_base.data[0],p_base.data[1],p_base.data[2],attached_object_radius_,int(dist));
+      //ROS_INFO("[cspace] Attached object point is in collision. xyz: %0.3f %0.3f %0.3f radius: %d cells (dist: %d cells).", p_base.data[0],p_base.data[1],p_base.data[2],attached_object_radius_,int(dist));
 
       // for debugging
       s.v.x(p_base.data[0]);
@@ -859,6 +911,7 @@ bool SBPLCollisionSpace::isValidPoint(double &x, double &y, double &z, short uns
   return true;
 }
 
+/*
 bool SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, std::vector<std::vector<double> > &xyz)
 {
   KDL::Vector p_base,p1,p2;
@@ -904,95 +957,58 @@ bool SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, st
 
   return true;
 }
+*/
+
+bool SBPLCollisionSpace::getAttachedObject(const std::vector<double> &angles, std::vector<std::vector<double> > &xyz)
+{
+  KDL::Vector v;
+  int x,y,z;
+  xyz.clear();
+
+  if(!object_attached_)
+    return false;
+
+  // compute foward kinematics
+  if(!model_.computeDefaultGroupFK(angles, frames_))
+  {
+    ROS_ERROR("[cspace] Failed to compute foward kinematics.");
+    return false;
+  }
+
+  xyz.resize(object_spheres_.size(), std::vector<double>(4,0));
+  for(size_t i = 0; i < object_spheres_.size(); ++i)
+  {
+    v = frames_[object_spheres_[i].kdl_chain][object_spheres_[i].kdl_segment] /* * attached_object_pose_*/ * object_spheres_[i].v;
+
+    // snap to grid
+    grid_->worldToGrid(v.x(), v.y(), v.z(), x, y, z); 
+    grid_->gridToWorld(x, y, z, xyz[i][0], xyz[i][1], xyz[i][2]);
+
+    xyz[i][3] = object_spheres_[i].radius;
+  }
+
+  return true;
+}
 
 double SBPLCollisionSpace::getAttachedObjectRadius()
 {
   return attached_object_radius_*grid_->getResolution();   
 }
 
-bool SBPLCollisionSpace::getBoundingCylinderOfMesh(std::string mesh_file, shapes::Shape *mesh, bodies::BoundingCylinder &cyl)
-{
-  bool retval = false;
-  mesh = NULL;
-
-  if (!mesh_file.empty())
-  { 
-    resource_retriever::Retriever retriever;
-    resource_retriever::MemoryResource res;
-    bool ok = true;
-
-    try
-    { 
-      res = retriever.get(mesh_file);
-    }
-    catch (resource_retriever::Exception& e)
-    { 
-      ROS_ERROR("%s", e.what());
-      ok = false;
-    }
-
-    if (ok)
-    { 
-      if (res.size == 0)
-        ROS_WARN("Retrieved empty mesh for resource '%s'", mesh_file.c_str());
-      else
-      { 
-        mesh = shapes::createMeshFromBinaryStlData(reinterpret_cast<char*>(res.data.get()), res.size);
-        if (mesh == NULL)
-          ROS_ERROR("Failed to load mesh '%s'", mesh_file.c_str());
-        else
-          retval = true;
-      }
-    }
-  }
-  else
-    ROS_WARN("Empty mesh filename");
-
-  if(retval)
-  {
-    const bodies::Body *body=new bodies::ConvexMesh(mesh);
-    body->computeBoundingCylinder(cyl);
-    ROS_INFO("Bounding cylinder has radius: %0.3f  length: %0.3f", cyl.radius, cyl.length);
-  }
-  
-  return retval;
-}
-
-void SBPLCollisionSpace::getBoundingCylinderOfMesh(const std::vector<int32_t> &triangles, const std::vector<geometry_msgs::Point> &vertices, bodies::BoundingCylinder &cyl)
-{
-  shapes::Shape *mesh = NULL;
-
-  shapes::Mesh *dest = new shapes::Mesh(vertices.size(), triangles.size()/3);
-  for (size_t i = 0 ; i < vertices.size(); ++i)
-  {
-    dest->vertices[3*i] = vertices[i].x;
-    dest->vertices[3*i+1] = vertices[i].y;
-    dest->vertices[3*i+2] = vertices[i].z;
-  }
-
-  for (unsigned int i = 0 ; i < triangles.size(); ++i)
-    dest->triangles[i] = triangles[i];
-  
-  mesh = dest;
-
-  const bodies::Body *body=new bodies::ConvexMesh(mesh);
-  body->computeBoundingCylinder(cyl);
-  ROS_INFO("Bounding cylinder has radius: %0.3f  length: %0.3f", cyl.radius, cyl.length);
-}
-
 void SBPLCollisionSpace::processCollisionObjectMsg(const mapping_msgs::CollisionObject &object)
 {
-  if(object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
+  if(object.id.compare("all") == 0) // ignoring the operation type
+  {
+    removeAllCollisionObjects();
+  }
+  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
   {
     object_map_[object.id] = object;
     addCollisionObject(object);
   }
   else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
   {
-    if(object.id.compare("all") == 0)
-      removeAllCollisionObjects();
-    else
-      removeCollisionObject(object);
+    removeCollisionObject(object);
   }
   else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
   {
@@ -1033,7 +1049,10 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
   for(size_t i = 0; i < known_objects_.size(); ++i)
   {
     if(known_objects_[i].compare(object.id) == 0)
+    {
+      ROS_WARN("[cspace] Received %s object again. Not adding.",object.id.c_str());
       new_object = false;
+    }
   }
   if(new_object)
     known_objects_.push_back(object.id);
@@ -1123,6 +1142,10 @@ void SBPLCollisionSpace::visualizeCollisionModel(const std::vector<double> &angl
   {
     aviz_->visualizeSpheres(spheres, 210, 0.5, text+" (object)");
     ROS_DEBUG("[node] Visualizing %d attached_object spheres if its collision model.", int(spheres.size()));
+    /*
+    for(size_t i = 0; i < spheres.size(); ++i)
+      ROS_INFO("[cspace] [%d] %0.3f %0.3f %0.3f radius: %0.3f", int(i), spheres[i][0], spheres[i][1], spheres[i][2], spheres[i][3]);
+    */
   }
   else
     ROS_DEBUG("[node] No attached object.");
@@ -1161,7 +1184,7 @@ void SBPLCollisionSpace::visualizeCollisions(const std::vector<double> &angles, 
   }
   if(spheres.size() > 0)
   {
-    aviz_->visualizeSpheres(spheres, 50, 0.6, text+" (object)");
+    aviz_->visualizeSpheres(spheres, 50, 0.8, text+" (object)");
     ROS_INFO("[node] Visualizing %d attached_object spheres in collision.", int(spheres.size()));
   }
   else
@@ -1192,9 +1215,102 @@ void SBPLCollisionSpace::visualizeVoxels(double x_center, double y_center, doubl
       }
     }
   }
-  aviz_->visualizeSpheres(voxels, 218, text, grid_->getResolution());
+  aviz_->visualizeSpheres(voxels, 300, text, grid_->getResolution());
   ROS_INFO("[cspace] Visualizing cells centered around cell %d %d %d with radius %d cells", x_c, y_c, z_c, radius_c);
   ROS_INFO("[cspace] Visualizing %d voxel spheres around %0.3f %0.3f %0.3f with radius %0.3fm", int(voxels.size()), x_center, y_center, z_center, radius);
+}
+
+bool SBPLCollisionSpace::doesLinkExist(std::string name)
+{
+  int chain, segment;
+  return model_.getFrameInfo(name, group_name_, chain, segment);
+}
+
+void SBPLCollisionSpace::getIntermediatePoints(btVector3 a, btVector3 b, double d, std::vector<btVector3> &points)
+{
+  btVector3 pt, dir;
+  int interm_points = floor(a.distance(b) / d + 0.5);
+  
+  dir = b - a;
+  dir.normalize();
+  ROS_DEBUG("# interm points: %d  unit vector: %0.3f %0.3f %0.3f", interm_points, dir.x(), dir.y(), dir.z());
+
+  points.clear();
+  points.push_back(a);
+  for(int i = 1; i <= interm_points; ++i)
+  {
+    pt = a + dir*i*d;
+    points.push_back(pt);
+  }
+  points.push_back(b);
+
+  /*
+  // debug & visualization
+  std::vector<std::vector<double> > spheres(points.size(), std::vector<double>(4,0));
+  std::vector<geometry_msgs::Point> line(points.size());
+  for(size_t i = 0; i < points.size(); ++i)
+  {
+    if(i == 0)
+      ROS_INFO("[%d]  %0.3f %0.3f %0.3f", int(i), points[i].x(), points[i].y(), points[i].z());
+    else  
+      ROS_INFO("[%d]  %0.3f %0.3f %0.3f dist: %0.3f", int(i), points[i].x(), points[i].y(), points[i].z(), points[i].distance(points[i-1]));
+
+    spheres[i][0] = points[i].x();
+    spheres[i][1] = points[i].y();
+    spheres[i][2] = points[i].z();
+    spheres[i][3] = d;
+
+    line[i].x = points[i].x();
+    line[i].y = points[i].y();
+    line[i].z = points[i].z();
+  }
+  aviz_->visualizeSpheres(spheres, 25, 0.6, "intermediate_spheres");
+  aviz_->visualizeLine(line, "line", 0, 280, 0.02);
+  */
+}
+
+
+void SBPLCollisionSpace::getIntermediatePoints(KDL::Vector a, KDL::Vector b, double d, std::vector<KDL::Vector> &points)
+{
+  KDL::Vector pt, dir;
+  int interm_points = floor(distance(a,b) / d + 0.5);
+  
+  dir = b - a;
+  double norm  = dir.Normalize();
+  ROS_DEBUG("# interm points: %d  unit vector: %0.3f %0.3f %0.3f norm: %0.3f", interm_points, dir.x(), dir.y(), dir.z(), norm);
+
+  points.clear();
+  points.push_back(a);
+  for(int i = 1; i <= interm_points; ++i)
+  {
+    pt = a + dir*i*d;
+    points.push_back(pt);
+  }
+  points.push_back(b);
+
+  /*
+  // debug & visualization
+  std::vector<std::vector<double> > spheres(points.size(), std::vector<double>(4,0));
+  std::vector<geometry_msgs::Point> line(points.size());
+  for(size_t i = 0; i < points.size(); ++i)
+  {
+    if(i == 0)
+      ROS_INFO("[%d]  %0.3f %0.3f %0.3f", int(i), points[i].x(), points[i].y(), points[i].z());
+    else  
+      ROS_INFO("[%d]  %0.3f %0.3f %0.3f dist: %0.3f", int(i), points[i].x(), points[i].y(), points[i].z(), distance(points[i],points[i-1]));
+
+    spheres[i][0] = points[i].x();
+    spheres[i][1] = points[i].y();
+    spheres[i][2] = points[i].z();
+    spheres[i][3] = d;
+
+    line[i].x = points[i].x();
+    line[i].y = points[i].y();
+    line[i].z = points[i].z();
+  }
+  aviz_->visualizeSpheres(spheres, 25, 0.6, "intermediate_spheres");
+  aviz_->visualizeLine(line, "line", 0, 280, 0.02);
+  */
 }
 
 }
