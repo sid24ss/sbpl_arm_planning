@@ -29,8 +29,8 @@
 
 /** \author Benjamin Cohen, Sachin Chitta  */
 
-#ifndef __SBPL_ARM_PLANNER_NODE_H_
-#define __SBPL_ARM_PLANNER_NODE_H_
+#ifndef _SBPL_ARM_PLANNER_NODE_H_
+#define _SBPL_ARM_PLANNER_NODE_H_
 
 #include <iostream>
 #include <map>

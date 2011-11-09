@@ -152,7 +152,6 @@ bool SBPLArmPlannerNode::init()
   planning_service_ = root_handle_.advertiseService("/sbpl_planning/plan_path", &SBPLArmPlannerNode::planKinematicPath,this);
   
   planner_initialized_ = true;
-
   ROS_INFO("The SBPL arm planner node initialized succesfully.");
   return true;
 }
@@ -222,10 +221,10 @@ void SBPLArmPlannerNode::collisionMapCallback(const mapping_msgs::CollisionMapCo
 
 void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map)
 {
-  ROS_INFO("[node] trying to get colmap_mutex_");
+  ROS_DEBUG("[node] trying to get colmap_mutex_");
   if(colmap_mutex_.try_lock())
   {
-    ROS_INFO("[node] locked colmap_mutex_");
+    ROS_DEBUG("[node] locked colmap_mutex_");
 
     if(collision_map->header.frame_id.compare(reference_frame_) != 0)
     {
@@ -260,7 +259,7 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::Collision
   }
   else
   {
-    ROS_INFO("[node] failed trying to get colmap_mutex_ mutex");
+    ROS_DEBUG("[node] failed trying to get colmap_mutex_ mutex");
     return;
   }
 }
@@ -306,6 +305,7 @@ void SBPLArmPlannerNode::jointStatesCallback(const sensor_msgs::JointStateConstP
     angles[6] = state->position[34];
   }
 
+  //cspace_->visualizeCollisionModel(angles, "attached_object1");
   visualizeCollisionModel(angles);
 }
 
@@ -321,6 +321,10 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
       attached_object_ = false;
       cspace_->removeAttachedObject();
     }
+    else if(!cspace_->doesLinkExist(attached_object->link_name))
+    {
+      ROS_WARN("[node] This attached object is not intended for this arm.");
+    }
     // add object
     else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
     {
@@ -328,7 +332,7 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
       attachObject(attached_object->object, attached_object->link_name);
     }
     // attach object and remove it from collision space
-    else if( attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
+    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
     {
       ROS_INFO("[node] Received a message to ATTACH_AND_REMOVE_AS_OBJECT of object: %s", attached_object->object.id.c_str());
       
@@ -372,22 +376,16 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
 
 void SBPLArmPlannerNode::collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object)
 {
-  // for some reason, it wasn't getting all of the 'all' messages...
-  if(collision_object->id.compare("all") == 0)
-    cspace_->removeAllCollisionObjects();
-
   if(object_mutex_.try_lock())
   {
     // debug: have we seen this collision object before?
     if(object_map_.find(collision_object->id) != object_map_.end())
-      ROS_DEBUG("[collisionObjectCallback] We have seen this object ('%s')  before.", collision_object->id.c_str());
+      ROS_DEBUG("[node] We have seen this object ('%s')  before.", collision_object->id.c_str());
     else
-      ROS_DEBUG("[collisionObjectCallback] We have NOT seen this object ('%s') before.", collision_object->id.c_str());
+      ROS_DEBUG("[node] We have NOT seen this object ('%s') before.", collision_object->id.c_str());
     object_map_[collision_object->id] = (*collision_object);
     object_mutex_.unlock();
   }
-
-  ROS_DEBUG("[collisionObjectCallback] %s", collision_object->id.c_str());
   cspace_->processCollisionObjectMsg((*collision_object));
 
   visualizeCollisionObjects();
@@ -413,18 +411,19 @@ void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj, 
 
     if(object.shapes[i].type == geometric_shapes_msgs::Shape::SPHERE)
     {
-      ROS_INFO("Attaching a sphere with radius: %0.3fm", object.shapes[i].dimensions[0]);
+      ROS_INFO("[node] Attaching a sphere with radius: %0.3fm", object.shapes[i].dimensions[0]);
       cspace_->attachSphereToGripper(link_name, object.poses[i], object.shapes[i].dimensions[0]);
     }
     else if(object.shapes[i].type == geometric_shapes_msgs::Shape::CYLINDER)
     {
-      ROS_INFO("Attaching a cylinder with radius: %0.3fm & length %0.3fm", object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
+      ROS_INFO("[node] Attaching a cylinder with radius: %0.3fm & length %0.3fm", object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
 
-      cspace_->attachCylinderToGripper(link_name, object.poses[i], object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
+      //cspace_->attachCylinderToGripper(link_name, object.poses[i], object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
+      cspace_->attachCylinder(link_name, object.poses[i], object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
     }
     else if(object.shapes[i].type == geometric_shapes_msgs::Shape::MESH)
     {
-      ROS_INFO("Attaching a mesh with %d triangles  & %d vertices.", int(object.shapes[i].triangles.size()/3), int(object.shapes[i].vertices.size()));
+      ROS_INFO("[node] Attaching a mesh with %d triangles  & %d vertices.", int(object.shapes[i].triangles.size()/3), int(object.shapes[i].vertices.size()));
 
       cspace_->attachMeshToGripper(object.header.frame_id, object.poses[i], object.shapes[i].triangles, object.shapes[i].vertices);
     }
@@ -432,11 +431,16 @@ void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj, 
     {
       std::vector<double> dims(object.shapes[i].dimensions);
       sort(dims.begin(),dims.end());
-      ROS_INFO("Attaching a box as a cylinder with length: %0.3fm   radius: %0.3fm", dims[2], dims[1]);
-      cspace_->attachCylinderToGripper(link_name, object.poses[i], dims[1], dims[2]/2.0);
+      /*
+      for(size_t k = 0; k < dims.size(); ++k)
+        ROS_ERROR("[k] dim: %0.3f",dims[k]);
+      */
+      ROS_INFO("[node] Attaching a box as a cylinder with length: %0.3fm   radius: %0.3fm", dims[2], dims[1]);
+      //cspace_->attachCylinderToGripper(link_name, object.poses[i], dims[1], dims[2]);
+      cspace_->attachCylinder(link_name, object.poses[i], dims[1], dims[2]);
     }
     else
-      ROS_WARN("Currently attaching objects of type '%d' aren't supported.", object.shapes[i].type);
+      ROS_WARN("[node] Currently attaching objects of type '%d' aren't supported.", object.shapes[i].type);
   }
 }
 
@@ -450,26 +454,17 @@ bool SBPLArmPlannerNode::setStart(const sensor_msgs::JointState &start_state)
 
   std::vector<std::vector<double> > xyz;
 
-  if(attached_object_)
-  {
-    ROS_WARN("SLEEPING FOR 5 SECONDS BEFORE PLANNING");
-    sleep(5);
-  }
-
   ROS_INFO("[node] start: %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f", sbpl_start[0],sbpl_start[1],sbpl_start[2],sbpl_start[3],sbpl_start[4],sbpl_start[5],sbpl_start[6]);
-
-  //ROS_INFO("[node] Visualizing start configuration.");
-  //aviz_->visualizeArmConfiguration(80, sbpl_start);
 
   if(sbpl_arm_env_.setStartConfiguration(sbpl_start) == 0)
   {
-    ROS_ERROR("Environment failed to set start state. Not Planning.\n");
+    ROS_ERROR("[node] Environment failed to set start state. Not Planning.\n");
     return false;
   }
 
   if(planner_->set_start(mdp_cfg_.startstateid) == 0)
   {
-    ROS_ERROR("Failed to set start state. Not Planning.");
+    ROS_ERROR("[node] Failed to set start state. Not Planning.");
     return false;
   }
 
@@ -488,7 +483,7 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
   std::vector <std::vector <double> > sbpl_tolerance(1, std::vector<double> (12,0));
 
   if(goals.position_constraints.size() != goals.orientation_constraints.size())
-    ROS_WARN("There are %d position contraints and %d orientation constraints.", int(goals.position_constraints.size()),int(goals.orientation_constraints.size()));
+    ROS_WARN("[node] There are %d position contraints and %d orientation constraints.", int(goals.position_constraints.size()),int(goals.orientation_constraints.size()));
 
   //currently only supports one goal
   sbpl_goal[0][0] = goals.position_constraints[0].position.x;
@@ -526,21 +521,21 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
   sbpl_tolerance[0][4] = goals.orientation_constraints[0].absolute_pitch_tolerance;
   sbpl_tolerance[0][5] = goals.orientation_constraints[0].absolute_yaw_tolerance;
 
-  ROS_INFO("goal quat from move_arm: %0.3f %0.3f %0.3f %0.3f", goals.orientation_constraints[0].orientation.x, goals.orientation_constraints[0].orientation.y, goals.orientation_constraints[0].orientation.z, goals.orientation_constraints[0].orientation.w);
+  ROS_INFO("[node] goal quat from move_arm: %0.3f %0.3f %0.3f %0.3f", goals.orientation_constraints[0].orientation.x, goals.orientation_constraints[0].orientation.y, goals.orientation_constraints[0].orientation.z, goals.orientation_constraints[0].orientation.w);
 
-  ROS_INFO("goal xyz(%s): %.3f %.3f %.3f (tol: %.3fm) rpy: %.3f %.3f %.3f (tol: %.3frad)", map_frame_.c_str(),sbpl_goal[0][0],sbpl_goal[0][1],sbpl_goal[0][2],sbpl_tolerance[0][0],sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5], sbpl_tolerance[0][1]);
+  ROS_INFO("[node] goal xyz(%s): %.3f %.3f %.3f (tol: %.3fm) rpy: %.3f %.3f %.3f (tol: %.3frad)", map_frame_.c_str(),sbpl_goal[0][0],sbpl_goal[0][1],sbpl_goal[0][2],sbpl_tolerance[0][0],sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5], sbpl_tolerance[0][1]);
 
   //set sbpl environment goal
   if(!sbpl_arm_env_.setGoalPosition(sbpl_goal, sbpl_tolerance))
   {
-    ROS_ERROR("Failed to set goal state. Perhaps goal position is out of reach. Exiting.");
+    ROS_ERROR("[node] Failed to set goal state. Perhaps goal position is out of reach. Exiting.");
     return false;
   }
 
   //set planner goal	
   if(planner_->set_goal(mdp_cfg_.goalstateid) == 0)
   {
-    ROS_ERROR("Failed to set goal state. Exiting.");
+    ROS_ERROR("[node] Failed to set goal state. Exiting.");
     return false;
   }
 
@@ -566,7 +561,7 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
   //check for an empty start state
   if(req.motion_plan_request.start_state.joint_state.position.size() <= 0)
   {
-    ROS_ERROR("No start state given. Unable to plan.");
+    ROS_ERROR("[node] No start state given. Unable to plan.");
     return false;
   }
 
@@ -574,14 +569,14 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
   if(req.motion_plan_request.goal_constraints.position_constraints.size() <= 0 || 
       req.motion_plan_request.goal_constraints.orientation_constraints.size() <= 0)
   {
-    ROS_ERROR("Position constraint or orientation constraint is empty. Unable to plan.");
+    ROS_ERROR("[node] Position constraint or orientation constraint is empty. Unable to plan.");
     return false;
   }
 
   //check if there is more than one goal constraint
   if(req.motion_plan_request.goal_constraints.position_constraints.size() > 1 || 
       req.motion_plan_request.goal_constraints.orientation_constraints.size() > 1)
-    ROS_WARN("The planning request message contains %d position and %d orientation constraints. Currently the planner only supports one position & orientation constraint pair at a time. Planning to the first goal may not satisfy move_arm.", int(req.motion_plan_request.goal_constraints.position_constraints.size()), int(req.motion_plan_request.goal_constraints.orientation_constraints.size()));
+    ROS_WARN("[node] The planning request message contains %d position and %d orientation constraints. Currently the planner only supports one position & orientation constraint pair at a time. Planning to the first goal may not satisfy move_arm.", int(req.motion_plan_request.goal_constraints.position_constraints.size()), int(req.motion_plan_request.goal_constraints.orientation_constraints.size()));
 
   // add collision objects to occupancy grid
   cspace_->putCollisionObjectsInGrid();
@@ -591,12 +586,12 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
 
   if(planning_joint_ != "r_wrist_roll_link" && arm_name_ == "right_arm")
   {
-    ROS_ERROR("Planner is configured to plan for the right arm. It has only been tested with pose constraints for r_wrist_roll_link. Other links may be supported in the future.");
+    ROS_ERROR("[node] Planner is configured to plan for the right arm. It has only been tested with pose constraints for r_wrist_roll_link. Other links may be supported in the future.");
     return false;
   }
   else if(planning_joint_ != "l_wrist_roll_link" && arm_name_ == "left_arm")
   {
-    ROS_ERROR("Planner is configured to plan for the left arm. It has only been tested with pose constraints for l_wrist_roll_link. Other links may be supported in the future.");
+    ROS_ERROR("[node] Planner is configured to plan for the left arm. It has only been tested with pose constraints for l_wrist_roll_link. Other links may be supported in the future.");
     return false;
   }
 
@@ -613,7 +608,7 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
   req.motion_plan_request.goal_constraints.position_constraints[0].position = pose_out.pose.position;
   req.motion_plan_request.goal_constraints.orientation_constraints[0].orientation = pose_out.pose.orientation;
 
-  ROS_DEBUG("[planToPosition] Transformed goal from (%s): %0.3f %0.3f %0.3f to (%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[0].header.frame_id.c_str(),pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z, map_frame_.c_str(), pose_out.pose.position.x,pose_out.pose.position.y,pose_out.pose.position.z);
+  ROS_DEBUG("[node] Transformed goal from (%s): %0.3f %0.3f %0.3f to (%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[0].header.frame_id.c_str(),pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z, map_frame_.c_str(), pose_out.pose.position.x,pose_out.pose.position.y,pose_out.pose.position.z);
 
   //get the initial state of the planning joints
   start.position.resize(num_joints_);
@@ -628,23 +623,29 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
       break;
   }
   if(nind != num_joints_)
-    ROS_WARN("Not all of the expected joints in the arm were assigned a starting position.");
+    ROS_WARN("[node] Not all of the expected joints in the arm were assigned a starting position.");
 
   allocated_time_ = req.motion_plan_request.allowed_planning_time.toSec();
 
   colmap_mutex_.lock();
   object_mutex_.lock();
 
-  ROS_DEBUG("[planToPosition] About to set start configuration");
+  ROS_WARN("[node]  About to set the start position, %lf seconds after request came in.",(clock() - starttime) / (double)CLOCKS_PER_SEC);
+  
+  ROS_DEBUG("[node] About to set start configuration");
   if(setStart(start))
   {
-    ROS_DEBUG("[planToPosition] Successfully set starting configuration");
+    ROS_DEBUG("[node] Successfully set starting configuration");
 
+    ROS_WARN("[node]  About to visualize and set goal, %lf seconds after request came in.",(clock() - starttime) / (double)CLOCKS_PER_SEC);
+    
     if(visualize_goal_)
       visualizeGoalPosition(req.motion_plan_request.goal_constraints);
 
     if(setGoalPosition(req.motion_plan_request.goal_constraints))
     {
+      ROS_WARN("[node]  About to start planning, %lf seconds after request came in.",(clock() - starttime) / (double)CLOCKS_PER_SEC);
+
       if(plan(arm_path))
       {
         colmap_mutex_.unlock();
@@ -671,14 +672,14 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
         for(i = 0; i < (unsigned int)num_joints_; i++)
           res.trajectory.joint_trajectory.joint_names[i] = joint_names_[i];
   
-        ROS_INFO("Planner completed in %lf seconds. Planned trajectory has %d waypoints.",(clock() - starttime) / (double)CLOCKS_PER_SEC, int(res.trajectory.joint_trajectory.points.size()));
+        ROS_INFO("[node] Planner completed in %lf seconds. Planned trajectory has %d waypoints.",(clock() - starttime) / (double)CLOCKS_PER_SEC, int(res.trajectory.joint_trajectory.points.size()));
 
         if(print_path_)
           printPath(res.trajectory.joint_trajectory.points);
 
         // compute distance to goal
         if(!isGoalConstraintSatisfied(res.trajectory.joint_trajectory.points[res.trajectory.joint_trajectory.points.size()-1].positions, req.motion_plan_request.goal_constraints))
-          ROS_WARN("Uh Oh. Goal constraint isn't satisfied.");
+          ROS_WARN("[node] Uh Oh. Goal constraint isn't satisfied.");
         
         // visualizations
         if(visualize_expanded_states_)
@@ -700,17 +701,17 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
       }
       else
       {
-        ROS_ERROR("Failed to plan within alotted time frame (%0.2f seconds).", allocated_time_);
+        ROS_ERROR("[node] Failed to plan within alotted time frame (%0.2f seconds).", allocated_time_);
       }
     }
     else
     {
-      ROS_ERROR("Failed to set goal pose.");
+      ROS_ERROR("[node] Failed to set goal pose.");
     }
   }
   else
   {
-    ROS_ERROR("Failed to set start configuration.");
+    ROS_ERROR("[node] Failed to set start configuration.");
   }
 
   colmap_mutex_.unlock();
@@ -1084,7 +1085,7 @@ void SBPLArmPlannerNode::displayARAStarStates()
     aviz_->visualizeDetailedStates(expanded_states, detailed_color,"expanded",0.01);
   }
 
-  ROS_INFO("[displayARAStarStates] displaying %d expanded states.\n",int(expanded_states.size()));
+  ROS_INFO("[node] displaying %d expanded states.\n",int(expanded_states.size()));
 }
 
 void SBPLArmPlannerNode::visualizeGoalPosition(const motion_planning_msgs::Constraints &goal_pose)
@@ -1093,7 +1094,7 @@ void SBPLArmPlannerNode::visualizeGoalPosition(const motion_planning_msgs::Const
   pose.position = goal_pose.position_constraints[0].position;
   pose.orientation = goal_pose.orientation_constraints[0].orientation;
   aviz_->visualizePose(pose, "goal_pose");
-  ROS_DEBUG("[visualizeGoalPosition] publishing goal marker visualizations.");
+  ROS_DEBUG("[node] Publishing goal marker visualizations.");
 }
 
 void SBPLArmPlannerNode::visualizeElbowPoses()
@@ -1105,7 +1106,7 @@ void SBPLArmPlannerNode::visualizeElbowPoses()
   {
     aviz_->visualizeSphere(elbow_poses[i], 100, "elbow_poses" + boost::lexical_cast<std::string>(i), 0.02);
   }
-  ROS_INFO("[visualizeElbowPoses] Visualizing %d elbow poses.", int(elbow_poses.size()));
+  ROS_INFO("[node] Visualizing %d elbow poses.", int(elbow_poses.size()));
 }
 
 void SBPLArmPlannerNode::visualizeCollisionObjects()
@@ -1126,7 +1127,7 @@ void SBPLArmPlannerNode::visualizeCollisionObjects()
     points[i][2] = poses[i].position.z;
   }
 
-  ROS_DEBUG("[visualizeCollisionObjects] Displaying %d known collision object voxels.", int(points.size()));
+  ROS_DEBUG("[node] Displaying %d known collision object voxels.", int(points.size()));
   aviz_->visualizeBasicStates(points, color, "known_objects", 0.01);
 }
 
@@ -1158,7 +1159,7 @@ void SBPLArmPlannerNode::visualizeAttachedObject(const std::vector<double> &angl
 
   if(angles.size() < 7)
   {
-    ROS_WARN("[visualizeAttachedObject] Joint configuration is not of the right length.");
+    ROS_WARN("[node] Joint configuration is not of the right length.");
     return;
   }
 
@@ -1175,7 +1176,7 @@ void SBPLArmPlannerNode::displayShortestPath()
   //check if the list is empty
   if(dpath_.empty())
   {
-    ROS_INFO("The heuristic path has a length of 0");
+    ROS_INFO("[node] The heuristic path has a length of 0");
     return;
   }
   else
@@ -1231,7 +1232,7 @@ void SBPLArmPlannerNode::visualizeCollisionModel(const std::vector<double> &angl
   if(spheres.size() > 0)
   {
     aviz_->visualizeSpheres(spheres, 250, 0.8, "attached_object");
-    ROS_DEBUG("[node] Visualizing %d attached_object spheres.", int(spheres.size()));
+    ROS_INFO("[node] Visualizing %d attached_object spheres.", int(spheres.size()));
   }
   else
     ROS_DEBUG("[node] No attached object.");
