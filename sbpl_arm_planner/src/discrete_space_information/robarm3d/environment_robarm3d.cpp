@@ -312,7 +312,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
   int i, a, final_mp_cost = 0;
   unsigned char dist=0;
   int endeff[3]={0};
-  std::vector<short unsigned int> succcoord(arm_->num_joints_,0);
+  std::vector<int> succcoord(arm_->num_joints_,0);
   std::vector<double> pose(6,0), angles(arm_->num_joints_,0), source_angles(arm_->num_joints_,0);
 
   //to support two sets of succesor actions
@@ -409,7 +409,7 @@ if(prms_.verbose_)
     //get grid coordinates of endeff
     grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
 
-    short unsigned int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
+    int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
     //check if this state meets the goal criteria
     if(isGoalPosition(pose,EnvROBARMCfg.EndEffGoals[0], angles, final_mp_cost))
@@ -505,7 +505,7 @@ void EnvironmentROBARM3D::printHashTableHist()
       s0,s1, s50, s100, s200,s300,slarge);
 }
 
-EnvROBARM3DHashEntry_t* EnvironmentROBARM3D::getHashEntry(const std::vector<short unsigned int> &coord, short unsigned int action, bool bIsGoal)
+EnvROBARM3DHashEntry_t* EnvironmentROBARM3D::getHashEntry(const std::vector<int> &coord, int action, bool bIsGoal)
 {
   //if it is goal
   if(bIsGoal)
@@ -540,14 +540,14 @@ EnvROBARM3DHashEntry_t* EnvironmentROBARM3D::getHashEntry(const std::vector<shor
   return NULL;
 }
 
-EnvROBARM3DHashEntry_t* EnvironmentROBARM3D::createHashEntry(const std::vector<short unsigned int> &coord, short unsigned int endeff[3], short unsigned int action)
+EnvROBARM3DHashEntry_t* EnvironmentROBARM3D::createHashEntry(const std::vector<int> &coord, int endeff[3], int action)
 {
   int i;
   EnvROBARM3DHashEntry_t* HashEntry = new EnvROBARM3DHashEntry_t;
 
   HashEntry->coord = coord;
 
-  memcpy(HashEntry->xyz, endeff, 3*sizeof(short unsigned int));
+  memcpy(HashEntry->xyz, endeff, 3*sizeof(int));
 
   HashEntry->action = action;
 
@@ -646,8 +646,8 @@ int EnvironmentROBARM3D::cost(EnvROBARM3DHashEntry_t* HashEntry1, EnvROBARM3DHas
 
 bool EnvironmentROBARM3D::initEnvConfig()
 {
-  short unsigned int endeff[3] = {0};
-  std::vector<short unsigned int> coord(arm_->num_joints_,0);
+  int endeff[3] = {0};
+  std::vector<int> coord(arm_->num_joints_,0);
 
   //these probably don't have to be done
   EnvROBARMCfg.start_configuration.resize(arm_->num_joints_);
@@ -948,7 +948,7 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, con
   {
     int endeff[3];
     grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
-    short unsigned int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
+    int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
     if(dijkstra_->getDist(endeff_short[0],endeff_short[1],endeff_short[2]) > prms_.solve_for_ik_thresh_)
       return false;
@@ -1125,9 +1125,9 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
   anglesToCoord(angles, EnvROBARM.startHashEntry->coord);
 
   grid_->worldToGrid(pose[0],pose[1],pose[2],x,y,z);
-  EnvROBARM.startHashEntry->xyz[0] = (short unsigned int)x;
-  EnvROBARM.startHashEntry->xyz[1] = (short unsigned int)y;
-  EnvROBARM.startHashEntry->xyz[2] = (short unsigned int)z;
+  EnvROBARM.startHashEntry->xyz[0] = (int)x;
+  EnvROBARM.startHashEntry->xyz[1] = (int)y;
+  EnvROBARM.startHashEntry->xyz[2] = (int)z;
 
   EnvROBARM.startHashEntry->rpy[0] = pose[3];
   EnvROBARM.startHashEntry->rpy[1] = pose[4];
@@ -1266,7 +1266,7 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
 
 bool EnvironmentROBARM3D::precomputeHeuristics()
 {
-  std::vector<short unsigned int> dij_goal(3,0);
+  std::vector<int> dij_goal(3,0);
 
   dij_goal[0] = EnvROBARMCfg.EndEffGoals[0].xyz[0];
   dij_goal[1] = EnvROBARMCfg.EndEffGoals[0].xyz[1];
@@ -1357,7 +1357,7 @@ bool EnvironmentROBARM3D::precomputeElbowHeuristic()
     return false;
   }
 
-  std::vector<std::vector<short unsigned int> > elbow_shorts(elbow_cells.size(), std::vector<short unsigned int> (3,0));
+  std::vector<std::vector<int> > elbow_shorts(elbow_cells.size(), std::vector<int> (3,0));
   for(unsigned int q = 0; q < elbow_cells.size(); q++)
   {
     elbow_shorts[q][0] = elbow_cells[q][0];
@@ -1556,7 +1556,7 @@ double EnvironmentROBARM3D::getDistToClosestGoal(double *xyz, int* goal_num)
   return min_dist;
 }
 
-int EnvironmentROBARM3D::getDijkstraDistToGoal(short unsigned int x, short unsigned int y, short unsigned int z) const
+int EnvironmentROBARM3D::getDijkstraDistToGoal(int x, int y, int z) const
 {
   int endeff_cc[3] = {x, y, z};
 
@@ -1655,7 +1655,7 @@ bool EnvironmentROBARM3D::interpolatePathToGoal(std::vector<std::vector<double> 
 
 std::vector<std::vector<double> > EnvironmentROBARM3D::getShortestPath()
 {
-  std::vector<short unsigned int> start(3,0);
+  std::vector<int> start(3,0);
   std::vector<double> waypoint(3,0);
   std::vector<std::vector<int> > path;
   std::vector<std::vector<double> > dpath; 
@@ -1694,7 +1694,7 @@ std::vector<std::vector<double> > EnvironmentROBARM3D::getShortestPath()
   return dpath;
 }
 
-void EnvironmentROBARM3D::getBresenhamPath(const short unsigned int a[],const short unsigned int b[], std::vector<std::vector<int> > *path)
+void EnvironmentROBARM3D::getBresenhamPath(const int a[],const int b[], std::vector<std::vector<int> > *path)
 {
   bresenham3d_param_t params;
   std::vector<int> nXYZ(3,0);

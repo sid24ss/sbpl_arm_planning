@@ -57,10 +57,10 @@ namespace sbpl_arm_planner {
 typedef struct
 {
   unsigned int g;
-  short unsigned int iterationclosed;
-  short unsigned int x;
-  short unsigned int y;
-  short unsigned int z;
+  int iterationclosed;
+  int x;
+  int y;
+  int z;
 } State3D;
 
 
@@ -111,12 +111,12 @@ class BFS3D
     /** \brief set a single goal 
      * @param goal a 3x1 vector {x,y,z}
      * @return true if success, false if goal is invalid */
-    bool setGoal(std::vector<short unsigned int> goal);
+    bool setGoal(std::vector<int> goal);
     
     /** \brief set a list of goals
      * @param goal an  nx3 vector {x,y,z}
      * @return true if success, false if all goals are invalid */
-    bool setGoals(std::vector<std::vector<short unsigned int> > goals);
+    bool setGoals(std::vector<std::vector<int> > goals);
 
     /** \brief compute a breadth first search from every cell to the goal(s)
      * @return true if it succeed and false otherwise */
@@ -136,7 +136,7 @@ class BFS3D
      * @param start a 3x1 vector containing the {x,y,z} start position 
      * @param path an nx3 vector containing the waypoints
      * @return true if it was a success and false otherwise */
-    bool getShortestPath(std::vector<short unsigned int> start, std::vector<std::vector<int> > &path);
+    bool getShortestPath(std::vector<int> start, std::vector<std::vector<int> > &path);
 
     /** \brief configure the distance field object that will be used as the
      * occupancy grid.
@@ -150,14 +150,14 @@ class BFS3D
 
   private:
 
-    short unsigned int dimX_;
-    short unsigned int dimY_;
-    short unsigned int dimZ_;
+    int dimX_;
+    int dimY_;
+    int dimZ_;
   
-    short unsigned int radius_;
+    int radius_;
     double radius_m_;
 
-    std::vector<std::vector<short unsigned int> > goal_;
+    std::vector<std::vector<int> > goal_;
 
     int cost_1_move_;
     int cost_sqrt2_move_;
@@ -172,7 +172,7 @@ class BFS3D
     std::vector<int> dist_;
 
     void reInitializeState3D(State3D* state);
-    void initializeState3D(State3D* state, short unsigned int x, short unsigned int y, short unsigned int z);
+    void initializeState3D(State3D* state, int x, int y, int z);
     void create3DStateSpace(State3D**** statespace3D);
     void delete3DStateSpace(State3D**** statespace3D);
     inline int xyzToIndex(int x, int y, int z);

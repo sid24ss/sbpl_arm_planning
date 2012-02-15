@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  std::vector<short unsigned int> goal(3,0);
+  std::vector<int> goal(3,0);
   BFS3D bfs(100,100,100,4,10);
 
   bfs.init();
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 //  bfs.printCostToGoal();
 
 
-  std::vector<short unsigned int> start(3,0);
+  std::vector<int> start(3,0);
   start[0] = 0;
   start[1] = 3;
   start[2] = 5;

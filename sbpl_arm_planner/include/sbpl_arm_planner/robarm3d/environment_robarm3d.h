@@ -62,7 +62,7 @@ namespace sbpl_arm_planner
 typedef struct
 {
   bool is_6dof_goal;
-  short unsigned int xyz_tolerance;
+  int xyz_tolerance;
   int type;
   int xyz[3];
   double pos[3];
@@ -76,11 +76,11 @@ typedef struct
 typedef struct
 {
   unsigned char dist;											//distance to closest obstacle
-  short unsigned int action;              //successor action number
-  short unsigned int xyz[3];              //end eff pos (xyz)
+  int action;              //successor action number
+  int xyz[3];              //end eff pos (xyz)
   int stateID;                            //hash entry ID number
   int heur;
-  std::vector<short unsigned int> coord;
+  std::vector<int> coord;
   double rpy[3];
 } EnvROBARM3DHashEntry_t;
 
@@ -391,9 +391,9 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
 
     /** hash table */
     unsigned int intHash(unsigned int key);
-    unsigned int getHashBin(const std::vector<short unsigned int> &coord);
-    EnvROBARM3DHashEntry_t* getHashEntry(const std::vector<short unsigned int> &coord, short unsigned int action, bool bIsGoal);
-    EnvROBARM3DHashEntry_t* createHashEntry(const std::vector<short unsigned int> &coord, short unsigned int endeff[3], short unsigned int action);
+    unsigned int getHashBin(const std::vector<int> &coord);
+    EnvROBARM3DHashEntry_t* getHashEntry(const std::vector<int> &coord, int action, bool bIsGoal);
+    EnvROBARM3DHashEntry_t* createHashEntry(const std::vector<int> &coord, int endeff[3], int action);
 
     /** initialization */
     bool initEnvConfig();
@@ -404,8 +404,8 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
 
     /** coordinate frame/angle functions */
     void discretizeAngles();
-    void coordToAngles(const std::vector<short unsigned int> &coord, std::vector<double> &angles);
-    void anglesToCoord(const std::vector<double> &angle, std::vector<short unsigned int> &coord);
+    void coordToAngles(const std::vector<int> &coord, std::vector<double> &angles);
+    void anglesToCoord(const std::vector<double> &angle, std::vector<int> &coord);
 
     /** planning */
     bool isGoalPosition(const std::vector<double> &pose, const GoalPos &goal, std::vector<double> jnt_angles, int &cost);
@@ -426,13 +426,13 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     void printJointArray(FILE* fOut, EnvROBARM3DHashEntry_t* HashEntry, bool bGoal, bool bVerbose);
 
     /** distance */
-    int getDijkstraDistToGoal(short unsigned int x, short unsigned int y, short unsigned int z) const;
+    int getDijkstraDistToGoal(int x, int y, int z) const;
     double getDistToClosestGoal(double *xyz,int *goal_num); 
     int getElbowHeuristic(int FromStateID, int ToStateID);
     int getEndEffectorHeuristic(int FromStateID, int ToStateID);
     int getCombinedHeuristic(int FromStateID, int ToStateID);
     int getEuclideanDistance(int x1, int y1, int z1, int x2, int y2, int z2) const; 
-    void getBresenhamPath(const short unsigned int a[],const short unsigned int b[], std::vector<std::vector<int> > *path);
+    void getBresenhamPath(const int a[],const int b[], std::vector<std::vector<int> > *path);
 
     void clearStats();
 };
@@ -451,24 +451,24 @@ inline unsigned int EnvironmentROBARM3D::intHash(unsigned int key)
   return key;
 }
 
-inline unsigned int EnvironmentROBARM3D::getHashBin(const std::vector<short unsigned int> &coord)
+inline unsigned int EnvironmentROBARM3D::getHashBin(const std::vector<int> &coord)
 {
   int val = 0;
 
-  for(short unsigned int i = 0; i < coord.size(); i++)
+  for(size_t i = 0; i < coord.size(); i++)
     val += intHash(coord[i]) << i;
 
   return intHash(val) & (EnvROBARM.HashTableSize-1);
 }
 
 //angles are counterclockwise from 0 to 360 in radians, 0 is the center of bin 0, ...
-inline void EnvironmentROBARM3D::coordToAngles(const std::vector<short unsigned int> &coord, std::vector<double> &angles)
+inline void EnvironmentROBARM3D::coordToAngles(const std::vector<int> &coord, std::vector<double> &angles)
 {
-  for(short unsigned int i = 0; i < coord.size(); i++)
+  for(size_t i = 0; i < coord.size(); i++)
     angles[i] = coord[i]*EnvROBARMCfg.angledelta[i];
 }
 
-inline void EnvironmentROBARM3D::anglesToCoord(const std::vector<double> &angle, std::vector<short unsigned int> &coord)
+inline void EnvironmentROBARM3D::anglesToCoord(const std::vector<double> &angle, std::vector<int> &coord)
 {
   double pos_angle;
 

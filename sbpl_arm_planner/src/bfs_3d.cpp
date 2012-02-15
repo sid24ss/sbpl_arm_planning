@@ -65,9 +65,9 @@ BFS3D::~BFS3D()
 {
   if (grid3D_ != NULL)
   {
-    for (short unsigned int x = 0; x < dimX_; x++)
+    for (int x = 0; x < dimX_; x++)
     {
-      for (short unsigned int y = 0; y < dimY_; y++)
+      for (int y = 0; y < dimY_; y++)
         delete [] grid3D_[x][y];
       delete [] grid3D_[x];
     }
@@ -81,7 +81,7 @@ BFS3D::~BFS3D()
 
 void BFS3D::init()
 {
-  short unsigned int x,y,z;
+  int x,y,z;
   grid3D_ = new unsigned char** [dimX_];
   for (x = 0; x < dimX_; x++)
   {
@@ -97,7 +97,7 @@ void BFS3D::init()
   }
 }
 
-bool BFS3D::setGoal(std::vector<short unsigned int> goal)
+bool BFS3D::setGoal(std::vector<int> goal)
 {
   if(goal.empty() || goal.size() < 3)
     return false;
@@ -115,7 +115,7 @@ bool BFS3D::setGoal(std::vector<short unsigned int> goal)
   return true;
 }
 
-bool BFS3D::setGoals(std::vector<std::vector<short unsigned int> > goals)
+bool BFS3D::setGoals(std::vector<std::vector<int> > goals)
 {
   if(goals.size() <= 0)
   {
@@ -151,7 +151,7 @@ void BFS3D::reInitializeState3D(State3D* state)
   state->iterationclosed = 0;
 }
 
-void BFS3D::initializeState3D(State3D* state, short unsigned int x, short unsigned int y, short unsigned int z)
+void BFS3D::initializeState3D(State3D* state, int x, int y, int z)
 {
   state->g = INFINITE_COST;
   state->iterationclosed = 0;
@@ -162,7 +162,7 @@ void BFS3D::initializeState3D(State3D* state, short unsigned int x, short unsign
 
 void BFS3D::create3DStateSpace(State3D**** statespace3D)
 {
-  short unsigned int  x,y,z;
+  int  x,y,z;
 
   *statespace3D = new State3D** [dimX_];
   for (x = 0; x < dimX_; x++)
@@ -181,7 +181,7 @@ void BFS3D::create3DStateSpace(State3D**** statespace3D)
 
 void BFS3D::delete3DStateSpace(State3D**** statespace3D)
 {
-  short unsigned int x,y;
+  int x,y;
 
   if((*statespace3D) != NULL)
   {
@@ -341,7 +341,7 @@ void BFS3D::search3DwithQueue(State3D*** statespace)
 {
   State3D* ExpState;
   int newx, newy, newz;
-  short unsigned int x,y,z;
+  int x,y,z;
   unsigned int g_temp;
 
   //these are added here temporarily. should be in the class
@@ -439,7 +439,7 @@ bool BFS3D::isGoal(const std::vector<int> &state)
   return false;
 }
 
-bool BFS3D::getShortestPath(std::vector<short unsigned int> start, std::vector<std::vector<int> > &path)
+bool BFS3D::getShortestPath(std::vector<int> start, std::vector<std::vector<int> > &path)
 {
   int val = 0, cntr = 0, min_val = INFINITE_COST;
   std::vector<int> state(3,0);

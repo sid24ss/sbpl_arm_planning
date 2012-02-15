@@ -66,8 +66,8 @@ struct ArmJoint
 */
 struct ArmLink
 {
-  short unsigned int radius_c;
-  short unsigned int length_c;
+  int radius_c;
+  int length_c;
   int ind_chain;
   int ind_jnt1;
   int ind_jnt2;
@@ -131,7 +131,7 @@ class SBPLArmModel{
     void printArmDescription(std::string stream);
 
     /** \brief get radius of link in grid cells */
-    short unsigned int getLinkRadiusCells(int link);
+    int getLinkRadiusCells(int link);
     
     double getLinkRadius(int link);
 
@@ -181,7 +181,7 @@ class SBPLArmModel{
     std::string planning_joint_name_;
 
     /** \brief the radius of the widest link */
-    short unsigned int max_radius_;
+    int max_radius_;
 
     /** \brief a vector of joints */
 	  std::vector<ArmJoint> joints_;
@@ -215,7 +215,7 @@ class SBPLArmModel{
 };
 
 
-inline short unsigned int SBPLArmModel::getLinkRadiusCells(int link)
+inline int SBPLArmModel::getLinkRadiusCells(int link)
 {
   if(link < num_links_)
     return links_[link].radius_c;
