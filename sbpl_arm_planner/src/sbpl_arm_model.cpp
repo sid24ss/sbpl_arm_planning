@@ -274,49 +274,6 @@ bool SBPLArmModel::initKDLChain(const std::string &fKDL)
   return true;
 }
 
-void SBPLArmModel::parseKDLTree()
-{
-  num_kdl_joints_ = kdl_tree_.getNrOfJoints();
-
-  SBPL_DEBUG("%d KDL joints:",num_kdl_joints_);
-
-  // create the joint_segment_mapping, which used to be created by the URDF -> KDL parser
-  // but not any more, but the rest of the code depends on it, so we simply generate the mapping here:
-  KDL::SegmentMap segment_map = kdl_tree_.getSegments();
-
-  for (KDL::SegmentMap::const_iterator it = segment_map.begin(); it != segment_map.end(); ++it)
-  {
-    if (it->second.segment.getJoint().getType() != KDL::Joint::None)
-    {
-      std::string joint_name = it->second.segment.getJoint().getName();
-      SBPL_DEBUG("%s",joint_name.c_str());
-      std::string segment_name = it->first;
-      joint_segment_mapping_.insert(make_pair(joint_name, segment_name));
-    }
-  }
-
-  kdl_number_to_urdf_name_.resize(num_kdl_joints_);
-  // Create the inverse mapping - KDL segment to joint name
-  // (at the same time) Create a mapping from KDL numbers to URDF joint names and vice versa
-  for (map<string, string>::iterator it = joint_segment_mapping_.begin(); it!= joint_segment_mapping_.end(); ++it)
-  {
-    std::string joint_name = it->first;
-    std::string segment_name = it->second;
-  
-    std::cout << joint_name << " -> " << segment_name << std::endl;
-  
-    segment_joint_mapping_.insert(make_pair(segment_name, joint_name));
-    int kdl_number = kdl_tree_.getSegment(segment_name)->second.q_nr;
-    if (kdl_tree_.getSegment(segment_name)->second.segment.getJoint().getType() != KDL::Joint::None)
-    {
-      std::cout << "KDL number is: " << kdl_number << std::endl;
-   
-      kdl_number_to_urdf_name_[kdl_number] = joint_name;
-      urdf_name_to_kdl_number_.insert(make_pair(joint_name, kdl_number));
-    }
-  }
-}
-
 bool SBPLArmModel::computeFK(const std::vector<double> angles, int frame_num, KDL::Frame *frame_out)
 {
   KDL::Frame fk_frame_out;
@@ -351,57 +308,6 @@ bool SBPLArmModel::computeFK(const std::vector<double> angles, int frame_num, st
   }
   
   return false;
-}
-
-bool SBPLArmModel::computeFK(const std::vector<double> angles, int frame_num, std::vector<double> &xyzrpy, int sol_num)
-{
-  KDL::Frame frame_out;
-  xyzrpy.resize(6);
-  if(computeFK(angles,frame_num,&frame_out))
-  {
-    //convert to quaternion then back to rpy
-    //so we can choose which rpy solution we want
-    tf::Pose pose;
-    tf::PoseKDLToTF(frame_out,pose);
-    pose.getBasis().getRPY(xyzrpy[3],xyzrpy[4],xyzrpy[5],sol_num);
-
-    xyzrpy[0] = frame_out.p[0];
-    xyzrpy[1] = frame_out.p[1];
-    xyzrpy[2] = frame_out.p[2];
-
-    return true;
-  }
-
-  return false;
-}
-
-bool SBPLArmModel::computeEndEffPose(const std::vector<double> angles, double  R_target[3][3], double* x, double* y, double* z, double* axis_angle)
-{
-  KDL::Frame f_endeff;
-
-  if(computeFK(angles, planning_joint_, &f_endeff))
-  {
-    *x = f_endeff.p[0];
-    *y = f_endeff.p[1];
-    *z = f_endeff.p[2];
-
-    *axis_angle = frameToAxisAngle(f_endeff, R_target);
-    return true;
-  }
-  return false;
-}
-
-double SBPLArmModel::frameToAxisAngle(const KDL::Frame frame, const double R_target[3][3])
-{
-  double R_endeff[3][3];
-
-  //end effector rotation matrix
-  for(unsigned int i = 0; i < 3; i++)
-    for(unsigned int j = 0; j < 3; j++)
-      R_endeff[i][j] = frame.M(i,j);
-
-  //compute axis angle (temporary...switch to GetRotAngle())
-  return getAxisAngle(R_endeff, R_target);
 }
 
 bool SBPLArmModel::computeIK(const std::vector<double> pose, const std::vector<double> start, std::vector<double> &solution)
@@ -482,32 +388,6 @@ bool SBPLArmModel::computeFastIK(const std::vector<double> pose, const std::vect
   return true;
 }
 
-double SBPLArmModel::getAxisAngle(const double R1[3][3], const double R2[3][3])
-{
-  short unsigned int x,y,k;
-  double sum, R3[3][3], R1_T[3][3];
-
-  //R1_T = transpose R1
-  for(x=0; x<3; x++)
-    for(y=0; y<3; y++)
-      R1_T[x][y] = R1[y][x];
-
-  //R3= R1_T * R2
-  for (x=0; x<3; x++)
-  {
-    for (y=0; y<3; y++)
-    {
-      sum = 0.0;
-      for (k=0; k<3; k++)
-        sum += (R1_T[x][k] * R2[k][y]);
-
-      R3[x][y] = sum;
-    }
-  }
-
-  return acos(((R3[0][0] + R3[1][1] + R3[2][2]) - 1.0) / 2.0);
-}
-
 bool SBPLArmModel::getJointPositions(const std::vector<double> angles, std::vector<std::vector<double> > &links, KDL::Frame &f_out)
 {
   KDL::Frame f;
@@ -531,67 +411,6 @@ bool SBPLArmModel::getJointPositions(const std::vector<double> angles, std::vect
   return true;
 }
 
-bool SBPLArmModel::getJointPositions(const std::vector<double> angles, const double R_target[3][3], std::vector<std::vector<double> > &links, double *axis_angle)
-{
-  KDL::Frame f_link_tip;
-
-  links.resize(joint_indeces_.size());
-
-  for(unsigned int i = 0; i < joint_indeces_.size(); ++i)
-  {
-    //if(!computeFK(angles, links_[i].ind_chain, &f_link_tip))
-    if(!computeFK(angles, joint_indeces_[i], &f_link_tip))
-      return false;
-
-    links[i].resize(3,0);
-    links[i][0] = f_link_tip.p.x();
-    links[i][1] = f_link_tip.p.y();
-    links[i][2] = f_link_tip.p.z();
-
-    //if(links_[i].ind_chain == planning_joint_)
-    if(joint_indeces_[i] == planning_joint_)
-      *axis_angle = frameToAxisAngle(f_link_tip, R_target);
-  }
-  return true;
-}
-
-//returns end effector position in meters
-bool SBPLArmModel::computePlanningJointPos(const std::vector<double> angles, double* x, double* y, double* z)
-{
-  KDL::Frame planning_joint_frame;
-  if(!computeFK(angles, planning_joint_, &planning_joint_frame))
-  {
-    *x = planning_joint_frame.p.x();
-    *y = planning_joint_frame.p.y();
-    *z = planning_joint_frame.p.z();
-    return true;
-  }
-
-  return false;
-}
-
-//returns end effector position in meters
-bool SBPLArmModel::getPlanningJointPose(const std::vector<double> angles, double R_target[3][3], std::vector<double> &pose, double *axis_angle)
-{
-  KDL::Frame planning_joint_frame;
-  pose.resize(6);
-  
-  if(computeFK(angles, planning_joint_, &planning_joint_frame))
-  {
-    pose[0] = planning_joint_frame.p.x();
-    pose[1] = planning_joint_frame.p.y();
-    pose[2] = planning_joint_frame.p.z();
-    
-    planning_joint_frame.M.GetRPY(pose[3],pose[4],pose[5]);
-
-    *axis_angle = frameToAxisAngle(planning_joint_frame, R_target);
-
-    return true;
-  }
-
-  return false;
-}
-
 bool SBPLArmModel::getPlanningJointPose(const std::vector<double> angles, std::vector<double> &pose)
 {
   KDL::Frame planning_joint_frame;
@@ -609,91 +428,6 @@ bool SBPLArmModel::getPlanningJointPose(const std::vector<double> angles, std::v
   }
 
   return false;
-}
-
-void SBPLArmModel::RPY2Rot(double roll, double pitch, double yaw, double Rot[3][3])
-{
-  double cosr, cosp, cosy, sinr, sinp, siny;
-
-  cosr = cos(roll);
-  cosp = cos(pitch);
-  cosy = cos(yaw);
-  sinr = sin(roll);
-  sinp = sin(pitch);
-  siny = sin(yaw);
-
-  Rot[0][0] = cosp*cosy;
-  Rot[0][1] = cosy*sinp*sinr - siny*cosr;
-  Rot[0][2] = cosy*sinp*cosr + siny*sinr;   
-
-  Rot[1][0] = siny*cosp;
-  Rot[1][1] = siny*sinp*sinr + cosy*cosr;
-  Rot[1][2] = siny*sinp*cosr - cosy*sinr;
-
-  Rot[2][0] = -sinp;
-  Rot[2][1] = cosp*sinr;
-  Rot[2][2] = cosp*cosr;
-}
-
-/** convert a rotation matrix into the RPY format (copied from getEulerZYX() in Bullet physics library) */
-void SBPLArmModel::getRPY(double Rot[3][3], double* roll, double* pitch, double* yaw, int solution_number)
-{
-  double delta,rpy1[3],rpy2[3];
-
-  // Check that pitch is not at a singularity
-  if(fabs(Rot[0][2]) >= 1)
-  {
-    rpy1[2]  = 0;
-    rpy2[2]  = 0;
-
-    // From difference of angles formula
-    delta = atan2(Rot[0][0], Rot[2][0]);
-    if(Rot[0][2] > 0)   //gimbal locked up
-    {
-      rpy1[1] = M_PI / 2.0;
-      rpy2[1] = M_PI / 2.0;
-      rpy1[0] = rpy1[1] + delta;
-      rpy2[0] = rpy2[1] + delta;
-    }
-    else // gimbal locked down
-    {
-      rpy1[1] = -M_PI / 2.0;
-      rpy2[1] = -M_PI / 2.0;
-      rpy1[0] = -rpy1[1] + delta;
-      rpy2[0] = -rpy2[1] + delta;
-    }
-  }
-  else
-  {
-    rpy1[1] = -asin(Rot[0][2]);
-    rpy2[1] = M_PI - rpy1[1];
-
-
-    rpy1[0] = atan2(Rot[1][2]/cos(rpy1[1]),
-        Rot[2][2]/cos(rpy1[1]));
-
-    rpy2[0] = atan2(Rot[1][2]/cos(rpy2[1]),
-        Rot[2][2]/cos(rpy2[1]));
-
-    rpy1[2] = atan2(Rot[0][1]/cos(rpy1[1]),
-        Rot[0][0]/cos(rpy1[1]));
-
-    rpy2[2] = atan2(Rot[0][1]/cos(rpy2[1]),
-        Rot[0][0]/cos(rpy2[1]));
-  }
-
-  if (solution_number == 1)
-  {
-    *yaw = rpy1[2];
-    *pitch = rpy1[1];
-    *roll = rpy1[0];
-  }
-  else
-  {
-    *yaw = rpy2[2];
-    *pitch = rpy2[1];
-    *roll = rpy2[0];
-  }
 }
 
 bool SBPLArmModel::checkJointLimits(std::vector<double> angles, bool verbose)

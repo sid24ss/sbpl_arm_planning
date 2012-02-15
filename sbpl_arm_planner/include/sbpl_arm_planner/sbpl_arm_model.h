@@ -108,26 +108,11 @@ class SBPLArmModel{
     /** \brief parse the arm description text file */
     bool getArmDescription(FILE* fCfg);
 
-    /** \brief compute the axis angle between 2 rotation matrices */
-    double getAxisAngle(const double R1[3][3], const double R2[3][3]);
-
-    /** \brief convert RPY values to a rotation matrix */
-    void RPY2Rot(double roll, double pitch, double yaw, double Rot[3][3]);
-    
     /** \brief compute the forward kinematics to get the pose of the specified joint*/
     bool computeFK(const std::vector<double> angles, int frame_num, KDL::Frame *frame_out);
 
     /** \brief compute the forward kinematics to get the pose of the specified joint*/
     bool computeFK(const std::vector<double> angles, int f_num, std::vector<double> &xyzrpy);
-
-    /** \brief (added for debugging - can be removed) compute the forward
-     * kinematics to get the pose of the specified joint, use sol_num to
-     * choose which RPY representation you want */
-    bool computeFK(const std::vector<double> angles, int frame_num, std::vector<double> &xyzrpy, int sol_num);
-    
-    /** \brief compute the position {x,y,z} of the planning_joint & the axis
-     * angle which represents the difference to the target frame */ 
-    bool computeEndEffPose(const std::vector<double> angles, double R_target[3][3], double *x, double *y, double *z, double *axis_angle);
 
     /** \brief compute the inverse kinematics for the planning_joint pose */
     bool computeIK(const std::vector<double> pose, const std::vector<double> start, std::vector<double> &solution);
@@ -135,18 +120,9 @@ class SBPLArmModel{
     /** \brief compute the closed form inverse kinematics solution  */
     bool computeFastIK(const std::vector<double> pose, const std::vector<double> start, std::vector<double> &solution);
 
-    /** \brief compute the positions of all the tips of the links (collision checking)*/ 
-    bool getJointPositions(const std::vector<double> angles, const double R_target[3][3], std::vector<std::vector<double> > &links, double *axis_angle);
-  
     bool getJointPositions(const std::vector<double> angles, std::vector<std::vector<double> > &links, KDL::Frame &f_out);
 
-    /** \brief compute the coordinates in the world frame of the planning_joint */ 
-    bool computePlanningJointPos(const std::vector<double> angles, double *x, double *y, double *z);
-   
     bool getPlanningJointPose(const std::vector<double> angles, std::vector<double> &pose);
-
-    /** \brief compute the pose in the world frame of the planning_joint */ 
-    bool getPlanningJointPose(const std::vector<double> angles, double R_target[3][3], std::vector<double> &pose, double *axis_angle);
 
     /** \brief return true or false if angles are within specified joint limits */
     bool checkJointLimits(std::vector<double> angles, bool verbose);
@@ -154,17 +130,11 @@ class SBPLArmModel{
     /** \brief print description of arm from SBPL arm text file */
     void printArmDescription(std::string stream);
 
-    /** \brief get the radius (in meters) of the widest link */
-    int getMaxLinkRadius();
-
     /** \brief get radius of link in grid cells */
     short unsigned int getLinkRadiusCells(int link);
     
     double getLinkRadius(int link);
 
-    /** \brief get radius of link in grid cells */
-    short unsigned int getPlanningJointRadius();
-   
     /** \brief set the resolution used for collision checking */
     void setResolution(double resolution);
 
@@ -232,14 +202,6 @@ class SBPLArmModel{
 
     std::string debug_stream_;
 
-    //copied from CHOMP - but not used as of now
-    void parseKDLTree();
-	  int num_kdl_joints_;
-    std::map<std::string, std::string> joint_segment_mapping_;    /**< Joint -> Segment mapping for KDL tree */
-    std::map<std::string, std::string> segment_joint_mapping_;    /**< Segment -> Joint mapping for KDL tree */
-    std::vector<std::string> kdl_number_to_urdf_name_;            /**< Mapping from KDL joint number to URDF joint name */
-    std::map<std::string, int> urdf_name_to_kdl_number_;          /**< Mapping from URDF joint name to KDL joint number */
-
     KDL::JntArray jnt_pos_in_;
 	  KDL::JntArray jnt_pos_out_;
 	  KDL::Frame p_out_;
@@ -250,12 +212,6 @@ class SBPLArmModel{
 	  KDL::JntArray ik_jnt_pos_out_;
 	 
     pr2_arm_kinematics::PR2ArmIKSolver* pr2_arm_ik_solver_;
-
-    /** \brief calculate axis angle between a KDL frame and a Rot matrix */
-    double frameToAxisAngle(const KDL::Frame frame, const double R_target[3][3]);
-   
-    /** \brief convert a rotation matrix into roll,pitch,yaw */ 
-    void getRPY(double Rot[3][3], double* roll, double* pitch, double* yaw, int solution_number);
 };
 
 
@@ -271,11 +227,6 @@ inline double SBPLArmModel::getLinkRadius(int link)
   if(link < num_links_)
     return links_[link].radius;
   return 0;
-}
-
-inline int SBPLArmModel::getMaxLinkRadius()
-{
-  return max_radius_;
 }
 
 inline std::vector<std::vector<double> >  SBPLArmModel::getCollisionCuboids()
