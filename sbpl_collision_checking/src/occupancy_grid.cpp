@@ -212,7 +212,7 @@ void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::v
 
 void OccupancyGrid::visualize()
 {
-  ROS_ERROR("[grid] Visualizing the grid is disabled. (DistanceField API changed...)");
+  ROS_WARN_ONCE("[grid] Visualizing the grid is disabled. (DistanceField API changed...)");
   //btTransform trans; 
   //trans.setIdentity();
   //grid_->visualize(0.01, 0.02, reference_frame_, trans, ros::Time::now());

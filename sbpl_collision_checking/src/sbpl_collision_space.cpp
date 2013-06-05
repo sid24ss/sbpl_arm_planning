@@ -392,7 +392,7 @@ bool SBPLCollisionSpace::checkPathForCollision(const std::vector<double> &start,
 
   getInterpolatedPath(start_norm, end_norm, inc_, path);
   if(path.size() > 4)
-    ROS_WARN("[cspace]  %d waypoints in interpolated path.", int(path.size()));
+    ROS_DEBUG("[cspace]  %d waypoints in interpolated path.", int(path.size()));
 
   // try to find collisions that might come later in the path earlier
   if(int(path.size()) > inc_cc)

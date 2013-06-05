@@ -20,7 +20,6 @@ find_package(Eigen REQUIRED)
 include_directories(${EIGEN_INCLUDE_DIRS})
 add_definitions(${EIGEN_DEFINITIONS})
 
-
 #rosbuild_add_compile_flags(-g)
 
 #set the default path for built executables to the "bin" directory
@@ -37,8 +36,8 @@ rosbuild_add_library(sbpl_collision_checking
 
 target_link_libraries(sbpl_collision_checking visualize_arm)
 
-rosbuild_add_executable(testCollisionSpace src/test_sbpl_collision_space.cpp)
-target_link_libraries(testCollisionSpace sbpl_collision_checking visualize_arm)
+#rosbuild_add_executable(testCollisionSpace src/test_sbpl_collision_space.cpp)
+#target_link_libraries(testCollisionSpace sbpl_collision_checking visualize_arm)
 
 rosbuild_add_executable(benchmarkCC src/benchmark_cc.cpp)
 target_link_libraries(benchmarkCC sbpl_collision_checking)

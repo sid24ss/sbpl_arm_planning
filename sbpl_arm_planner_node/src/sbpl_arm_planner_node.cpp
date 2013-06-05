@@ -228,7 +228,7 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const arm_navigation_msgs::Co
 
     if(collision_map->header.frame_id.compare(reference_frame_) != 0)
     {
-      ROS_WARN("collision_map_occ is in %s not in %s", collision_map->header.frame_id.c_str(), reference_frame_.c_str());
+      ROS_WARN_ONCE("collision_map_occ is in %s not in %s", collision_map->header.frame_id.c_str(), reference_frame_.c_str());
       ROS_DEBUG("the collision map has %i cubic obstacles", int(collision_map->boxes.size()));
     }
 
