@@ -1,0 +1,11 @@
+<launch>
+
+  <node pkg="simple_arm_control" type="attachObject" name="attach_object" >
+    <param name="shape"      value="box" />
+    <param name="operation"  value="add" />
+    <param name="dim_x" value="0.10" />
+    <param name="dim_y" value="0.08" />
+    <param name="dim_z" value="0.15" />
+  </node>
+
+</launch>
