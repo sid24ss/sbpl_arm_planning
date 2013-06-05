@@ -1,0 +1,24 @@
+<launch> 
+  <!-- start pr2 robot -->
+  <include file="$(find pr2_gazebo)/launch/pr2_empty_world.launch"/>
+
+  <!-- load perception -->
+  <include file="$(find pr2_arm_navigation_perception)/launch/laser-perception.launch"/>
+
+  <!-- load move_arm -->
+  <include file="$(find pr2_arm_navigation_actions)/launch/move_right_arm.launch"/>
+
+  <!-- load planning_environment -->
+  <include file="$(find planning_environment)/launch/environment_server.launch"/>
+
+  <!-- load planning -->
+<!--  <include file="$(find pr2_arm_navigation_planning)/launch/ompl_planning.launch"/> -->
+
+  <!-- load filters -->
+  <include file="$(find pr2_arm_navigation_filtering)/launch/trajectory_filter.launch"/>
+
+  <!-- load ik -->
+  <include file="$(find pr2_arm_navigation_kinematics)/launch/right_arm_collision_free_ik.launch"/>
+
+</launch>
+
