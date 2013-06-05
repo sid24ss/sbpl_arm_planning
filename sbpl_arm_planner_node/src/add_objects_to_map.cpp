@@ -3,7 +3,7 @@
 
 AddObjectsToMap::AddObjectsToMap()
 {
-  object_in_map_pub_ = nh_.advertise<mapping_msgs::CollisionObject>("collision_object", 1024);
+  object_in_map_pub_ = nh_.advertise<arm_navigation_msgs::CollisionObject>("collision_object", 1024);
 }
 
 bool AddObjectsToMap::parseObjectsFile(FILE* fCfg, std::vector<std::vector<double> > &objects, std::vector<std::string> &object_ids)
@@ -106,14 +106,14 @@ void AddObjectsToMap::addBoxes(std::vector<std::vector<double> > &objects, std::
 
 void AddObjectsToMap::addBox(geometry_msgs::Pose pose, std::vector<double> &dims, std::string id)
 {
-  mapping_msgs::CollisionObject object;
+  arm_navigation_msgs::CollisionObject object;
   object.id = id;
-  object.operation.operation = mapping_msgs::CollisionObjectOperation::ADD;
+  object.operation.operation = arm_navigation_msgs::CollisionObjectOperation::ADD;
   object.header.frame_id = "base_link";
   object.header.stamp = ros::Time::now();
   
-  geometric_shapes_msgs::Shape box_object;
-  box_object.type = geometric_shapes_msgs::Shape::BOX;
+  arm_navigation_msgs::Shape box_object;
+  box_object.type = arm_navigation_msgs::Shape::BOX;
   box_object.dimensions.resize(3);
   box_object.dimensions[0] = dims[0];
   box_object.dimensions[1] = dims[1];

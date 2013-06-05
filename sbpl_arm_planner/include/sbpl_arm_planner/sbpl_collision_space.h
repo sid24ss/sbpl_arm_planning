@@ -39,7 +39,7 @@
 #include <tf_conversions/tf_kdl.h>
 
 #include <tf/tf.h>
-#include <mapping_msgs/CollisionObject.h>
+#include <arm_navigation_msgs/CollisionObject.h>
 
 using namespace std;
 
@@ -124,7 +124,7 @@ class SBPLCollisionSpace
     double getAttachedObjectRadius();
    
     /** \brief add a collision object to the environment */ 
-    void addCollisionObject(const mapping_msgs::CollisionObject &object);
+    void addCollisionObject(const arm_navigation_msgs::CollisionObject &object);
 
     /** \brief transform a pose from one frame to another */
     void transformPose(std::string current_frame, std::string desired_frame, geometry_msgs::Pose &pose_in, geometry_msgs::Pose &pose_out);
@@ -132,9 +132,9 @@ class SBPLCollisionSpace
     void transformPose(const std::string &current_frame, const std::string &desired_frame, const geometry_msgs::Pose &pose_in, geometry_msgs::Pose &pose_out);
 
     /** \brief process a collision object message */
-    void processCollisionObjectMsg(const mapping_msgs::CollisionObject &object);
+    void processCollisionObjectMsg(const arm_navigation_msgs::CollisionObject &object);
 
-    void removeCollisionObject(const mapping_msgs::CollisionObject &object);
+    void removeCollisionObject(const arm_navigation_msgs::CollisionObject &object);
 
     void removeAllCollisionObjects();
 
@@ -160,7 +160,7 @@ class SBPLCollisionSpace
     FILE* fOut_;
 
     /** \brief map from object id to object details */
-    std::map<std::string, mapping_msgs::CollisionObject> object_map_;
+    std::map<std::string, arm_navigation_msgs::CollisionObject> object_map_;
     
     /** \brief map from object id to list of occupying voxels */
     std::map<std::string, std::vector<btVector3> > object_voxel_map_;

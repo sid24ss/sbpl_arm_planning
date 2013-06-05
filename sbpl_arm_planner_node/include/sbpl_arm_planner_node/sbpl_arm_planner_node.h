@@ -50,9 +50,9 @@
 
 /** Messages **/
 #include <geometry_msgs/Pose.h>
-#include <mapping_msgs/CollisionMap.h>
-#include <mapping_msgs/AttachedCollisionObject.h>
-#include <motion_planning_msgs/GetMotionPlan.h>
+#include <arm_navigation_msgs/CollisionMap.h>
+#include <arm_navigation_msgs/AttachedCollisionObject.h>
+#include <arm_navigation_msgs/GetMotionPlan.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h> 
 #include <kinematics_msgs/GetPositionIK.h>
 #include <kinematics_msgs/GetPositionFK.h>
@@ -74,7 +74,7 @@ namespace sbpl_arm_planner
       int run();
 
       /** \brief Planning service call back function */
-      bool planKinematicPath(motion_planning_msgs::GetMotionPlan::Request &req, motion_planning_msgs::GetMotionPlan::Response &res);
+      bool planKinematicPath(arm_navigation_msgs::GetMotionPlan::Request &req, arm_navigation_msgs::GetMotionPlan::Response &res);
 
     private:
 
@@ -82,13 +82,13 @@ namespace sbpl_arm_planner
       ros::ServiceServer planning_service_;
       ros::Subscriber object_subscriber_;
       ros::Subscriber joint_states_subscriber_;
-      message_filters::Subscriber<mapping_msgs::CollisionMap> collision_map_subscriber_;
-      tf::MessageFilter<mapping_msgs::CollisionMap> *collision_map_filter_;
-      mapping_msgs::CollisionMap cmap_;
+      message_filters::Subscriber<arm_navigation_msgs::CollisionMap> collision_map_subscriber_;
+      tf::MessageFilter<arm_navigation_msgs::CollisionMap> *collision_map_filter_;
+      arm_navigation_msgs::CollisionMap cmap_;
 
       //remove
       ros::Subscriber collision_object_subscriber_;
-      void collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object);
+      void collisionObjectCallback(const arm_navigation_msgs::CollisionObjectConstPtr &collision_object);
       std::vector<std::vector<double> > col_objects_;
 
       /** @brief A FK solver. (The FK service is currently being used) */
@@ -143,7 +143,7 @@ namespace sbpl_arm_planner
       std::vector<std::string> joint_names_;
       std::vector<double> stats_;
       std::vector<std::vector<double> > dpath_;
-      std::map<std::string, mapping_msgs::CollisionObject> object_map_;
+      std::map<std::string, arm_navigation_msgs::CollisionObject> object_map_;
 
       /* planner & environment */
       MDPConfig mdp_cfg_;
@@ -170,30 +170,30 @@ namespace sbpl_arm_planner
       bool setStart(const sensor_msgs::JointState &start_state);
 
       /** \brief Set cartesian goal(s) */
-      bool setGoalPosition(const motion_planning_msgs::Constraints &goals);
+      bool setGoalPosition(const arm_navigation_msgs::Constraints &goals);
 
       /** \brief Callback function that's called by the collision map topic. It reformats the collision map for the sbpl grid */
-      void updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map);
+      void updateMapFromCollisionMap(const arm_navigation_msgs::CollisionMapConstPtr &collision_map);
 
       /** \brief Callback function that gets called when a new collision map
        * is available. It updates the internal distance field with the map
        * and visualizes it (if desired).*/
-      void collisionMapCallback(const mapping_msgs::CollisionMapConstPtr &collision_map);
+      void collisionMapCallback(const arm_navigation_msgs::CollisionMapConstPtr &collision_map);
 
-      void attachedObjectCallback(const mapping_msgs::AttachedCollisionObjectConstPtr &attached_object);
+      void attachedObjectCallback(const arm_navigation_msgs::AttachedCollisionObjectConstPtr &attached_object);
 
       void jointStatesCallback(const sensor_msgs::JointStateConstPtr &state);
 
-      void attachObject(const mapping_msgs::CollisionObject &obj, std::string link_name);
+      void attachObject(const arm_navigation_msgs::CollisionObject &obj, std::string link_name);
 
       /** \brief Plan a path to a cartesian goal(s) */
-      bool planToPosition(motion_planning_msgs::GetMotionPlan::Request &req, motion_planning_msgs::GetMotionPlan::Response &res);
+      bool planToPosition(arm_navigation_msgs::GetMotionPlan::Request &req, arm_navigation_msgs::GetMotionPlan::Response &res);
 
       /** \brief Retrieve plan from sbpl */
       bool plan(std::vector<trajectory_msgs::JointTrajectoryPoint> &arm_path);
 
       /** \brief Check if path satisfies goal constraints */
-      bool isGoalConstraintSatisfied(const std::vector<double> &angles, const motion_planning_msgs::Constraints &goal);
+      bool isGoalConstraintSatisfied(const std::vector<double> &angles, const arm_navigation_msgs::Constraints &goal);
 
       /** \brief Compute IK using pr2_ik service */
       bool computeIK(const geometry_msgs::Pose &pose_stamped_msg, std::vector<double> jnt_pos, std::vector<double> &solution);
@@ -208,7 +208,7 @@ namespace sbpl_arm_planner
       bool initChain(std::string robot_description);
 
       /** \brief Publish a visualization marker to display the goal end effector position in rviz */
-      void visualizeGoalPosition(const motion_planning_msgs::Constraints &goal);
+      void visualizeGoalPosition(const arm_navigation_msgs::Constraints &goal);
 
       /* \brief Visualize the possible elbow poses when end-eff is at goal */
       void visualizeElbowPoses();

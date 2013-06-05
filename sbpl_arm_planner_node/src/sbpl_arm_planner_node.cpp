@@ -140,7 +140,7 @@ bool SBPLArmPlannerNode::init()
   if(!initializePlannerAndEnvironment())
     return false;
 
-  collision_map_filter_ = new tf::MessageFilter<mapping_msgs::CollisionMap>(collision_map_subscriber_,tf_,reference_frame_,1);
+  collision_map_filter_ = new tf::MessageFilter<arm_navigation_msgs::CollisionMap>(collision_map_subscriber_,tf_,reference_frame_,1);
   collision_map_filter_->registerCallback(boost::bind(&SBPLArmPlannerNode::collisionMapCallback, this, _1));
 
   collision_object_subscriber_ = root_handle_.subscribe("collision_object", 3, &SBPLArmPlannerNode::collisionObjectCallback, this);
@@ -214,12 +214,12 @@ bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
 }
 
 /** Callbacks ----------------------------------------------------------------*/
-void SBPLArmPlannerNode::collisionMapCallback(const mapping_msgs::CollisionMapConstPtr &collision_map)
+void SBPLArmPlannerNode::collisionMapCallback(const arm_navigation_msgs::CollisionMapConstPtr &collision_map)
 {
   updateMapFromCollisionMap(collision_map);
 }
 
-void SBPLArmPlannerNode::updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map)
+void SBPLArmPlannerNode::updateMapFromCollisionMap(const arm_navigation_msgs::CollisionMapConstPtr &collision_map)
 {
   ROS_DEBUG("[node] trying to get colmap_mutex_");
   if(colmap_mutex_.try_lock())
@@ -309,13 +309,13 @@ void SBPLArmPlannerNode::jointStatesCallback(const sensor_msgs::JointStateConstP
   visualizeCollisionModel(angles);
 }
 
-void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedCollisionObjectConstPtr &attached_object)
+void SBPLArmPlannerNode::attachedObjectCallback(const arm_navigation_msgs::AttachedCollisionObjectConstPtr &attached_object)
 {
   if(object_mutex_.try_lock())
   {
     // remove all objects
-    if(attached_object->link_name.compare(mapping_msgs::AttachedCollisionObject::REMOVE_ALL_ATTACHED_OBJECTS) == 0 &&
-        attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
+    if(attached_object->link_name.compare(arm_navigation_msgs::AttachedCollisionObject::REMOVE_ALL_ATTACHED_OBJECTS) == 0 &&
+        attached_object->object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::REMOVE)
     {
       ROS_DEBUG("[node] Removing all attached objects.");
       attached_object_ = false;
@@ -326,13 +326,13 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
       ROS_WARN("[node] This attached object is not intended for this arm.");
     }
     // add object
-    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
+    else if(attached_object->object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::ADD)
     {
       ROS_DEBUG("[node] Received a message to ADD an object (%s) with %d shapes.", attached_object->object.id.c_str(), int(attached_object->object.shapes.size()));
       attachObject(attached_object->object, attached_object->link_name);
     }
     // attach object and remove it from collision space
-    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
+    else if(attached_object->object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
     {
       ROS_INFO("[node] Received a message to ATTACH_AND_REMOVE_AS_OBJECT of object: %s", attached_object->object.id.c_str());
       
@@ -352,13 +352,13 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
       cspace_->removeCollisionObject(attached_object->object);
     }
     // remove object
-    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
+    else if(attached_object->object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::REMOVE)
     {
       attached_object_ = false;
       ROS_DEBUG("[node] Removing object (%s) from gripper.", attached_object->object.id.c_str());
       cspace_->removeAttachedObject();
     }
-    else if(attached_object->object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
+    else if(attached_object->object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
     {
       attached_object_ = false;
       ROS_DEBUG("[node] Removing object (%s) from gripper and adding to collision map.", attached_object->object.id.c_str());
@@ -374,7 +374,7 @@ void SBPLArmPlannerNode::attachedObjectCallback(const mapping_msgs::AttachedColl
   updateCollisionMap();
 }
 
-void SBPLArmPlannerNode::collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object)
+void SBPLArmPlannerNode::collisionObjectCallback(const arm_navigation_msgs::CollisionObjectConstPtr &collision_object)
 {
   if(object_mutex_.try_lock())
   {
@@ -391,10 +391,10 @@ void SBPLArmPlannerNode::collisionObjectCallback(const mapping_msgs::CollisionOb
   visualizeCollisionObjects();
 }
 
-void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj, std::string link_name)
+void SBPLArmPlannerNode::attachObject(const arm_navigation_msgs::CollisionObject &obj, std::string link_name)
 {
   geometry_msgs::PoseStamped pose_in, pose_out;
-  mapping_msgs::CollisionObject object(obj);
+  arm_navigation_msgs::CollisionObject object(obj);
 
   attached_object_ = true;
 
@@ -409,25 +409,26 @@ void SBPLArmPlannerNode::attachObject(const mapping_msgs::CollisionObject &obj, 
     object.poses[i] = pose_out.pose;
     ROS_WARN("[node] [attach_object] Converted shape from %s (%0.2f %0.2f %0.2f) to %s (%0.3f %0.3f %0.3f)", pose_in.header.frame_id.c_str(), pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z, attached_object_frame_.c_str(), pose_out.pose.position.x, pose_out.pose.position.y, pose_out.pose.position.z);
 
-    if(object.shapes[i].type == geometric_shapes_msgs::Shape::SPHERE)
+    if(object.shapes[i].type == arm_navigation_msgs::Shape::SPHERE)
     {
       ROS_INFO("[node] Attaching a sphere with radius: %0.3fm", object.shapes[i].dimensions[0]);
       cspace_->attachSphereToGripper(link_name, object.poses[i], object.shapes[i].dimensions[0]);
     }
-    else if(object.shapes[i].type == geometric_shapes_msgs::Shape::CYLINDER)
+    else if(object.shapes[i].type == arm_navigation_msgs::Shape::CYLINDER)
     {
       ROS_INFO("[node] Attaching a cylinder with radius: %0.3fm & length %0.3fm", object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
 
       //cspace_->attachCylinderToGripper(link_name, object.poses[i], object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
       cspace_->attachCylinder(link_name, object.poses[i], object.shapes[i].dimensions[0], object.shapes[i].dimensions[1]);
     }
-    else if(object.shapes[i].type == geometric_shapes_msgs::Shape::MESH)
+    else if(object.shapes[i].type == arm_navigation_msgs::Shape::MESH)
     {
-      ROS_INFO("[node] Attaching a mesh with %d triangles  & %d vertices.", int(object.shapes[i].triangles.size()/3), int(object.shapes[i].vertices.size()));
+      ROS_ERROR("Not supporting meshes.");
+      //ROS_INFO("[node] Attaching a mesh with %d triangles  & %d vertices.", int(object.shapes[i].triangles.size()/3), int(object.shapes[i].vertices.size()));
 
-      cspace_->attachMeshToGripper(object.header.frame_id, object.poses[i], object.shapes[i].triangles, object.shapes[i].vertices);
+      //cspace_->attachMeshToGripper(object.header.frame_id, object.poses[i], object.shapes[i].triangles, object.shapes[i].vertices);
     }
-    else if(object.shapes[i].type == geometric_shapes_msgs::Shape::BOX)
+    else if(object.shapes[i].type == arm_navigation_msgs::Shape::BOX)
     {
       std::vector<double> dims(object.shapes[i].dimensions);
       sort(dims.begin(),dims.end());
@@ -474,7 +475,7 @@ bool SBPLArmPlannerNode::setStart(const sensor_msgs::JointState &start_state)
   return true;
 }
 
-bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints &goals)
+bool SBPLArmPlannerNode::setGoalPosition(const arm_navigation_msgs::Constraints &goals)
 {
   double roll,pitch,yaw;
   geometry_msgs::Pose pose_msg;
@@ -549,7 +550,7 @@ bool SBPLArmPlannerNode::setGoalPosition(const motion_planning_msgs::Constraints
   return true;
 }
 
-bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Request &req, motion_planning_msgs::GetMotionPlan::Response &res)
+bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Request &req, arm_navigation_msgs::GetMotionPlan::Response &res)
 {
   unsigned int i;
   int nind = 0;
@@ -726,7 +727,7 @@ bool SBPLArmPlannerNode::planToPosition(motion_planning_msgs::GetMotionPlan::Req
   return false;
 }
 
-bool SBPLArmPlannerNode::planKinematicPath(motion_planning_msgs::GetMotionPlan::Request &req, motion_planning_msgs::GetMotionPlan::Response &res)
+bool SBPLArmPlannerNode::planKinematicPath(arm_navigation_msgs::GetMotionPlan::Request &req, arm_navigation_msgs::GetMotionPlan::Response &res)
 {
   if(!planner_initialized_)
   {
@@ -817,7 +818,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   return b_ret;
 }
 
-bool SBPLArmPlannerNode::isGoalConstraintSatisfied(const std::vector<double> &angles, const motion_planning_msgs::Constraints &goal)
+bool SBPLArmPlannerNode::isGoalConstraintSatisfied(const std::vector<double> &angles, const arm_navigation_msgs::Constraints &goal)
 {
   bool satisfied = true;
   geometry_msgs::Pose pose, err;
@@ -849,7 +850,7 @@ bool SBPLArmPlannerNode::isGoalConstraintSatisfied(const std::vector<double> &an
   ROS_INFO("Error: xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", err.position.x, err.position.y, err.position.z, err.orientation.x, err.orientation.y, err.orientation.z, err.orientation.w);
   ROS_INFO(" ");
 
-  if(goal.position_constraints[0].constraint_region_shape.type == geometric_shapes_msgs::Shape::BOX)
+  if(goal.position_constraints[0].constraint_region_shape.type == arm_navigation_msgs::Shape::BOX)
   {
     if(goal.position_constraints[0].constraint_region_shape.dimensions.size() < 3)
     { 
@@ -872,7 +873,7 @@ bool SBPLArmPlannerNode::isGoalConstraintSatisfied(const std::vector<double> &an
       satisfied = false;
     }
   }
-  else if(goal.position_constraints[0].constraint_region_shape.type == geometric_shapes_msgs::Shape::SPHERE)
+  else if(goal.position_constraints[0].constraint_region_shape.type == arm_navigation_msgs::Shape::SPHERE)
   {
     if(goal.position_constraints[0].constraint_region_shape.dimensions.size() < 1)
     { 
@@ -1088,7 +1089,7 @@ void SBPLArmPlannerNode::displayARAStarStates()
   ROS_INFO("[node] displaying %d expanded states.\n",int(expanded_states.size()));
 }
 
-void SBPLArmPlannerNode::visualizeGoalPosition(const motion_planning_msgs::Constraints &goal_pose)
+void SBPLArmPlannerNode::visualizeGoalPosition(const arm_navigation_msgs::Constraints &goal_pose)
 {
   geometry_msgs::Pose pose;
   pose.position = goal_pose.position_constraints[0].position;

@@ -1,10 +1,11 @@
 #include <ros/ros.h>
-#include <mapping_msgs/AttachedCollisionObject.h>
-#include <geometric_shapes_msgs/Shape.h>
+#include <arm_navigation_msgs/AttachedCollisionObject.h>
+#include <arm_navigation_msgs/Shape.h>
 #include <resource_retriever/retriever.h>
 #include <geometric_shapes/shapes.h>
 #include <geometric_shapes/shape_operations.h>
 
+/*
 bool getTrianglesFromMeshFile(std::string mesh_file, std::vector<int32_t> &triangles, std::vector<geometry_msgs::Point> &vertices)
 {
   bool retval = false;
@@ -62,6 +63,7 @@ bool getTrianglesFromMeshFile(std::string mesh_file, std::vector<int32_t> &trian
 
   return retval;
 }
+*/
 
 int main(int argc, char** argv) {
 
@@ -70,10 +72,10 @@ int main(int argc, char** argv) {
   std::string shape, mesh_file, operation;
   ros::Publisher att_object_in_map_pub_;
   ros::NodeHandle nh;
-  geometric_shapes_msgs::Shape object;
+  arm_navigation_msgs::Shape object;
   geometry_msgs::Pose pose;
 
-  att_object_in_map_pub_  = nh.advertise<mapping_msgs::AttachedCollisionObject>("attached_collision_object", 10);
+  att_object_in_map_pub_  = nh.advertise<arm_navigation_msgs::AttachedCollisionObject>("attached_collision_object", 10);
   sleep(2);
 
   ros::NodeHandle ph("~");
@@ -84,7 +86,7 @@ int main(int argc, char** argv) {
   ph.param<double>("length",length,0.5);
 
   //add a cylinder into the collision space attached to the r_gripper_r_finger_tip_link
-  mapping_msgs::AttachedCollisionObject att_object;
+  arm_navigation_msgs::AttachedCollisionObject att_object;
   att_object.link_name = "r_gripper_r_finger_tip_link";
   att_object.touch_links.push_back("r_gripper_palm_link");
   att_object.touch_links.push_back("r_gripper_r_finger_link");
@@ -96,23 +98,26 @@ int main(int argc, char** argv) {
   att_object.object.header.stamp = ros::Time::now();
 
   if(operation.compare("remove") == 0)
-    att_object.object.operation.operation = mapping_msgs::CollisionObjectOperation::REMOVE;
+    att_object.object.operation.operation = arm_navigation_msgs::CollisionObjectOperation::REMOVE;
   else
-    att_object.object.operation.operation = mapping_msgs::CollisionObjectOperation::ADD;
+    att_object.object.operation.operation = arm_navigation_msgs::CollisionObjectOperation::ADD;
   
   if(shape.compare("mesh") == 0)
   {
-    object.type = geometric_shapes_msgs::Shape::MESH;
+    ROS_ERROR("Not supporting meshes.");
+    /*
+    object.type = arm_navigation_msgs::Shape::MESH;
     
     if(!getTrianglesFromMeshFile(mesh_file, object.triangles, object.vertices))
     {
       ROS_ERROR("Unable to retrieve mesh file. Exiting");
       return 0;
     }
+    */
   }
   else if(shape.compare("cylinder") == 0)
   {
-    object.type = geometric_shapes_msgs::Shape::CYLINDER;
+    object.type = arm_navigation_msgs::Shape::CYLINDER;
     object.dimensions.resize(2);
     object.dimensions[0] = radius;
     object.dimensions[1] = length;
@@ -120,12 +125,12 @@ int main(int argc, char** argv) {
   else if(shape.compare("box") == 0)
   {
     ROS_INFO("Box is not yet implemented. Using a sphere.");
-    object.type = geometric_shapes_msgs::Shape::SPHERE;
-    //object.type = geometric_shapes_msgs::Shape::BOX;
+    object.type = arm_navigation_msgs::Shape::SPHERE;
+    //object.type = arm_navigation_msgs::Shape::BOX;
   }
   else
   {
-    object.type = geometric_shapes_msgs::Shape::SPHERE;
+    object.type = arm_navigation_msgs::Shape::SPHERE;
     object.dimensions.resize(1);
     object.dimensions[0] = radius;
   }

@@ -2,8 +2,8 @@
 #include <ros/ros.h>
 #include <vector>
 #include <string>
-#include <mapping_msgs/CollisionObject.h>
-#include <geometric_shapes_msgs/Shape.h>
+#include <arm_navigation_msgs/CollisionObject.h>
+#include <arm_navigation_msgs/Shape.h>
 
 class AddObjectsToMap
 {

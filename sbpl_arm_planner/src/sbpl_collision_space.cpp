@@ -948,26 +948,26 @@ void SBPLCollisionSpace::getBoundingCylinderOfMesh(const std::vector<int32_t> &t
   ROS_INFO("Bounding cylinder has radius: %0.3f  length: %0.3f", cyl.radius, cyl.length);
 }
 
-void SBPLCollisionSpace::processCollisionObjectMsg(const mapping_msgs::CollisionObject &object)
+void SBPLCollisionSpace::processCollisionObjectMsg(const arm_navigation_msgs::CollisionObject &object)
 {
-  if(object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
+  if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::ADD)
   {
     object_map_[object.id] = object;
     addCollisionObject(object);
   }
-  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
+  else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::REMOVE)
   {
     if(object.id.compare("all") == 0)
       removeAllCollisionObjects();
     else
       removeCollisionObject(object);
   }
-  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
+  else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
   {
     object_map_[object.id] = object;
     addCollisionObject(object);
   }
-  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
+  else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
   {
     //TODO: Attach to gripper
     removeCollisionObject(object);
@@ -976,13 +976,13 @@ void SBPLCollisionSpace::processCollisionObjectMsg(const mapping_msgs::Collision
     ROS_WARN("*** Operation isn't supported. ***\n\n");
 }
 
-void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject &object)
+void SBPLCollisionSpace::addCollisionObject(const arm_navigation_msgs::CollisionObject &object)
 {
   geometry_msgs::Pose pose;
 
   for(size_t i = 0; i < object.shapes.size(); ++i)
   {
-    if(object.shapes[i].type == geometric_shapes_msgs::Shape::BOX)
+    if(object.shapes[i].type == arm_navigation_msgs::Shape::BOX)
     {
       transformPose(object.header.frame_id, grid_->getReferenceFrame(), object.poses[i], pose);
       object_voxel_map_[object.id].clear();
@@ -1011,7 +1011,7 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
   ROS_DEBUG("[addCollisionObject] Just added %s to the distance field.", object.id.c_str());
 }
 
-void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObject &object)
+void SBPLCollisionSpace::removeCollisionObject(const arm_navigation_msgs::CollisionObject &object)
 {
   for(size_t i = 0; i < known_objects_.size(); ++i)
   {
@@ -1063,7 +1063,7 @@ void SBPLCollisionSpace::getCollisionObjectVoxelPoses(std::vector<geometry_msgs:
 
 void SBPLCollisionSpace::printObjectMaps()
 {
-  std::map<std::string, mapping_msgs::CollisionObject>::iterator itr1;
+  std::map<std::string, arm_navigation_msgs::CollisionObject>::iterator itr1;
   std::map<std::string, std::vector<btVector3> >::iterator itr2;
 
   ROS_INFO("object_map_ has %d elements:", int(object_map_.size()));

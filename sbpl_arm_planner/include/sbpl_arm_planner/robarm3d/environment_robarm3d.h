@@ -310,7 +310,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
      * occupancy grid with.
      * @param a collision map
     */
-    //void updateOccupancyGridFromCollisionMap(const mapping_msgs::CollisionMap &collision_map);
+    //void updateOccupancyGridFromCollisionMap(const arm_navigation_msgs::CollisionMap &collision_map);
 
     /** 
      * @brief For debugging. Print out the IK stats and return the IK

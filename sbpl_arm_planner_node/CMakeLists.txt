@@ -29,4 +29,4 @@ rosbuild_add_executable(addObjectsToMap src/add_objects_to_map.cpp)
 
 target_link_libraries(sbpl_arm_planner_node sbpl_arm_planner)
 target_link_libraries(sbpl_arm_planner_node visualize_arm)
-
+rosbuild_link_boost(sbpl_arm_planner_node signals)
