@@ -16,6 +16,11 @@ rosbuild_init()
 
 rosbuild_add_boost_directories()
 
+find_package(Eigen REQUIRED)
+include_directories(${EIGEN_INCLUDE_DIRS})
+add_definitions(${EIGEN_DEFINITIONS})
+
+
 #rosbuild_add_compile_flags(-g)
 
 #set the default path for built executables to the "bin" directory

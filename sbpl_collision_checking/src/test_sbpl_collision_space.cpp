@@ -113,7 +113,7 @@ bool TestSBPLCollisionSpace::init()
   aviz_ = new sbpl_arm_planner::VisualizeArm(arm_name_);
   aviz_->setReferenceFrame(reference_frame_);
 
-  collision_map_filter_ = new tf::MessageFilter<mapping_msgs::CollisionMap>(collision_map_subscriber_,tf_,reference_frame_,1);
+  collision_map_filter_ = new tf::MessageFilter<arm_navigation_msgs::CollisionMap>(collision_map_subscriber_,tf_,reference_frame_,1);
   collision_map_filter_->registerCallback(boost::bind(&TestSBPLCollisionSpace::collisionMapCallback, this, _1));
 
   joint_states_subscriber_ = root_handle_.subscribe("joint_states", 1, &TestSBPLCollisionSpace::jointStatesCallback,this);
@@ -212,18 +212,18 @@ void TestSBPLCollisionSpace::jointStatesCallback(const sensor_msgs::JointStateCo
   ROS_DEBUG("[test] joint_states callback done");
 }
 
-void TestSBPLCollisionSpace::collisionMapCallback(const mapping_msgs::CollisionMapConstPtr &collision_map)
+void TestSBPLCollisionSpace::collisionMapCallback(const arm_navigation_msgs::CollisionMapConstPtr &collision_map)
 {
   updateMapFromCollisionMap(collision_map);
 }
 
-void TestSBPLCollisionSpace::updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map)
+void TestSBPLCollisionSpace::updateMapFromCollisionMap(const arm_navigation_msgs::CollisionMapConstPtr &collision_map)
 {
   grid_->updateFromCollisionMap(*collision_map);
   cspace_->putCollisionObjectsInGrid();
 }
 
-void TestSBPLCollisionSpace::collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object)
+void TestSBPLCollisionSpace::collisionObjectCallback(const arm_navigation_msgs::CollisionObjectConstPtr &collision_object)
 {
   // for some reason, it wasn't getting all of the 'all' messages...
   if(collision_object->id.compare("all") == 0)

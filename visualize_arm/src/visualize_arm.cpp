@@ -130,7 +130,7 @@ VisualizeArm::VisualizeArm(std::string arm_name) : ph_("~"), arm_name_(arm_name)
 */
   marker_array_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 500, true);
   marker_publisher_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 500, true);
-  display_trajectory_publisher_ = nh_.advertise<motion_planning_msgs::DisplayTrajectory>("arm_viz", 200);
+  display_trajectory_publisher_ = nh_.advertise<arm_navigation_msgs::DisplayTrajectory>("arm_viz", 200);
 }
 
 VisualizeArm::~VisualizeArm()
@@ -329,7 +329,7 @@ void VisualizeArm::displayArmConfiguration(std::vector<double> angles)
     ros::Duration(0.3).sleep();
   }
 
-  motion_planning_msgs::DisplayTrajectory display_trajectory;
+  arm_navigation_msgs::DisplayTrajectory display_trajectory;
 
   display_trajectory.model_id = "pr2";
   display_trajectory.trajectory.joint_trajectory.header.frame_id = "base_link";
@@ -646,7 +646,8 @@ void VisualizeArm::visualizePoses(const std::vector<std::vector<double> > &poses
 {
   marker_array_.markers.clear();
   marker_array_.markers.resize(poses.size()*3);
-  btQuaternion pose_quaternion;
+  //btQuaternion pose_quaternion;
+  tf::Quaternion pose_quaternion;
   geometry_msgs::Quaternion quaternion_msg;
 
   int mind = -1;
@@ -725,7 +726,8 @@ void VisualizeArm::visualizePoses(const std::vector<std::vector<double> > &poses
 
 void VisualizeArm::visualizePose(const std::vector<double> &pose, std::string text)
 {
-  btQuaternion pose_quaternion;
+  //btQuaternion pose_quaternion;
+  tf::Quaternion pose_quaternion;
   geometry_msgs::Pose pose_msg;
 
   pose_msg.position.x = pose[0];

@@ -33,7 +33,8 @@
 #include <vector>
 #include <fstream>
 #include <ros/ros.h>
-//#include <sbpl/config.h>
+#include <tf/LinearMath/Vector3.h>
+#include <Eigen/Geometry>
 #include <LinearMath/btTransform.h>
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btTransform.h>
@@ -116,7 +117,7 @@ class OccupancyGrid
     double getResolution();
 
     /** @brief update the distance field from the collision_map */
-    void updateFromCollisionMap(const mapping_msgs::CollisionMap &collision_map);
+    void updateFromCollisionMap(const arm_navigation_msgs::CollisionMap &collision_map);
     
     /** @brief display distance field visualizations to rviz */
     void visualize();
@@ -132,9 +133,12 @@ class OccupancyGrid
     */
     void addCollisionCuboid(double origin_x, double origin_y, double origin_z, double size_x, double size_y, double size_z);
 
-    void addPointsToField(const std::vector<btVector3> &points);
+    //void addPointsToField(const std::vector<btVector3> &points);
+    void addPointsToField(const std::vector<Eigen::Vector3d> &points);
 
-    void getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<btVector3> &voxels);
+    //void getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<btVector3> &voxels);
+    void getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<Eigen::Vector3d> &voxels);
+
     bool saveGridToBinaryFile(std::string filename);
 
     void printGridFromBinaryFile(std::string filename);
@@ -188,9 +192,16 @@ inline std::string OccupancyGrid::getReferenceFrame()
   return reference_frame_;
 }
 
-inline void OccupancyGrid::addPointsToField(const std::vector<btVector3> &points)
+//inline void OccupancyGrid::addPointsToField(const std::vector<btVector3> &points)
+inline void OccupancyGrid::addPointsToField(const std::vector<Eigen::Vector3d> &points)
 {
-  grid_->addPointsToField(points);
+  std::vector<tf::Vector3> pts(points.size());
+  for(size_t i = 0; i < points.size(); ++i)
+    pts[i] = tf::Vector3(points[i].x(), points[i].y(), points[i].z());
+
+  grid_->addPointsToField(pts);
+
+  //grid_->addPointsToField(points);
 }
 
 

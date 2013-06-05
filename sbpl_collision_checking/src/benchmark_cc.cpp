@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   cspace_->init(group_name);
 
   // get map
-  mapping_msgs::CollisionMapConstPtr map = ros::topic::waitForMessage<mapping_msgs::CollisionMap>("collision_map_occ");
+  arm_navigation_msgs::CollisionMapConstPtr map = ros::topic::waitForMessage<arm_navigation_msgs::CollisionMap>("collision_map_occ");
   grid_->updateFromCollisionMap(*map); 
 
   std::vector<double> angles(7,0);

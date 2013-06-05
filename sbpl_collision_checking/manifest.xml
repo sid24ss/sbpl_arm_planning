@@ -20,7 +20,7 @@
 	<depend package="bullet" />
 	<depend package="tf" />
 	<depend package="tf_conversions" />
-  <depend package="mapping_msgs" />
+  <depend package="arm_navigation_msgs" />
   <depend package="geometric_shapes" />
   <depend package="visualize_arm" />
 	<depend package="sensor_msgs" />

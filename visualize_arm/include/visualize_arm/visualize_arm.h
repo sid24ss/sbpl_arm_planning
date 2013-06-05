@@ -18,7 +18,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
 #include <boost/lexical_cast.hpp>
-#include <motion_planning_msgs/DisplayTrajectory.h>
+#include <arm_navigation_msgs/DisplayTrajectory.h>
 #include <planning_environment/monitors/joint_state_monitor.h>
 #include <kinematics_msgs/GetPositionIK.h>
 #include <kinematics_msgs/GetPositionFK.h>

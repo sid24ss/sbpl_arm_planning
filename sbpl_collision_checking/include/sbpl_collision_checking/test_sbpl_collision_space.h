@@ -51,8 +51,8 @@
 
 /** Messages **/
 #include <geometry_msgs/Pose.h>
-#include <mapping_msgs/CollisionMap.h>
-#include <mapping_msgs/CollisionObject.h>
+#include <arm_navigation_msgs/CollisionMap.h>
+#include <arm_navigation_msgs/CollisionObject.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h> 
 #include <kinematics_msgs/GetPositionFK.h>
 #include <pr2_controllers_msgs/JointTrajectoryControllerState.h>
@@ -76,12 +76,12 @@ class TestSBPLCollisionSpace
     ros::NodeHandle node_handle_, root_handle_;
     ros::Subscriber object_subscriber_;
     ros::Subscriber joint_states_subscriber_;
-    message_filters::Subscriber<mapping_msgs::CollisionMap> collision_map_subscriber_;
-    tf::MessageFilter<mapping_msgs::CollisionMap> *collision_map_filter_;
+    message_filters::Subscriber<arm_navigation_msgs::CollisionMap> collision_map_subscriber_;
+    tf::MessageFilter<arm_navigation_msgs::CollisionMap> *collision_map_filter_;
 
     //remove
     ros::Subscriber collision_object_subscriber_;
-    void collisionObjectCallback(const mapping_msgs::CollisionObjectConstPtr &collision_object);
+    void collisionObjectCallback(const arm_navigation_msgs::CollisionObjectConstPtr &collision_object);
     std::vector<std::vector<double> > col_objects_;
 
     std::string left_fk_service_name_;
@@ -100,7 +100,7 @@ class TestSBPLCollisionSpace
     std::string arm_name_;
     std::vector<std::string> ljoint_names_;
     std::vector<std::string> rjoint_names_;
-    std::map<std::string, mapping_msgs::CollisionObject> object_map_;
+    std::map<std::string, arm_navigation_msgs::CollisionObject> object_map_;
 
     std::vector<double> angles_;
 
@@ -130,9 +130,9 @@ class TestSBPLCollisionSpace
     tf::TransformListener tf_;
     tf::StampedTransform transform_;
 
-    void updateMapFromCollisionMap(const mapping_msgs::CollisionMapConstPtr &collision_map);
+    void updateMapFromCollisionMap(const arm_navigation_msgs::CollisionMapConstPtr &collision_map);
 
-    void collisionMapCallback(const mapping_msgs::CollisionMapConstPtr &collision_map);
+    void collisionMapCallback(const arm_navigation_msgs::CollisionMapConstPtr &collision_map);
 
     void jointStatesCallback(const sensor_msgs::JointStateConstPtr &state);
 

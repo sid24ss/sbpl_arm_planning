@@ -995,27 +995,27 @@ double SBPLCollisionSpace::getAttachedObjectRadius()
   return attached_object_radius_*grid_->getResolution();   
 }
 
-void SBPLCollisionSpace::processCollisionObjectMsg(const mapping_msgs::CollisionObject &object)
+void SBPLCollisionSpace::processCollisionObjectMsg(const arm_navigation_msgs::CollisionObject &object)
 {
   if(object.id.compare("all") == 0) // ignoring the operation type
   {
     removeAllCollisionObjects();
   }
-  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::ADD)
+  else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::ADD)
   {
     object_map_[object.id] = object;
     addCollisionObject(object);
   }
-  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::REMOVE)
+  else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::REMOVE)
   {
     removeCollisionObject(object);
   }
-  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
+  else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
   {
     object_map_[object.id] = object;
     addCollisionObject(object);
   }
-  else if(object.operation.operation == mapping_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
+  else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::ATTACH_AND_REMOVE_AS_OBJECT)
   {
     //TODO: Attach to gripper
     removeCollisionObject(object);
@@ -1024,21 +1024,23 @@ void SBPLCollisionSpace::processCollisionObjectMsg(const mapping_msgs::Collision
     ROS_WARN("*** Operation isn't supported. ***\n\n");
 }
 
-void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject &object)
+void SBPLCollisionSpace::addCollisionObject(const arm_navigation_msgs::CollisionObject &object)
 {
   geometry_msgs::Pose pose;
 
   for(size_t i = 0; i < object.shapes.size(); ++i)
   {
-    if(object.shapes[i].type == geometric_shapes_msgs::Shape::BOX)
+    if(object.shapes[i].type == arm_navigation_msgs::Shape::BOX)
     {
-      transformPose(object.header.frame_id, grid_->getReferenceFrame(), object.poses[i], pose);
-      grid_->getVoxelsInBox(pose, object.shapes[i].dimensions, object_voxel_map_[object.id]);
+      //transformPose(object.header.frame_id, grid_->getReferenceFrame(), object.poses[i], pose);
+      //grid_->getVoxelsInBox(pose, object.shapes[i].dimensions, object_voxel_map_[object.id]);
       
-      ROS_DEBUG("[%s] TransformPose from %s to %s.", object.id.c_str(), object.header.frame_id.c_str(), grid_->getReferenceFrame().c_str());
-      ROS_DEBUG("[%s] %s: xyz: %0.3f %0.3f %0.3f   quat: %0.3f %0.3f %0.3f %0.3f", object.id.c_str(), object.header.frame_id.c_str(), object.poses[i].position.x,  object.poses[i].position.y, object.poses[i].position.z, object.poses[i].orientation.x, object.poses[i].orientation.y, object.poses[i].orientation.z,object.poses[i].orientation.w);
-      ROS_DEBUG("[%s] %s: xyz: %0.3f %0.3f %0.3f   quat: %0.3f %0.3f %0.3f %0.3f", object.id.c_str(), grid_->getReferenceFrame().c_str(), pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
-      ROS_DEBUG("[%s] occupies %d voxels.",object.id.c_str(), int(object_voxel_map_[object.id].size()));
+      std::vector<double> dims(3);
+      dims[0] = object.shapes[i].dimensions[0];
+      dims[1] = object.shapes[i].dimensions[1];
+      dims[2] = object.shapes[i].dimensions[2];
+      object_voxel_map_[object.id].clear();
+      grid_->getVoxelsInBox(object.poses[i], dims, object_voxel_map_[object.id]);
     }
     else
       ROS_WARN("[cspace] Collision objects of type %d are not yet supported.", object.shapes[i].type);
@@ -1061,7 +1063,7 @@ void SBPLCollisionSpace::addCollisionObject(const mapping_msgs::CollisionObject 
   ROS_DEBUG("[cspace] Just added %s to the distance field.", object.id.c_str());
 }
 
-void SBPLCollisionSpace::removeCollisionObject(const mapping_msgs::CollisionObject &object)
+void SBPLCollisionSpace::removeCollisionObject(const arm_navigation_msgs::CollisionObject &object)
 {
   for(size_t i = 0; i < known_objects_.size(); ++i)
   {

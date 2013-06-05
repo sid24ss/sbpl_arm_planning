@@ -137,7 +137,7 @@ double OccupancyGrid::getResolution()
   return grid_->getResolution(distance_field::PropagationDistanceField::DIM_X);
 }
 
-void OccupancyGrid::updateFromCollisionMap(const mapping_msgs::CollisionMap &collision_map)
+void OccupancyGrid::updateFromCollisionMap(const arm_navigation_msgs::CollisionMap &collision_map)
 {
   if(collision_map.boxes.empty())
   {
@@ -155,6 +155,7 @@ void OccupancyGrid::updateFromCollisionMap(const mapping_msgs::CollisionMap &col
 void OccupancyGrid::addCollisionCuboid(double origin_x, double origin_y, double origin_z, double size_x, double size_y, double size_z)
 {
   int num_points=0;
+  std::vector<tf::Vector3> pts;
   //cuboid_points_.clear();
 
   for (double x=origin_x-size_x/2.0; x<=origin_x+size_x/2.0; x+=grid_resolution_)
@@ -163,21 +164,26 @@ void OccupancyGrid::addCollisionCuboid(double origin_x, double origin_y, double 
     {
       for (double z=origin_z-size_z/2.0; z<=origin_z+size_z/2.0; z+=grid_resolution_)
       {
-        cuboid_points_.push_back(btVector3(x,y,z));
+        //cuboid_points_.push_back(btVector3(x,y,z));
+        pts.push_back(tf::Vector3(x,y,z));
         ++num_points;
       }
     }
   }
 
-  grid_->addPointsToField(cuboid_points_);
+  //grid_->addPointsToField(cuboid_points_);
+  grid_->addPointsToField(pts);
 
   ROS_DEBUG("[grid] Added %d points for collision cuboid (origin: %0.2f %0.2f %0.2f  size: %0.2f %0.2f %0.2f).", num_points, origin_x, origin_y, origin_z, size_x, size_y, size_z);
 }
 
-void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<btVector3> &voxels)
+//void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<btVector3> &voxels)
+void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::vector<double> &dim, std::vector<Eigen::Vector3d> &voxels)
 {
-  btVector3 vin, vout, v(pose.position.x, pose.position.y, pose.position.z);
-  btMatrix3x3 m(btQuaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w));
+  //btVector3 vin, vout, v(pose.position.x, pose.position.y, pose.position.z);
+  //btMatrix3x3 m(btQuaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w));
+  Eigen::Vector3d vin, vout, v(pose.position.x, pose.position.y, pose.position.z);
+  Eigen::Matrix3d m(Eigen::Quaterniond(pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z));
 
   for (double x=0-dim[0]/2.0; x<=dim[0]/2.0; x+=grid_resolution_)
   {
@@ -185,9 +191,16 @@ void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::v
     {
       for (double z=0-dim[2]/2.0; z<=dim[2]/2.0; z+=grid_resolution_)
       {
+        /*
         vin.setX(x);
         vin.setY(y);
         vin.setZ(z);
+        vout = m*vin;
+        vout += v;
+        */
+        vin(0) = (x);
+        vin(1) = (y);
+        vin(2) = (z);
         vout = m*vin;
         vout += v;
 
@@ -199,9 +212,10 @@ void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::v
 
 void OccupancyGrid::visualize()
 {
-  btTransform trans; 
-  trans.setIdentity();
-  grid_->visualize(0.01, 0.02, reference_frame_, trans, ros::Time::now());
+  ROS_ERROR("[grid] Visualizing the grid is disabled. (DistanceField API changed...)");
+  //btTransform trans; 
+  //trans.setIdentity();
+  //grid_->visualize(0.01, 0.02, reference_frame_, trans, ros::Time::now());
 }
 
 const distance_field::PropagationDistanceField* OccupancyGrid::getDistanceFieldPtr()
