@@ -277,32 +277,32 @@ void SBPLArmPlannerNode::jointStatesCallback(const sensor_msgs::JointStateConstP
   if(arm_name_.compare("right_arm") == 0)
   {
     // r_gripper_l_finger_link & r_gripper_r_finger_link
-    cspace_->setJointPosition(state->name[24], state->position[24]);
     cspace_->setJointPosition(state->name[25], state->position[25]);
+    cspace_->setJointPosition(state->name[26], state->position[26]);
 
     // right arm - pr2 specific
-    angles[0] = state->position[17];
-    angles[1] = state->position[18];
-    angles[2] = state->position[16];
-    angles[3] = state->position[20];
-    angles[4] = state->position[19];
-    angles[5] = state->position[21];
-    angles[6] = state->position[22];
+    angles[0] = state->position[18];
+    angles[1] = state->position[19];
+    angles[2] = state->position[17];
+    angles[3] = state->position[21];
+    angles[4] = state->position[20];
+    angles[5] = state->position[22];
+    angles[6] = state->position[23];
   }
   else
   {
     // l_gripper_l_finger_link & l_gripper_r_finger_link
-    cspace_->setJointPosition(state->name[36], state->position[36]);
-    cspace_->setJointPosition(state->name[37], state->position[37]);
+    cspace_->setJointPosition(state->name[39], state->position[39]);
+    cspace_->setJointPosition(state->name[40], state->position[40]);
 
     // left arm - pr2 specific
-    angles[0] = state->position[29];
-    angles[1] = state->position[30];
-    angles[2] = state->position[28];
-    angles[3] = state->position[32];
-    angles[4] = state->position[31];
-    angles[5] = state->position[33];
-    angles[6] = state->position[34];
+    angles[0] = state->position[32];
+    angles[1] = state->position[33];
+    angles[2] = state->position[31];
+    angles[3] = state->position[35];
+    angles[4] = state->position[34];
+    angles[5] = state->position[36];
+    angles[6] = state->position[37];
   }
 
   //cspace_->visualizeCollisionModel(angles, "attached_object1");
