@@ -18,6 +18,11 @@ rosbuild_add_boost_directories()
 
 #rosbuild_add_compile_flags(-g)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SBPL REQUIRED sbpl)
+include_directories(${SBPL_INCLUDE_DIRS})
+link_directories(${SBPL_LIBRARY_DIRS})
+
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
@@ -37,6 +42,7 @@ rosbuild_add_library(sbpl_arm_planner
 			src/pr2/orientation_solver.cpp)
 
 target_link_libraries(sbpl_arm_planner sbpl_collision_checking)
+target_link_libraries(sbpl_arm_planner ${SBPL_LIBRARIES})
 
 # rosbuild_add_executable(planPath src/test/plan_path.cpp)
 # rosbuild_add_executable(planPathTest src/test/plan_path_test.cpp)

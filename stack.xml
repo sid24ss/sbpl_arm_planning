@@ -1,18 +1,15 @@
 <stack>
-  <description brief="sbpl_arm_planning">Search Based Motion Planner for
-    Manipulation (PR2 Only)</description>
+  <description brief="sbpl_arm_planning">Search Based Motion Planner for Manipulation (PR2 Only)</description>
   <author>by Benjamin Cohen</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/trunk</url>
+
   <depend stack="arm_navigation" /> <!-- arm_navigation_msgs -->
   <depend stack="arm_navigation_experimental" /> <!-- distance_field -->
   <depend stack="common" /> <!-- actionlib -->
   <depend stack="common_msgs" /> <!-- geometry_msgs, sensor_msgs, visualization_msgs -->
   <depend stack="geometry" /> <!-- kdl, tf, bullet, angles -->
-  <!--  <depend stack="kinematics" />  kinematics_msgs -->
-  <!-- <depend stack="motion_planners" />  sbpl -->
-  <!-- <depend stack="motion_planning_common" /> arm_navigation_msgs, planning_environment, planning_models, distance_field, arm_navigation_msgs, geometric_shapes -->
   <depend stack="pr2_controllers" /> <!-- pr2_controllers_msgs -->
   <depend stack="pr2_kinematics" /> <!-- pr2_arm_kinematics -->
   <depend stack="robot_model" /> <!-- urdf, kdl_parser, resource_retriever -->
