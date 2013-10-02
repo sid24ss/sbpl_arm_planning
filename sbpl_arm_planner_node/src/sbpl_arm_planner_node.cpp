@@ -304,8 +304,6 @@ void SBPLArmPlannerNode::jointStatesCallback(const sensor_msgs::JointStateConstP
     angles[5] = state->position[36];
     angles[6] = state->position[37];
   }
-
-  //cspace_->visualizeCollisionModel(angles, "attached_object1");
   visualizeCollisionModel(angles);
 }
 
@@ -691,9 +689,6 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
 
         if(visualize_trajectory_)
           aviz_->visualizeJointTrajectoryMsg(res.trajectory.joint_trajectory, throttle_);
-
-        //if(visualize_collision_model_trajectory_)
-        //  aviz_->visualizeCollisionModelFromJointTrajectoryMsg(res.trajectory.joint_trajectory, *cspace_, throttle_);
           
         if(use_research_heuristic_)
           visualizeElbowPoses();
