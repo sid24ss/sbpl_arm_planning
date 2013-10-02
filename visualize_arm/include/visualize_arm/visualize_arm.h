@@ -42,7 +42,7 @@ class VisualizeArm
     ~VisualizeArm();
 
     /* \brief set reference frame of visualizations */
-    void setReferenceFrame(std::string &frame);
+    void setReferenceFrame(std::string frame);
 
     /* \brief send a joint configuration to the arm controller */
     void sendArmToConfiguration(const std::vector<double> &angles);
@@ -64,11 +64,7 @@ class VisualizeArm
     /* \brief compute FK for the pr2 arm meshes using the kinematic service*/
     bool computeFKforVisualization(const std::vector<double> &jnt_pos, std::vector<geometry_msgs::PoseStamped> &poses);
 
-    /* \brief visualize the pr2 arm in the configuration */
-    void visualizeArmConfiguration(double color_num, const std::vector<double> &jnt_pos);
-
-    /* \brief visualize the arm of the pr2 in specified color (color: 1-360) */
-    void visualizeArmMeshes(double color_num, std::vector<geometry_msgs::PoseStamped> &poses);
+    void visualizeArmConfiguration(double hue, const std::vector<double> &jnt_pos, std::string ns="", int id=0);
 
     /* \brief visualize a pose (sphere, arrow, string of text) */
     void visualizePose(const std::vector<double> &pose, std::string text);
@@ -101,7 +97,7 @@ class VisualizeArm
 
     /* \brief display a throttled set of arm configurations in a trajectory
      * by default throttle = 5 */
-    void visualizeArmConfigurations(const std::vector<std::vector<double> > &traj, int throttle);
+    void visualizeArmConfigurations(const std::vector<std::vector<double> > &traj, int throttle, std::string ns="", int id=0);
 
     /* \brief display a throttled set of arm configurations in a trajectory msg */
     void visualizeJointTrajectoryMsg(trajectory_msgs::JointTrajectory traj_msg, int throttle);
@@ -109,19 +105,10 @@ class VisualizeArm
     /* \brief print out the information that was parsed from the env file */
     void printEnvironmentInfo(FILE *fid);
 
-    /* \brief display the spherical collision model of each waypoint in a path */
-    //void visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle);
-    
-    //void visualizeCollisionModel(const std::vector<std::vector<double> > &path, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle, int hue);
-
-    /* \brief display the spherical collision model of each waypoint in a joint trajectory msg */
-    //void visualizeCollisionModelFromJointTrajectoryMsg(trajectory_msgs::JointTrajectory &traj_msg, sbpl_arm_planner::SBPLCollisionSpace &cspace, int throttle);
-   
     /* \brief display a gripper given the arm's joint angles */
-    void visualizeGripperConfiguration(double color_num, const std::vector<double> &jnt_pos);
+    void visualizeGripperConfiguration(double hue, const std::vector<double> &jnt_pos, std::vector<double> &fingers, std::string="", int id=0);
 
-    /* \brief display the gripper meshes (called by visualizeGripperConfiguration) */
-    void visualizeGripperMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses);
+    void visualizeArmConfiguration(double hue, const std::vector<double> &jnt_pos, std::vector<double> &fingers, std::string ns, int id);
 
     /* \brief display a list of states (xyz coordinates) (intended for use with sbpl) */
     void visualizeBasicStates(const std::vector<std::vector<double> > &states, const std::vector<double> &color, std::string name, double size);
@@ -150,6 +137,20 @@ class VisualizeArm
     void visualizeSpheres(const std::vector<std::vector<double> > &pose, int color, std::string text, std::vector<double> &radius);
 
     void deleteVisualizations(std::string ns, int max_id);
+
+    void publishMarker(visualization_msgs::Marker& m);
+    
+    void publishMarkerArray(visualization_msgs::MarkerArray& ma);
+
+    void visualizeMesh(std::string mesh_file, std::string name, geometry_msgs::Pose &pose, std::vector<double> &color, int id=0, double scale=1.0, bool use_textures=false);
+
+    void visualizeMesh(std::string mesh_file, std::string name, std::vector<double> &pose, std::vector<double> &color, int id=0, double scale=1.0, bool use_textures=false);
+
+    void getGripperMeshesMarkerMsg(const geometry_msgs::Pose &pose, double hue, std::string ns, int id, double position, std::vector<visualization_msgs::Marker> &markers);
+
+    void visualizeGripper(const geometry_msgs::Pose &pose, double position, double hue, std::string ns, int id);
+    
+    void multiply(const geometry_msgs::Pose &a, const geometry_msgs::Pose &b, geometry_msgs::Pose &c);
 
   private:
 
@@ -202,6 +203,13 @@ class VisualizeArm
     double position_tolerance_;
     double orientation_tolerance_;
     bool goal_is_6dof_;
+
+    /* \brief visualize the arm of the pr2 in specified color (color: 1-360) */
+    void visualizeArmMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses, std::string ns="", int id=0);
+
+    /* \brief display the gripper meshes (called by visualizeGripperConfiguration) */
+    void visualizeGripperMeshes(double hue, std::vector<geometry_msgs::PoseStamped> &poses, std::string ns="", int id=0);
+
 };
 
 }
