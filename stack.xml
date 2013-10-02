@@ -3,7 +3,7 @@
   <author>by Benjamin Cohen</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/trunk</url>
+  <url>http://www.sbpl.net/sbpl_arm_planning</url>
 
   <depend stack="arm_navigation" /> <!-- arm_navigation_msgs -->
   <depend stack="arm_navigation_experimental" /> <!-- distance_field -->
