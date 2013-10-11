@@ -671,6 +671,13 @@ bool EnvironmentROBARM3D::initEnvConfig()
   //create the goal state
   EnvROBARM.goalHashEntry = createHashEntry(coord, endeff, 0);
 
+  // Create goal states
+  EnvROBARM.goalHashEntries.resize(EnvROBARMCfg.ParsedGoals.size());
+  for (int i = 0; i < EnvROBARMCfg.ParsedGoals.size(); ++i)
+  {
+    EnvROBARM.goalHashEntries[i] = createHashEntry(coord, endeff, 0);
+  }
+
   return true;
 }
 
@@ -768,10 +775,10 @@ bool EnvironmentROBARM3D::initGeneral()
   //create the rpysolver
   rpysolver_ = new RPYSolver(arm_, cspace_);
 
-#if DEBUG_SEARCH
-  arm_->setDebugFile(std::string("sbpl"));
-  cspace_->setDebugFile(fSucc);
-#endif
+  #if DEBUG_SEARCH
+    arm_->setDebugFile(std::string("sbpl"));
+    cspace_->setDebugFile(fSucc);
+  #endif
 
   //initialize Environment
   if(initEnvConfig() == false)
@@ -1151,24 +1158,26 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     SBPL_ERROR("[setGoalPosition] No goal constraint set.");
     return false;
   }
-/*
-  // temporary hack - should be returned to the new cspace
-  std::vector<std::vector<double> > cuboids = arm_->getCollisionCuboids();
-  ROS_INFO("[env] received %d cuboids",int(cuboids.size()));
+  /*
+    // temporary hack - should be returned to the new cspace
+    std::vector<std::vector<double> > cuboids = arm_->getCollisionCuboids();
+    ROS_INFO("[env] received %d cuboids",int(cuboids.size()));
 
-  for(size_t i = 0; i < cuboids.size(); i++)
-  {
-    if(cuboids[i].size() == 6)
-      grid_->addCollisionCuboid(cuboids[i][0],cuboids[i][1],cuboids[i][2],cuboids[i][3],cuboids[i][4],cuboids[i][5]);
-    else
-      ROS_INFO("[env] Self-collision cuboid #%d has an incomplete description.\n", i);
-  }
-  grid_->visualize();
-*/
+    for(size_t i = 0; i < cuboids.size(); i++)
+    {
+      if(cuboids[i].size() == 6)
+        grid_->addCollisionCuboid(cuboids[i][0],cuboids[i][1],cuboids[i][2],cuboids[i][3],cuboids[i][4],cuboids[i][5]);
+      else
+        ROS_INFO("[env] Self-collision cuboid #%d has an incomplete description.\n", i);
+    }
+    grid_->visualize();
+  */
   // Check if an IK solution exists for the goal pose before we do the search
   // we plan even if there is no solution
   std::vector<double> pose(7,0);
   std::vector<double> jnt_angles(7,0);
+
+  // Not checking for the IK solution. Apparently, it's not used - Arjun. Must confirm.
   pose = goals[0];
   unsigned char dist_ik;
   if(!arm_->computeIK(pose, jnt_angles, EnvROBARMCfg.ik_solution))
@@ -1231,37 +1240,52 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
   for(int i = 0; i < arm_->num_joints_; i++)
     EnvROBARM.goalHashEntry->coord[i] = 0;
 
+  // Set goal hash entries.
+  for (int j = 0; j < EnvROBARM.goalHashEntries.size(); ++j)
+  {
+      EnvROBARM.goalHashEntries[j]->xyz[0] = EnvROBARMCfg.EndEffGoals[j].xyz[0];
+      EnvROBARM.goalHashEntries[j]->xyz[1] = EnvROBARMCfg.EndEffGoals[j].xyz[1];
+      EnvROBARM.goalHashEntries[j]->xyz[2] = EnvROBARMCfg.EndEffGoals[j].xyz[2];
+      EnvROBARM.goalHashEntries[j]->rpy[0] = EnvROBARMCfg.EndEffGoals[j].rpy[0];
+      EnvROBARM.goalHashEntries[j]->rpy[1] = EnvROBARMCfg.EndEffGoals[j].rpy[1];
+      EnvROBARM.goalHashEntries[j]->rpy[2] = EnvROBARMCfg.EndEffGoals[j].rpy[2];
+      EnvROBARM.goalHashEntries[j]->action = 0;
+
+      for(int i = 0; i < arm_->num_joints_; i++)
+        EnvROBARM.goalHashEntries[j]->coord[i] = 0;
+  }
+
   for(unsigned int i = 0; i < EnvROBARMCfg.EndEffGoals.size(); i++)
   {
     SBPL_INFO("goal %i:  grid: %u %u %u (cells)  xyz: %0.2f %0.2f %0.2f (meters)  (tol: %0.3fm %0.3fm %0.3fm) rpy: %1.2f %1.2f %1.2f (radians) (tol: %0.3f %0.3f %0.3f)",i,EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],tolerances[i][1],tolerances[i][2],EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][3],tolerances[i][4],tolerances[i][5]);
     SBPL_DEBUG("quat: %0.3f %0.3f %0.3f %0.3f",EnvROBARMCfg.EndEffGoals[i].q[0], EnvROBARMCfg.EndEffGoals[i].q[1], EnvROBARMCfg.EndEffGoals[i].q[2], EnvROBARMCfg.EndEffGoals[i].q[3]);
   }
 
-#if DEBUG_SEARCH
-  if(prms_.verbose_)
-  {
-    SBPL_DEBUG_NAMED("search", "\n-----------------------------------------------------------------------------------");
-    SBPL_DEBUG_NAMED("search", "time: %f", clock() / (double)CLOCKS_PER_SEC);
-    SBPL_DEBUG_NAMED("search", "A new goal has been set.");
-    SBPL_DEBUG_NAMED("search", "grid: %u %u %u (cells)  xyz: %.2f %.2f %.2f (meters)  (tol: %.3f) rpy: %1.2f %1.2f %1.2f (radians) (tol: %.3f)",
-        EnvROBARMCfg.EndEffGoals[0].xyz[0], EnvROBARMCfg.EndEffGoals[0].xyz[1],EnvROBARMCfg.EndEffGoals[0].xyz[2],
-        EnvROBARMCfg.EndEffGoals[0].pos[0],EnvROBARMCfg.EndEffGoals[0].pos[1],EnvROBARMCfg.EndEffGoals[0].pos[2],tolerances[0][0],
-        EnvROBARMCfg.EndEffGoals[0].rpy[0],EnvROBARMCfg.EndEffGoals[0].rpy[1],EnvROBARMCfg.EndEffGoals[0].rpy[2],tolerances[0][1]);
+  #if DEBUG_SEARCH
+    if(prms_.verbose_)
+    {
+      SBPL_DEBUG_NAMED("search", "\n-----------------------------------------------------------------------------------");
+      SBPL_DEBUG_NAMED("search", "time: %f", clock() / (double)CLOCKS_PER_SEC);
+      SBPL_DEBUG_NAMED("search", "A new goal has been set.");
+      SBPL_DEBUG_NAMED("search", "grid: %u %u %u (cells)  xyz: %.2f %.2f %.2f (meters)  (tol: %.3f) rpy: %1.2f %1.2f %1.2f (radians) (tol: %.3f)",
+          EnvROBARMCfg.EndEffGoals[0].xyz[0], EnvROBARMCfg.EndEffGoals[0].xyz[1],EnvROBARMCfg.EndEffGoals[0].xyz[2],
+          EnvROBARMCfg.EndEffGoals[0].pos[0],EnvROBARMCfg.EndEffGoals[0].pos[1],EnvROBARMCfg.EndEffGoals[0].pos[2],tolerances[0][0],
+          EnvROBARMCfg.EndEffGoals[0].rpy[0],EnvROBARMCfg.EndEffGoals[0].rpy[1],EnvROBARMCfg.EndEffGoals[0].rpy[2],tolerances[0][1]);
 
-    SBPL_DEBUG_NAMED("search", "-----------------------------------------------------------------------------------\n");
-  }
-#endif
+      SBPL_DEBUG_NAMED("search", "-----------------------------------------------------------------------------------\n");
+    }
+  #endif
 
-  // precompute heuristics
-  if(!precomputeHeuristics())
-  {
-    SBPL_ERROR("Precomputing heuristics failed. Exiting.");
-    return false;
-  }
+    // precompute heuristics
+    if(!precomputeHeuristics())
+    {
+      SBPL_ERROR("Precomputing heuristics failed. Exiting.");
+      return false;
+    }
 
-  clearStats();
+    clearStats();
 
-  return true;
+    return true;
 }
 
 bool EnvironmentROBARM3D::precomputeHeuristics()
@@ -1997,4 +2021,3 @@ void EnvironmentROBARM3D::getElbowPoints(std::vector<std::vector<double> > &elbo
 }
 
 }
-

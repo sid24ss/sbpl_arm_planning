@@ -118,6 +118,8 @@ typedef struct
   EnvROBARM3DHashEntry_t* goalHashEntry;
   EnvROBARM3DHashEntry_t* startHashEntry;
 
+  std::vector<EnvROBARM3DHashEntry_t*> goalHashEntries;
+
   //Maps from coords to stateID
   int HashTableSize;
   std::vector<EnvROBARM3DHashEntry_t*>* Coord2StateIDHashTable;
