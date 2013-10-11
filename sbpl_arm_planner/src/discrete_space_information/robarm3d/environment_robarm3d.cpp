@@ -242,13 +242,13 @@ int EnvironmentROBARM3D::GetFromToHeuristic(int FromStateID, int ToStateID)
 
 int EnvironmentROBARM3D::GetGoalHeuristic(int stateID)
 {
-#if DEBUG_HEUR
-  if(stateID >= (int)EnvROBARM.StateID2CoordTable.size())
-  {
-    SBPL_ERROR("ERROR in EnvROBARM... function: stateID illegal");
-    return -1;
-  }
-#endif
+  #if DEBUG_HEUR
+    if(stateID >= (int)EnvROBARM.StateID2CoordTable.size())
+    {
+      SBPL_ERROR("ERROR in EnvROBARM... function: stateID illegal");
+      return -1;
+    }
+  #endif
 
   return GetFromToHeuristic(stateID, EnvROBARM.goalHashEntry->stateID);
 }
@@ -670,13 +670,6 @@ bool EnvironmentROBARM3D::initEnvConfig()
 
   //create the goal state
   EnvROBARM.goalHashEntry = createHashEntry(coord, endeff, 0);
-
-  // Create goal states
-  EnvROBARM.goalHashEntries.resize(EnvROBARMCfg.ParsedGoals.size());
-  for (int i = 0; i < EnvROBARMCfg.ParsedGoals.size(); ++i)
-  {
-    EnvROBARM.goalHashEntries[i] = createHashEntry(coord, endeff, 0);
-  }
 
   return true;
 }
@@ -1239,21 +1232,6 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
 
   for(int i = 0; i < arm_->num_joints_; i++)
     EnvROBARM.goalHashEntry->coord[i] = 0;
-
-  // Set goal hash entries.
-  for (int j = 0; j < EnvROBARM.goalHashEntries.size(); ++j)
-  {
-      EnvROBARM.goalHashEntries[j]->xyz[0] = EnvROBARMCfg.EndEffGoals[j].xyz[0];
-      EnvROBARM.goalHashEntries[j]->xyz[1] = EnvROBARMCfg.EndEffGoals[j].xyz[1];
-      EnvROBARM.goalHashEntries[j]->xyz[2] = EnvROBARMCfg.EndEffGoals[j].xyz[2];
-      EnvROBARM.goalHashEntries[j]->rpy[0] = EnvROBARMCfg.EndEffGoals[j].rpy[0];
-      EnvROBARM.goalHashEntries[j]->rpy[1] = EnvROBARMCfg.EndEffGoals[j].rpy[1];
-      EnvROBARM.goalHashEntries[j]->rpy[2] = EnvROBARMCfg.EndEffGoals[j].rpy[2];
-      EnvROBARM.goalHashEntries[j]->action = 0;
-
-      for(int i = 0; i < arm_->num_joints_; i++)
-        EnvROBARM.goalHashEntries[j]->coord[i] = 0;
-  }
 
   for(unsigned int i = 0; i < EnvROBARMCfg.EndEffGoals.size(); i++)
   {
@@ -1978,7 +1956,7 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID)
 
   //distance to closest goal in meters
   grid_->gridToWorld(FromHashEntry->xyz[0],FromHashEntry->xyz[1],FromHashEntry->xyz[2],FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
-  edist_to_goal_m = getDistToClosestGoal(FromEndEff_m, &closest_goal);
+  edist_to_goal_m = getDistToClosestGoal(FromEndEff_m, &closest_goal);  //Gets Euclidean Distance
 
   //ROS_ERROR("heur_xyz: %0.3f %0.3f %0.3f", FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
 

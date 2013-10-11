@@ -152,6 +152,10 @@ sstream
 boost/algorithm/string.hpp
 -
 
+/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp
+sbpl_arm_planner/bfs_3d.h
+-
+
 /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp
 sbpl_arm_planner/robarm3d/environment_robarm3d.h
 -

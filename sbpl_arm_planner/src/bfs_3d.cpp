@@ -199,9 +199,9 @@ void BFS3D::delete3DStateSpace(State3D**** statespace3D)
 
 bool BFS3D::runBFS()
 {
-#if DEBUG_TIME
-  clock_t currenttime = clock();
-#endif
+  #if DEBUG_TIME
+    clock_t currenttime = clock();
+  #endif
 
   if(goal_.empty())
   {
@@ -214,17 +214,17 @@ bool BFS3D::runBFS()
 
   search3DwithFifo();
   
-/* Uncomment this if using a queue:
- 
-  State3D*** statespace3D;
-  create3DStateSpace(&statespace3D);
-  search3DwithQueue(statespace3D);
-  delete3DStateSpace(&statespace3D);
-*/
+  /* Uncomment this if using a queue:
+   
+    State3D*** statespace3D;
+    create3DStateSpace(&statespace3D);
+    search3DwithQueue(statespace3D);
+    delete3DStateSpace(&statespace3D);
+  */
 
-#if DEBUG_TIME
-  SBPL_DEBUG("completed in %.3f seconds.\n", double(clock()-currenttime) / CLOCKS_PER_SEC);
-#endif
+  #if DEBUG_TIME
+    SBPL_DEBUG("completed in %.3f seconds.\n", double(clock()-currenttime) / CLOCKS_PER_SEC);
+  #endif
 
   return true;
 }
@@ -251,6 +251,7 @@ void BFS3D::search3DwithFifo()
     int y = goal_[i][1];
     int z = goal_[i][2];
     //statespace[x][y][z].g = 0;
+    // TODO: Set cost to each goal as the initial value. Not as 0.
     dist_[xyzToIndex(x,y,z)] = 0;
     q_->insert(x,y,z);
   }
