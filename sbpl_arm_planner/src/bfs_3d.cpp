@@ -251,8 +251,8 @@ void BFS3D::search3DwithFifo()
     int y = goal_[i][1];
     int z = goal_[i][2];
     //statespace[x][y][z].g = 0;
-    // TODO: Set cost to each goal as the initial value. Not as 0.
-    dist_[xyzToIndex(x,y,z)] = 0;
+    // TODO: Set cost to each goal as the initial value. Not as 1.
+    dist_[xyzToIndex(x,y,z)] = 1; //Not 0 for theoretical reasons - Max (what?)
     q_->insert(x,y,z);
   }
 }

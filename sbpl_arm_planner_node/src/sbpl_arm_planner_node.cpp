@@ -478,52 +478,57 @@ bool SBPLArmPlannerNode::setGoalPosition(const arm_navigation_msgs::Constraints 
   double roll,pitch,yaw;
   geometry_msgs::Pose pose_msg;
   tf::Pose tf_pose;
-  std::vector <std::vector <double> > sbpl_goal(1, std::vector<double> (11,0));  //Changed to include Quaternion
-  std::vector <std::vector <double> > sbpl_tolerance(1, std::vector<double> (12,0));
+  std::vector <std::vector <double> > sbpl_goal(int(goals.position_constraints.size()), std::vector<double> (11,0));  //Changed to include Quaternion
+  std::vector <std::vector <double> > sbpl_tolerance(int(goals.position_constraints.size()), std::vector<double> (12,0));
 
   if(goals.position_constraints.size() != goals.orientation_constraints.size())
     ROS_WARN("[node] There are %d position contraints and %d orientation constraints.", int(goals.position_constraints.size()),int(goals.orientation_constraints.size()));
 
-  //currently only supports one goal
-  sbpl_goal[0][0] = goals.position_constraints[0].position.x;
-  sbpl_goal[0][1] = goals.position_constraints[0].position.y;
-  sbpl_goal[0][2] = goals.position_constraints[0].position.z;
+  //currently only supports one goal - AHA! Found you.
+  ROS_INFO("[node] Received %d position constraints and %d orientation constraints",int(goals.position_constraints.size()),int(goals.orientation_constraints.size()));
 
-  //convert quaternion into roll,pitch,yaw
-  pose_msg.position = goals.position_constraints[0].position;
-  pose_msg.orientation = goals.orientation_constraints[0].orientation;
+  for (int i = 0; i < int(goals.position_constraints.size()); ++i)
+  {
+    sbpl_goal[i][0] = goals.position_constraints[i].position.x;
+    sbpl_goal[i][1] = goals.position_constraints[i].position.y;
+    sbpl_goal[i][2] = goals.position_constraints[i].position.z;
 
-  //perturb quaternion if rpy will suffer from gimbal lock
-  //if(pose_msg.orientation.x == 0 && pose_msg.orientation.z == 0)
-  pose_msg.orientation.w += 0.005;
+    //convert quaternion into roll,pitch,yaw
+    pose_msg.position = goals.position_constraints[i].position;
+    pose_msg.orientation = goals.orientation_constraints[i].orientation;
 
-  tf::poseMsgToTF(pose_msg, tf_pose);
-  tf_pose.getBasis().getRPY(roll,pitch,yaw);
-  sbpl_goal[0][3] = roll;
-  sbpl_goal[0][4] = pitch;
-  sbpl_goal[0][5] = yaw;
+    //perturb quaternion if rpy will suffer from gimbal lock
+    //if(pose_msg.orientation.x == 0 && pose_msg.orientation.z == 0)
+    pose_msg.orientation.w += 0.005;
 
-  //6dof goal: true, 3dof: false 
-  sbpl_goal[0][6] = true;
- 
-  //orientation constraint as a quaternion 
-  sbpl_goal[0][7] = goals.orientation_constraints[0].orientation.x;
-  sbpl_goal[0][8] = goals.orientation_constraints[0].orientation.y;
-  sbpl_goal[0][9] = goals.orientation_constraints[0].orientation.z;
-  sbpl_goal[0][10] = goals.orientation_constraints[0].orientation.w;
+    tf::poseMsgToTF(pose_msg, tf_pose);
+    tf_pose.getBasis().getRPY(roll,pitch,yaw);
+    sbpl_goal[i][3] = roll;
+    sbpl_goal[i][4] = pitch;
+    sbpl_goal[i][5] = yaw;
 
-  //allowable tolerance from goal
-  sbpl_tolerance[0][0] = goals.position_constraints[0].constraint_region_shape.dimensions[0] / 2.0;
-  sbpl_tolerance[0][1] = goals.position_constraints[0].constraint_region_shape.dimensions[0] / 2.0;
-  sbpl_tolerance[0][2] = goals.position_constraints[0].constraint_region_shape.dimensions[0] / 2.0;
-  sbpl_tolerance[0][3] = goals.orientation_constraints[0].absolute_roll_tolerance;
-  sbpl_tolerance[0][4] = goals.orientation_constraints[0].absolute_pitch_tolerance;
-  sbpl_tolerance[0][5] = goals.orientation_constraints[0].absolute_yaw_tolerance;
+    //6dof goal: true, 3dof: false 
+    sbpl_goal[0][6] = true;
+   
+    //orientation constraint as a quaternion 
+    sbpl_goal[i][7] = goals.orientation_constraints[i].orientation.x;
+    sbpl_goal[i][8] = goals.orientation_constraints[i].orientation.y;
+    sbpl_goal[i][9] = goals.orientation_constraints[i].orientation.z;
+    sbpl_goal[i][10] = goals.orientation_constraints[i].orientation.w;
 
-  ROS_INFO("[node] goal quat from move_arm: %0.3f %0.3f %0.3f %0.3f", goals.orientation_constraints[0].orientation.x, goals.orientation_constraints[0].orientation.y, goals.orientation_constraints[0].orientation.z, goals.orientation_constraints[0].orientation.w);
+    //allowable tolerance from goal
+    sbpl_tolerance[i][0] = goals.position_constraints[i].constraint_region_shape.dimensions[0] / 2.0;
+    sbpl_tolerance[i][1] = goals.position_constraints[i].constraint_region_shape.dimensions[1] / 2.0;
+    sbpl_tolerance[i][2] = goals.position_constraints[i].constraint_region_shape.dimensions[2] / 2.0;
+    sbpl_tolerance[i][3] = goals.orientation_constraints[i].absolute_roll_tolerance;
+    sbpl_tolerance[i][4] = goals.orientation_constraints[i].absolute_pitch_tolerance;
+    sbpl_tolerance[i][5] = goals.orientation_constraints[i].absolute_yaw_tolerance;
 
-  ROS_INFO("[node] goal xyz(%s): %.3f %.3f %.3f (tol: %.3fm) rpy: %.3f %.3f %.3f (tol: %.3frad)", map_frame_.c_str(),sbpl_goal[0][0],sbpl_goal[0][1],sbpl_goal[0][2],sbpl_tolerance[0][0],sbpl_goal[0][3],sbpl_goal[0][4],sbpl_goal[0][5], sbpl_tolerance[0][1]);
+    ROS_INFO("[node] goal %d quat from move_arm: %0.3f %0.3f %0.3f %0.3f",i, goals.orientation_constraints[i].orientation.x, goals.orientation_constraints[i].orientation.y, goals.orientation_constraints[i].orientation.z, goals.orientation_constraints[i].orientation.w);
 
+    ROS_INFO("[node] goal %d xyz(%s): %.3f %.3f %.3f (tol: %.3fm) rpy: %.3f %.3f %.3f (tol: %.3frad)",i, map_frame_.c_str(),sbpl_goal[i][0],sbpl_goal[i][1],sbpl_goal[i][2],sbpl_tolerance[i][0],sbpl_goal[i][3],sbpl_goal[i][4],sbpl_goal[i][5], sbpl_tolerance[i][1]);
+  }
+  
   //set sbpl environment goal
   if(!sbpl_arm_env_.setGoalPosition(sbpl_goal, sbpl_tolerance))
   {
@@ -595,20 +600,25 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
   }
 
   //transform goal pose into reference_frame_
-  geometry_msgs::PoseStamped pose_in, pose_out;
-  pose_in.header = req.motion_plan_request.goal_constraints.position_constraints[0].header;
-  pose_in.header.stamp = ros::Time();
-  pose_in.pose.position = req.motion_plan_request.goal_constraints.position_constraints[0].position;
-  pose_in.pose.orientation = req.motion_plan_request.goal_constraints.orientation_constraints[0].orientation;
+  std:;vector<geometry_msgs::PoseStamped> pose_in, pose_out;
+  pose_in.resize(int(req.motion_plan_request.goal_constraints.position_constraints.size()));
+  pose_out.resize(int(req.motion_plan_request.goal_constraints.position_constraints.size()));
+  for (int i = 0; i < int(pose_in.size()); ++i)
+  {
+    pose_in[i].header = req.motion_plan_request.goal_constraints.position_constraints[i].header;
+    pose_in[i].header.stamp = ros::Time();
+    pose_in[i].pose.position = req.motion_plan_request.goal_constraints.position_constraints[i].position;
+    pose_in[i].pose.orientation = req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation;
 
-  // TODO: catch the exception
-  tf_.transformPose(map_frame_,pose_in,pose_out);
+    // TODO: catch the exception
+    tf_.transformPose(map_frame_,pose_in[i],pose_out[i]);
 
-  req.motion_plan_request.goal_constraints.position_constraints[0].position = pose_out.pose.position;
-  req.motion_plan_request.goal_constraints.orientation_constraints[0].orientation = pose_out.pose.orientation;
+    req.motion_plan_request.goal_constraints.position_constraints[i].position = pose_out[i].pose.position;
+    req.motion_plan_request.goal_constraints.orientation_constraints[i].orientation = pose_out[i].pose.orientation;
 
-  ROS_DEBUG("[node] Transformed goal from (%s): %0.3f %0.3f %0.3f to (%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[0].header.frame_id.c_str(),pose_in.pose.position.x, pose_in.pose.position.y, pose_in.pose.position.z, map_frame_.c_str(), pose_out.pose.position.x,pose_out.pose.position.y,pose_out.pose.position.z);
-
+    ROS_INFO("[node] Transformed goal from (%s): %0.3f %0.3f %0.3f to (%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id.c_str(),pose_in[i].pose.position.x, pose_in[i].pose.position.y, pose_in[i].pose.position.z, map_frame_.c_str(), pose_out[i].pose.position.x,pose_out[i].pose.position.y,pose_out[i].pose.position.z);
+  }
+  
   //get the initial state of the planning joints
   start.position.resize(num_joints_);
   for(i = 0; i < req.motion_plan_request.start_state.joint_state.position.size(); i++)
@@ -765,7 +775,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   // if a path is returned, then pack it into msg form
   if(b_ret && (solution_state_ids_v.size() > 0))
   {
-    ROS_DEBUG("[plan] A path was returned with %d waypoints.", int(solution_state_ids_v.size()));
+    ROS_INFO("[plan] A path was returned with %d waypoints.", int(solution_state_ids_v.size()));
     ROS_INFO("[plan] Initial Epsilon: %0.3f   Final Epsilon: %0.3f", planner_->get_initial_eps(),planner_->get_final_epsilon());
     arm_path.resize(solution_state_ids_v.size()+1);
     for(size_t i=0; i < solution_state_ids_v.size(); i++)
@@ -815,7 +825,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
 
 bool SBPLArmPlannerNode::isGoalConstraintSatisfied(const std::vector<double> &angles, const arm_navigation_msgs::Constraints &goal)
 {
-  bool satisfied = true;
+  bool satisfied = false;
   geometry_msgs::Pose pose, err;
 
   if(!computeFK(angles,pose))
@@ -823,76 +833,82 @@ bool SBPLArmPlannerNode::isGoalConstraintSatisfied(const std::vector<double> &an
     ROS_ERROR("Failed to check if goal constraint is satisfied because the FK service failed.");
     return false;
   }
-
-  if(goal.position_constraints.size() > 0)
+  for (int i = 0; i < goal.position_constraints.size(); ++i)
   {
-    err.position.x = fabs(pose.position.x - goal.position_constraints[0].position.x);
-    err.position.y = fabs(pose.position.y - goal.position_constraints[0].position.y);
-    err.position.z = fabs(pose.position.z - goal.position_constraints[0].position.z);
-  }
+    bool this_goal_satisfied = true;
+    if(goal.position_constraints.size() >= i)
+    {
+      err.position.x = fabs(pose.position.x - goal.position_constraints[i].position.x);
+      err.position.y = fabs(pose.position.y - goal.position_constraints[i].position.y);
+      err.position.z = fabs(pose.position.z - goal.position_constraints[i].position.z);
+    }
 
-  if(goal.orientation_constraints.size() > 0)
-  {
-    err.orientation.x = fabs(pose.orientation.x - goal.orientation_constraints[0].orientation.x);
-    err.orientation.y = fabs(pose.orientation.y - goal.orientation_constraints[0].orientation.y);
-    err.orientation.z = fabs(pose.orientation.z - goal.orientation_constraints[0].orientation.z);
-    err.orientation.w = fabs(pose.orientation.w - goal.orientation_constraints[0].orientation.w);
-  }
+    if(goal.orientation_constraints.size() >= i)
+    {
+      err.orientation.x = fabs(pose.orientation.x - goal.orientation_constraints[i].orientation.x);
+      err.orientation.y = fabs(pose.orientation.y - goal.orientation_constraints[i].orientation.y);
+      err.orientation.z = fabs(pose.orientation.z - goal.orientation_constraints[i].orientation.z);
+      err.orientation.w = fabs(pose.orientation.w - goal.orientation_constraints[i].orientation.w);
+    }
 
-  ROS_INFO(" ");
-  ROS_INFO("Pose:  xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
-  ROS_INFO("Goal:  xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", goal.position_constraints[0].position.x, goal.position_constraints[0].position.y, goal.position_constraints[0].position.z, goal.orientation_constraints[0].orientation.x, goal.orientation_constraints[0].orientation.y, goal.orientation_constraints[0].orientation.z, goal.orientation_constraints[0].orientation.w);
-  ROS_INFO("Error: xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", err.position.x, err.position.y, err.position.z, err.orientation.x, err.orientation.y, err.orientation.z, err.orientation.w);
-  ROS_INFO(" ");
+    ROS_INFO(" ");
+    ROS_INFO("Pose:  xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+    ROS_INFO("Goal:  xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", goal.position_constraints[i].position.x, goal.position_constraints[i].position.y, goal.position_constraints[i].position.z, goal.orientation_constraints[i].orientation.x, goal.orientation_constraints[i].orientation.y, goal.orientation_constraints[i].orientation.z, goal.orientation_constraints[i].orientation.w);
+    ROS_INFO("Error: xyz: %0.4f %0.4f %0.4f  quat: %0.4f %0.4f %0.4f %0.4f", err.position.x, err.position.y, err.position.z, err.orientation.x, err.orientation.y, err.orientation.z, err.orientation.w);
+    ROS_INFO(" ");
 
-  if(goal.position_constraints[0].constraint_region_shape.type == arm_navigation_msgs::Shape::BOX)
-  {
-    if(goal.position_constraints[0].constraint_region_shape.dimensions.size() < 3)
-    { 
-      ROS_WARN("Goal constraint region shape is a BOX but fewer than 3 dimensions are defined.");
-      return false;
-    }
-    if(err.position.x >= goal.position_constraints[0].constraint_region_shape.dimensions[0])
+    if(goal.position_constraints[i].constraint_region_shape.type == arm_navigation_msgs::Shape::BOX)
     {
-      ROS_WARN("X is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.x, goal.position_constraints[0].constraint_region_shape.dimensions[0]);
-      satisfied = false;
+      if(goal.position_constraints[i].constraint_region_shape.dimensions.size() < 3)
+      { 
+        ROS_WARN("Goal constraint region shape is a BOX but fewer than 3 dimensions are defined.");
+        return false;
+      }
+      if(err.position.x >= goal.position_constraints[i].constraint_region_shape.dimensions[0])
+      {
+        ROS_WARN("[node][box] X is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.x, goal.position_constraints[i].constraint_region_shape.dimensions[0]);
+        this_goal_satisfied = false;
+      }
+      if(err.position.y >= goal.position_constraints[i].constraint_region_shape.dimensions[1])
+      {
+        ROS_WARN("[node][box]Y is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.y, goal.position_constraints[i].constraint_region_shape.dimensions[1]); 
+        this_goal_satisfied = false;
+      }
+      if(err.position.z >= goal.position_constraints[i].constraint_region_shape.dimensions[2])
+      {
+        ROS_WARN("[node][box]Z is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.z, goal.position_constraints[i].constraint_region_shape.dimensions[2]);
+        this_goal_satisfied = false;
+      }
     }
-    if(err.position.y >= goal.position_constraints[0].constraint_region_shape.dimensions[1])
+    else if(goal.position_constraints[i].constraint_region_shape.type == arm_navigation_msgs::Shape::SPHERE)
     {
-      ROS_WARN("Y is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.y, goal.position_constraints[0].constraint_region_shape.dimensions[1]); 
-      satisfied = false;
+      if(goal.position_constraints[i].constraint_region_shape.dimensions.size() < 1)
+      { 
+        ROS_WARN("Goal constraint region shape is a SPHERE but it has no dimensions...");
+        return false;
+      }
+      if(err.position.x >= goal.position_constraints[i].constraint_region_shape.dimensions[0])
+      {
+        ROS_WARN("[node][sphere]X is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.x, goal.position_constraints[i].constraint_region_shape.dimensions[0]);
+        this_goal_satisfied = false;
+      }
+      if(err.position.y >= goal.position_constraints[i].constraint_region_shape.dimensions[0])
+      {
+        ROS_WARN("[node][sphere]Y is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.y, goal.position_constraints[i].constraint_region_shape.dimensions[0]);
+        this_goal_satisfied = false;
+      }
+      if(err.position.z >= goal.position_constraints[i].constraint_region_shape.dimensions[0])
+      {
+        ROS_WARN("[node][sphere]Z is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.z, goal.position_constraints[i].constraint_region_shape.dimensions[0]);
+        this_goal_satisfied = false;
+      }
     }
-    if(err.position.z >= goal.position_constraints[0].constraint_region_shape.dimensions[2])
-    {
-      ROS_WARN("Z is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.z, goal.position_constraints[0].constraint_region_shape.dimensions[2]);
-      satisfied = false;
-    }
+    else
+      ROS_WARN("Goal constraint region shape is of type %d.", goal.position_constraints[i].constraint_region_shape.type);
+  
+    satisfied = satisfied | this_goal_satisfied;
   }
-  else if(goal.position_constraints[0].constraint_region_shape.type == arm_navigation_msgs::Shape::SPHERE)
-  {
-    if(goal.position_constraints[0].constraint_region_shape.dimensions.size() < 1)
-    { 
-      ROS_WARN("Goal constraint region shape is a SPHERE but it has no dimensions...");
-      return false;
-    }
-    if(err.position.x >= goal.position_constraints[0].constraint_region_shape.dimensions[0])
-    {
-      ROS_WARN("X is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.x, goal.position_constraints[0].constraint_region_shape.dimensions[0]);
-      satisfied = false;
-    }
-    if(err.position.y >= goal.position_constraints[0].constraint_region_shape.dimensions[0])
-    {
-      ROS_WARN("Y is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.y, goal.position_constraints[0].constraint_region_shape.dimensions[1]);
-      satisfied = false;
-    }
-    if(err.position.z >= goal.position_constraints[0].constraint_region_shape.dimensions[0])
-    {
-      ROS_WARN("Z is not satisfied (error: %0.4f   tolerance: %0.4f)", err.position.z, goal.position_constraints[0].constraint_region_shape.dimensions[2]);
-      satisfied = false;
-    }
-  }
-  else
-    ROS_WARN("Goal constraint region shape is of type %d.", goal.position_constraints[0].constraint_region_shape.type);
+  
 
   return satisfied;
 }
@@ -1086,11 +1102,18 @@ void SBPLArmPlannerNode::displayARAStarStates()
 
 void SBPLArmPlannerNode::visualizeGoalPosition(const arm_navigation_msgs::Constraints &goal_pose)
 {
-  geometry_msgs::Pose pose;
-  pose.position = goal_pose.position_constraints[0].position;
-  pose.orientation = goal_pose.orientation_constraints[0].orientation;
-  aviz_->visualizePose(pose, "goal_pose");
-  ROS_DEBUG("[node] Publishing goal marker visualizations.");
+  std::vector<geometry_msgs::Pose> poses;
+  poses.resize(int(goal_pose.position_constraints.size()));
+  for (int i = 0; i < int(goal_pose.position_constraints.size()); ++i)
+  {
+    poses[i].position = goal_pose.position_constraints[i].position;
+    poses[i].orientation = goal_pose.orientation_constraints[i].orientation;
+  }
+  if (int(poses.size() == 1))
+    aviz_->visualizePose(poses[0],"goal_pose");
+  else
+    aviz_->visualizePoses(poses,"goal_pose");
+  ROS_INFO("[node] Publishing %d goal marker visualizations.",int(goal_pose.position_constraints.size()));
 }
 
 void SBPLArmPlannerNode::visualizeElbowPoses()

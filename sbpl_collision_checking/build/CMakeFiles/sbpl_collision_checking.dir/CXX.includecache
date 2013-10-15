@@ -106,18 +106,6 @@ visualize_arm/visualize_arm.h
 geometry_msgs/Point.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/bresenham.cpp
-sbpl_collision_checking/bresenham.h
--
-
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/occupancy_grid.cpp
-sbpl_collision_checking/occupancy_grid.h
--
-
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_model.cpp
-sbpl_collision_checking/sbpl_collision_model.h
--
-
 /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_space.cpp
 sbpl_collision_checking/sbpl_collision_space.h
 -

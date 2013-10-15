@@ -8,6 +8,7 @@
 /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/control_right_arm.dir
 /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/move_left_arm.dir
 /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/move_right_arm.dir
+/home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/move_right_arm_multiple_goals.dir
 /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/rosbuild_precompile.dir
 /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/rosbuild_premsgsrvgen.dir
 /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/rospack_genmsg.dir

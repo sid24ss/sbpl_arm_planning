@@ -735,6 +735,76 @@ void VisualizeArm::visualizePoses(const std::vector<std::vector<double> > &poses
   marker_array_publisher_.publish(marker_array_);
 }
 
+void VisualizeArm::visualizePoses(const std::vector<geometry_msgs::Pose> &poses, std::string text)
+{
+  int mind = -1;
+  marker_array_.markers.clear();
+  marker_array_.markers.resize(3*poses.size());
+  ros::Time time = ros::Time::now();
+
+  // ROS_DEBUG("[visualizing: %s] position: %0.3f %0.3f %0.3f quaternion: %0.3f %0.3f %0.3f %0.3f (frame: %s)", text.c_str(), pose.position.x, pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, reference_frame_.c_str());
+  for (int i = 0; i < poses.size(); ++i)
+  {
+    mind++;
+    marker_array_.markers[mind].header.stamp = time;
+    marker_array_.markers[mind].header.frame_id = reference_frame_;
+    marker_array_.markers[mind].ns = text + "_arrow";
+    marker_array_.markers[mind].type = visualization_msgs::Marker::ARROW;
+    marker_array_.markers[mind].id = i;
+    marker_array_.markers[mind].action = visualization_msgs::Marker::ADD;
+    marker_array_.markers[mind].pose = poses[i];
+    marker_array_.markers[mind].scale.x = 0.125;
+    marker_array_.markers[mind].scale.y = 0.125;
+    marker_array_.markers[mind].scale.z = 0.125;
+    marker_array_.markers[mind].color.r = 0.0;
+    marker_array_.markers[mind].color.g = 0.7;
+    marker_array_.markers[mind].color.b = 0.6;
+    marker_array_.markers[mind].color.a = 0.7;
+    marker_array_.markers[mind].lifetime = ros::Duration(180.0);
+
+    mind++;
+    marker_array_.markers[mind].header.stamp = time;
+    marker_array_.markers[mind].header.frame_id = reference_frame_;
+    marker_array_.markers[mind].ns = text + "_sphere";
+    marker_array_.markers[mind].id = i;
+    marker_array_.markers[mind].type = visualization_msgs::Marker::SPHERE;
+    marker_array_.markers[mind].action = visualization_msgs::Marker::ADD;
+    marker_array_.markers[mind].pose = poses[i];
+    marker_array_.markers[mind].scale.x = 0.10;
+    marker_array_.markers[mind].scale.y = 0.10;
+    marker_array_.markers[mind].scale.z = 0.10;
+    marker_array_.markers[mind].color.r = 1.0;
+    marker_array_.markers[mind].color.g = 0.0;
+    marker_array_.markers[mind].color.b = 0.6;
+    marker_array_.markers[mind].color.a = 0.6;
+    marker_array_.markers[mind].lifetime = ros::Duration(180.0);
+
+    mind++;
+    marker_array_.markers[mind].header.stamp = time;
+    marker_array_.markers[mind].header.frame_id = reference_frame_;
+    marker_array_.markers[mind].ns = text;
+    marker_array_.markers[mind].id = i;
+    marker_array_.markers[mind].type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+    marker_array_.markers[mind].action = visualization_msgs::Marker::ADD;
+    marker_array_.markers[mind].pose = poses[i];
+    marker_array_.markers[mind].scale.x = 0.03;
+    marker_array_.markers[mind].scale.y = 0.03;
+    marker_array_.markers[mind].scale.z = 0.03;
+    marker_array_.markers[mind].color.r = 1.0;
+    marker_array_.markers[mind].color.g = 1.0;
+    marker_array_.markers[mind].color.b = 1.0;
+    marker_array_.markers[mind].color.a = 0.9;
+    marker_array_.markers[mind].text = text;
+    marker_array_.markers[mind].lifetime = ros::Duration(180.0);
+    ROS_INFO("[visualizing: %s] position: %0.3f %0.3f %0.3f quaternion: %0.3f %0.3f %0.3f %0.3f (frame: %s)", text.c_str(), poses[i].position.x, poses[i].position.y, poses[i].position.z, poses[i].orientation.x, poses[i].orientation.y, poses[i].orientation.z, poses[i].orientation.w, reference_frame_.c_str());
+
+  }
+
+  ROS_INFO("[visualize_arm] %d markers in the array",(int)marker_array_.markers.size());
+  
+  marker_array_publisher_.publish(marker_array_);
+}
+
 void VisualizeArm::visualizePose(const std::vector<double> &pose, std::string text)
 {
   //btQuaternion pose_quaternion;
@@ -748,7 +818,7 @@ void VisualizeArm::visualizePose(const std::vector<double> &pose, std::string te
   pose_quaternion.setRPY(pose[3],pose[4],pose[5]);
   tf::quaternionTFToMsg(pose_quaternion, pose_msg.orientation);
 
-  ROS_DEBUG("[visualizing: %s] position: %0.3f %0.3f %0.3f quaternion: %0.3f %0.3f %0.3f %0.3f (frame: %s)", text.c_str(), pose[0], pose[1], pose[2], pose_msg.orientation.x, pose_msg.orientation.y, pose_msg.orientation.z, pose_msg.orientation.w, reference_frame_.c_str());
+  ROS_INFO("[visualizing: %s] position: %0.3f %0.3f %0.3f quaternion: %0.3f %0.3f %0.3f %0.3f (frame: %s)", text.c_str(), pose[0], pose[1], pose[2], pose_msg.orientation.x, pose_msg.orientation.y, pose_msg.orientation.z, pose_msg.orientation.w, reference_frame_.c_str());
 
   visualizePose(pose_msg, text);
 }

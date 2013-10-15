@@ -73,6 +73,8 @@ class VisualizeArm
 
     /* \brief visualize a list of poses (sphere, arrow, pose index number) */
     void visualizePoses(const std::vector<std::vector<double> > &poses);
+
+    void visualizePoses(const std::vector<geometry_msgs::Pose> &poses, std::string text);
    
     /* \brief visualize the trajectory stored in a CSV file */
     void visualizeTrajectoryFile(std::string filename, int throttle);

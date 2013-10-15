@@ -273,13 +273,13 @@ int EnvironmentROBARM3D::SizeofCreatedEnv()
 
 void EnvironmentROBARM3D::PrintState(int stateID, bool bVerbose, FILE* fOut /*=NULL*/)
 {
-#if DEBUG_HEUR
-  if(stateID >= (int)EnvROBARM.StateID2CoordTable.size())
-  {
-    SBPL_ERROR("ERROR in EnvROBARM... function: stateID illegal (2)\n");
-    throw new SBPL_Exception();
-  }
-#endif
+  #if DEBUG_HEUR
+    if(stateID >= (int)EnvROBARM.StateID2CoordTable.size())
+    {
+      SBPL_ERROR("ERROR in EnvROBARM... function: stateID illegal (2)\n");
+      throw new SBPL_Exception();
+    }
+  #endif
 
   if(fOut == NULL)
     fOut = stdout;
@@ -337,6 +337,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
   coordToAngles(succcoord, source_angles);
 
   //check if cell is close to enough to goal to use higher resolution actions
+  // TODO: Check distance to all goals. Is this captured in the Dijkstra costs itself?
   int dist_to_goal = getDijkstraDistToGoal(HashEntry->xyz[0],HashEntry->xyz[1],HashEntry->xyz[2]);
 
   if(prms_.use_multires_mprims_)
@@ -353,10 +354,10 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
     }
   }
 
-#if DEBUG_SEARCH
-if(prms_.verbose_)
-  SBPL_DEBUG_NAMED("search", "\nstate %d: %.2f %.2f %.2f %.2f %.2f %.2f %.2f  endeff: %3d %3d %3d",SourceStateID, source_angles[0],source_angles[1],source_angles[2],source_angles[3],source_angles[4],source_angles[5],source_angles[6], HashEntry->xyz[0],HashEntry->xyz[1],HashEntry->xyz[2]);
-#endif
+  #if DEBUG_SEARCH
+    if(prms_.verbose_)
+      SBPL_DEBUG_NAMED("search", "\nstate %d: %.2f %.2f %.2f %.2f %.2f %.2f %.2f  endeff: %3d %3d %3d",SourceStateID, source_angles[0],source_angles[1],source_angles[2],source_angles[3],source_angles[4],source_angles[5],source_angles[6], HashEntry->xyz[0],HashEntry->xyz[1],HashEntry->xyz[2]);
+  #endif
 
   //iterate through successors of state s (possible actions)
   for (i = actions_i_min; i < actions_i_max; i++)
@@ -385,20 +386,20 @@ if(prms_.verbose_)
     //check for collisions
     if(!cspace_->checkCollision(angles, prms_.verbose_, false, dist))
     {
-#if DEBUG_SEARCH
-  if(prms_.verbose_)
-      SBPL_DEBUG_NAMED("search", " succ: %2d  dist: %2d is in collision.", i, int(dist));
-#endif
+      #if DEBUG_SEARCH
+        if(prms_.verbose_)
+            SBPL_DEBUG_NAMED("search", " succ: %2d  dist: %2d is in collision.", i, int(dist));
+      #endif
       continue;
     }
 
     // check for collision along interpolated path between sourcestate and succ
     if(!cspace_->checkPathForCollision(source_angles, angles, prms_.verbose_, dist))
     {
-#if DEBUG_SEARCH
-      if(prms_.verbose_)
-        SBPL_DEBUG_NAMED("search", " succ: %2d  dist: %2d is in collision along interpolated path.", i, int(dist));
-#endif
+      #if DEBUG_SEARCH
+            if(prms_.verbose_)
+              SBPL_DEBUG_NAMED("search", " succ: %2d  dist: %2d is in collision along interpolated path.", i, int(dist));
+      #endif
       continue;
     }
 
@@ -411,21 +412,25 @@ if(prms_.verbose_)
 
     int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
-    //check if this state meets the goal criteria
-    if(isGoalPosition(pose,EnvROBARMCfg.EndEffGoals[0], angles, final_mp_cost))
+    // Sid: check if this state meets all the goal criteria
+    for(size_t k = 0; k < EnvROBARMCfg.EndEffGoals.size(); ++k)
     {
-      bSuccisGoal = true;
+      final_mp_cost = 0;
+      if(isGoalPosition(pose,EnvROBARMCfg.EndEffGoals[k], angles, final_mp_cost))
+      {
+        bSuccisGoal = true;
 
-      for (int j = 0; j < arm_->num_joints_; j++)
-        EnvROBARM.goalHashEntry->coord[j] = succcoord[j];
+        for (int j = 0; j < arm_->num_joints_; j++)
+          EnvROBARM.goalHashEntry->coord[j] = succcoord[j];
 
-      EnvROBARM.goalHashEntry->xyz[0] = endeff[0];
-      EnvROBARM.goalHashEntry->xyz[1] = endeff[1];
-      EnvROBARM.goalHashEntry->xyz[2] = endeff[2];
-      EnvROBARM.goalHashEntry->action = i;
-      EnvROBARM.goalHashEntry->dist = dist;
+        EnvROBARM.goalHashEntry->xyz[0] = endeff[0];
+        EnvROBARM.goalHashEntry->xyz[1] = endeff[1];
+        EnvROBARM.goalHashEntry->xyz[2] = endeff[2];
+        EnvROBARM.goalHashEntry->action = i;
+        EnvROBARM.goalHashEntry->dist = dist;
 
-      SBPL_DEBUG("[GetSuccs] Goal successor is generated. SourceStateID: %d (distance to nearest obstacle: %0.2fm)",SourceStateID,  (double)dist*grid_->getResolution());
+        SBPL_INFO("[GetSuccs] Goal successor is generated. SourceStateID: %d (distance to nearest obstacle: %0.2fm)",SourceStateID,  (double)dist*grid_->getResolution());
+      }
     }
 
     //check if hash entry already exists, if not then create one
@@ -437,10 +442,10 @@ if(prms_.verbose_)
       OutHashEntry->rpy[2] = pose[5];
       OutHashEntry->dist = dist;
 
-#if DEBUG_SEARCH
-  if(prms_.verbose_)
-      SBPL_DEBUG_NAMED("search", "%5i: action: %2d dist: %2d edge_distance_cost: %5d heur: %2d endeff: %3d %3d %3d", OutHashEntry->stateID, i, int(OutHashEntry->dist), cost(HashEntry,OutHashEntry,bSuccisGoal), GetFromToHeuristic(OutHashEntry->stateID, EnvROBARM.goalHashEntry->stateID), OutHashEntry->xyz[0],OutHashEntry->xyz[1],OutHashEntry->xyz[2]);
-#endif
+      #if DEBUG_SEARCH
+        if(prms_.verbose_)
+            SBPL_DEBUG_NAMED("search", "%5i: action: %2d dist: %2d edge_distance_cost: %5d heur: %2d endeff: %3d %3d %3d", OutHashEntry->stateID, i, int(OutHashEntry->dist), cost(HashEntry,OutHashEntry,bSuccisGoal), GetFromToHeuristic(OutHashEntry->stateID, EnvROBARM.goalHashEntry->stateID), OutHashEntry->xyz[0],OutHashEntry->xyz[1],OutHashEntry->xyz[2]);
+      #endif
     }
 
     //put successor on successor list with the proper cost
@@ -783,6 +788,7 @@ bool EnvironmentROBARM3D::initGeneral()
   //initialize dijkstra 
   initDijkstra();
   
+  SBPL_INFO("[env] Use Research heuristics: %d",prms_.use_research_heuristic_);
   if(prms_.use_research_heuristic_)
     initElbowDijkstra();
 
@@ -1139,7 +1145,7 @@ bool EnvironmentROBARM3D::setStartConfiguration(const std::vector<double> angles
 bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double> > &goals, const std::vector<std::vector<double> > &tolerances)
 {
   //goals: {{x1,y1,z1,r1,p1,y1,is_6dof},{x2,y2,z2,r2,p2,y2,is_6dof}...}
-
+  ROS_INFO("[env] Received %d goals!",goals.size());
   if(!EnvROBARMCfg.bInitialized)
   {
     SBPL_ERROR("Cannot set goal position because environment is not initialized.");
@@ -1235,7 +1241,7 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
 
   for(unsigned int i = 0; i < EnvROBARMCfg.EndEffGoals.size(); i++)
   {
-    SBPL_INFO("goal %i:  grid: %u %u %u (cells)  xyz: %0.2f %0.2f %0.2f (meters)  (tol: %0.3fm %0.3fm %0.3fm) rpy: %1.2f %1.2f %1.2f (radians) (tol: %0.3f %0.3f %0.3f)",i,EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],tolerances[i][1],tolerances[i][2],EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][3],tolerances[i][4],tolerances[i][5]);
+    SBPL_INFO("[env] Setting goal %i:  grid: %u %u %u (cells)  xyz: %0.2f %0.2f %0.2f (meters)  (tol: %0.3fm %0.3fm %0.3fm) rpy: %1.2f %1.2f %1.2f (radians) (tol: %0.3f %0.3f %0.3f)",i,EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],tolerances[i][1],tolerances[i][2],EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][3],tolerances[i][4],tolerances[i][5]);
     SBPL_DEBUG("quat: %0.3f %0.3f %0.3f %0.3f",EnvROBARMCfg.EndEffGoals[i].q[0], EnvROBARMCfg.EndEffGoals[i].q[1], EnvROBARMCfg.EndEffGoals[i].q[2], EnvROBARMCfg.EndEffGoals[i].q[3]);
   }
 
@@ -1254,30 +1260,45 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
     }
   #endif
 
-    // precompute heuristics
-    if(!precomputeHeuristics())
-    {
-      SBPL_ERROR("Precomputing heuristics failed. Exiting.");
-      return false;
-    }
+  // precompute heuristics
+  if(!precomputeHeuristics())
+  {
+    SBPL_ERROR("Precomputing heuristics failed. Exiting.");
+    return false;
+  }
 
-    clearStats();
+  clearStats();
 
-    return true;
+  return true;
 }
 
 bool EnvironmentROBARM3D::precomputeHeuristics()
 {
-  std::vector<int> dij_goal(3,0);
+  // int * dijGoals = new int [3*EnvROBARMCfg.EndEffGoals.size()];
+  // for(size_t i = 0; i < EnvROBARMCfg.EndEffGoals.size(); ++i)
+  // {
+  //   dijGoals[3*i] = EnvROBARMCfg.EndEffGoals[i].xyz[0];
+  //   dijGoals[3*i+1] = EnvROBARMCfg.EndEffGoals[i].xyz[1];
+  //   dijGoals[3*i+2] = EnvROBARMCfg.EndEffGoals[i].xyz[2];
+  // }
 
-  dij_goal[0] = EnvROBARMCfg.EndEffGoals[0].xyz[0];
-  dij_goal[1] = EnvROBARMCfg.EndEffGoals[0].xyz[1];
-  dij_goal[2] = EnvROBARMCfg.EndEffGoals[0].xyz[2];
+  std::vector<std::vector<int> > dijGoals(EnvROBARMCfg.EndEffGoals.size(), std::vector<int> (3,0));
+  // std::vector<int> dij_goal(3,0);
+  for (size_t i = 0; i < EnvROBARMCfg.EndEffGoals.size(); ++i)
+  {
+    dijGoals[i][0] = EnvROBARMCfg.EndEffGoals[i].xyz[0];
+    dijGoals[i][1] = EnvROBARMCfg.EndEffGoals[i].xyz[1];
+    dijGoals[i][2] = EnvROBARMCfg.EndEffGoals[i].xyz[2];
+    SBPL_INFO("[env] Dijkstra Goal: %d %d %d",dijGoals[i][0],dijGoals[i][1],dijGoals[i][2]); 
+  }
 
-  SBPL_DEBUG("[env] Dijkstra Goal: %d %d %d",dij_goal[0],dij_goal[1],dij_goal[2]); 
+  // dij_goal[0] = EnvROBARMCfg.EndEffGoals[0].xyz[0];
+  // dij_goal[1] = EnvROBARMCfg.EndEffGoals[0].xyz[1];
+  // dij_goal[2] = EnvROBARMCfg.EndEffGoals[0].xyz[2];
+
 
   //set the goal for h_endeff
-  if(!dijkstra_->setGoal(dij_goal))
+  if(!dijkstra_->setGoals(dijGoals))
   {
     SBPL_ERROR("[env] Failed to set goal for Dijkstra search.");
     return false;

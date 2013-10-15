@@ -67,6 +67,7 @@ SET(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/control_right_arm.dir/DependInfo.cmake"
   "CMakeFiles/move_left_arm.dir/DependInfo.cmake"
   "CMakeFiles/move_right_arm.dir/DependInfo.cmake"
+  "CMakeFiles/move_right_arm_multiple_goals.dir/DependInfo.cmake"
   "CMakeFiles/rosbuild_precompile.dir/DependInfo.cmake"
   "CMakeFiles/rosbuild_premsgsrvgen.dir/DependInfo.cmake"
   "CMakeFiles/rospack_genmsg.dir/DependInfo.cmake"
