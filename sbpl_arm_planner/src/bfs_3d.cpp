@@ -257,6 +257,7 @@ void BFS3D::search3DwithFifo()
   }
 }
 
+// Get distance from the goal. In case of multiple goals, it will be the distance to the nearest goal.
 int BFS3D::getDist(int x, int y, int z)
 {
   int idx = xyzToIndex(x,y,z);

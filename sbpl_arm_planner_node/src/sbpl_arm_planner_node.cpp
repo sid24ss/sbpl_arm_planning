@@ -197,7 +197,7 @@ bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
   planner_->set_initialsolution_eps(sbpl_arm_env_.getEpsilon());
 
   //set search mode (true - settle with first solution)
-  search_mode_ = false;
+  search_mode_ = true;
   planner_->set_search_mode(search_mode_);
 
   if(!initChain(robot_description_))
@@ -508,7 +508,7 @@ bool SBPLArmPlannerNode::setGoalPosition(const arm_navigation_msgs::Constraints 
     sbpl_goal[i][5] = yaw;
 
     //6dof goal: true, 3dof: false 
-    sbpl_goal[0][6] = true;
+    sbpl_goal[i][6] = true;
    
     //orientation constraint as a quaternion 
     sbpl_goal[i][7] = goals.orientation_constraints[i].orientation.x;
@@ -619,15 +619,19 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
     ROS_INFO("[node] Transformed goal from (%s): %0.3f %0.3f %0.3f to (%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id.c_str(),pose_in[i].pose.position.x, pose_in[i].pose.position.y, pose_in[i].pose.position.z, map_frame_.c_str(), pose_out[i].pose.position.x,pose_out[i].pose.position.y,pose_out[i].pose.position.z);
   }
   
-  //get the initial state of the planning joints
+  //get the initial state of the planning joints; This necessitates a certain order in the incoming joint states.
   start.position.resize(num_joints_);
   for(i = 0; i < req.motion_plan_request.start_state.joint_state.position.size(); i++)
   {
-    if(joint_names_[nind].compare(req.motion_plan_request.start_state.joint_state.name[i]) == 0)
+    for (int j = 0; j < joint_names_.size(); ++j)
     {
-      start.position[nind] = req.motion_plan_request.start_state.joint_state.position[i];
-      nind++;
+      if(joint_names_[j].compare(req.motion_plan_request.start_state.joint_state.name[i]) == 0)
+      {
+        start.position[j] = req.motion_plan_request.start_state.joint_state.position[i];
+        nind++;
+      }
     }
+    
     if(nind == num_joints_)
       break;
   }
@@ -686,7 +690,7 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
         if(print_path_)
           printPath(res.trajectory.joint_trajectory.points);
 
-        // compute distance to goal
+        // Check if the last point in the trajectory satisfies the goal constraint
         if(!isGoalConstraintSatisfied(res.trajectory.joint_trajectory.points[res.trajectory.joint_trajectory.points.size()-1].positions, req.motion_plan_request.goal_constraints))
           ROS_WARN("[node] Uh Oh. Goal constraint isn't satisfied.");
         
@@ -769,9 +773,13 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   if(b_ret && solution_state_ids_v.size() <= 0)
     b_ret = false;
 
+  //For multiple goals, we need to get the successor of the last but one state.
+  // vector<int> SIDV, CV;
+  // sbpl_arm_env_.GetSuccs(solution_state_ids_v.back(),&SIDV, &CV);
+  // solution_state_ids_v.back() = sbpl_arm_env_.EnvROBARM.goalHashEntry->stateID;
+
   //outputs debug information about the adaptive mprims
   sbpl_arm_env_.debugAdaptiveMotionPrims();
-
   // if a path is returned, then pack it into msg form
   if(b_ret && (solution_state_ids_v.size() > 0))
   {
@@ -823,6 +831,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   return b_ret;
 }
 
+// Search over all goals and return true if at least one goal is satisfied. 
 bool SBPLArmPlannerNode::isGoalConstraintSatisfied(const std::vector<double> &angles, const arm_navigation_msgs::Constraints &goal)
 {
   bool satisfied = false;
@@ -1210,6 +1219,7 @@ void SBPLArmPlannerNode::printPath(const std::vector<trajectory_msgs::JointTraje
   tf::Pose tf_pose;
   geometry_msgs::Pose pose;
   std::vector<double> jnt_pos(num_joints_,0);
+  int gx,gy,gz;
 
   ROS_INFO("Path:");
   for(unsigned int i = 0; i < arm_path.size(); i++)
@@ -1220,8 +1230,8 @@ void SBPLArmPlannerNode::printPath(const std::vector<trajectory_msgs::JointTraje
     computeFK(jnt_pos, pose);
     tf::poseMsgToTF(pose, tf_pose);
     tf_pose.getBasis().getRPY(roll,pitch,yaw);
-
-    ROS_INFO("%3d: %1.4f %1.4f %1.4f %1.4f %1.4f %1.4f %1.4f\n   xyz: %2.3f %2.3f %2.3f  rpy: %0.3f %0.3f %0.3f  quat: %0.2f %0.2f %0.2f %0.2f", i,arm_path[i].positions[0],arm_path[i].positions[1],arm_path[i].positions[2],arm_path[i].positions[3],arm_path[i].positions[4],arm_path[i].positions[5],arm_path[i].positions[6],pose.position.x, pose.position.y, pose.position.z, roll, pitch, yaw, pose.orientation.x,pose.orientation.y, pose.orientation.z, pose.orientation.w);
+    grid_->worldToGrid(pose.position.x, pose.position.y, pose.position.z,gx,gy,gz);
+    ROS_INFO("%3d: %1.4f %1.4f %1.4f %1.4f %1.4f %1.4f %1.4f\n ; grid: %5d,%5d,%5d  xyz: %2.3f %2.3f %2.3f  rpy: %0.3f %0.3f %0.3f  quat: %0.2f %0.2f %0.2f %0.2f", i,arm_path[i].positions[0],arm_path[i].positions[1],arm_path[i].positions[2],arm_path[i].positions[3],arm_path[i].positions[4],arm_path[i].positions[5],arm_path[i].positions[6],gx,gy,gz,pose.position.x, pose.position.y, pose.position.z, roll, pitch, yaw, pose.orientation.x,pose.orientation.y, pose.orientation.z, pose.orientation.w);
   }
 }
 

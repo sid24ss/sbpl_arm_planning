@@ -23,9 +23,9 @@ debug:
 visualizations:
   heuristic: true
   goal: true
-  expanded_states: false
-  trajectory: false
-  collision_model_trajectory: false
+  expanded_states: true
+  trajectory: true
+  collision_model_trajectory: true
   trajectory_throttle: 3
 
 collision_space:
@@ -54,4 +54,3 @@ planning_joints:
 reference_frame: base_footprint
 fk_service_name: pr2_right_arm_kinematics/get_fk
 ik_service_name: pr2_right_arm_kinematics/get_ik
-

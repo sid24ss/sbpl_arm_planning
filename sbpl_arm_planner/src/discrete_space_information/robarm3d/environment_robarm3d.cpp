@@ -413,10 +413,10 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
     int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
     // Sid: check if this state meets all the goal criteria
-    for(size_t k = 0; k < EnvROBARMCfg.EndEffGoals.size(); ++k)
+    for(int s = 0; s < EnvROBARMCfg.EndEffGoals.size(); ++s)
     {
       final_mp_cost = 0;
-      if(isGoalPosition(pose,EnvROBARMCfg.EndEffGoals[k], angles, final_mp_cost))
+      if(isGoalPosition(pose,EnvROBARMCfg.EndEffGoals[s], angles, final_mp_cost))
       {
         bSuccisGoal = true;
 
@@ -429,7 +429,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
         EnvROBARM.goalHashEntry->action = i;
         EnvROBARM.goalHashEntry->dist = dist;
 
-        SBPL_INFO("[GetSuccs] Goal successor is generated. SourceStateID: %d (distance to nearest obstacle: %0.2fm)",SourceStateID,  (double)dist*grid_->getResolution());
+        SBPL_INFO("[GetSuccs] Goal successor is generated. SourceStateID: %d (distance to nearest obstacle: %0.2fm); Grid coords: %d %d %d",SourceStateID,  (double)dist*grid_->getResolution(), endeff[0],endeff[1],endeff[2]);
       }
     }
 
@@ -899,12 +899,13 @@ bool EnvironmentROBARM3D::isGoalPosition(const std::vector<double> &pose, const 
           fabs(pose[1]-goal.pos[1]) <= goal.pos_tolerance[1] && 
           fabs(pose[2]-goal.pos[2]) <= goal.pos_tolerance[2])
       {
+        ROS_INFO("Position constraint is satisfied! goal: %u, %u, %u", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
         //log the amount of time required for the search to get close to the goal
         if(!near_goal)
         {
           time_to_goal_region = (clock() - starttime) / (double)CLOCKS_PER_SEC;
           near_goal = true;
-          printf("Search is at %0.2f %0.2f %0.2f, within %0.3fm of the goal (%0.2f %0.2f %0.2f) after %.4f sec. (after %d expansions)\n", pose[0],pose[1],pose[2],goal.pos_tolerance[0], goal.pos[0], goal.pos[1], goal.pos[2], time_to_goal_region,(int)expanded_states.size());
+          ROS_INFO("Search is at %0.2f %0.2f %0.2f, within %0.3fm of the goal (%0.2f %0.2f %0.2f) after %.4f sec. (after %d expansions)\n", pose[0],pose[1],pose[2],goal.pos_tolerance[0], goal.pos[0], goal.pos[1], goal.pos[2], time_to_goal_region,(int)expanded_states.size());
           EnvROBARMCfg.num_expands_to_position_constraint = expanded_states.size();
         }
         
@@ -922,13 +923,15 @@ bool EnvironmentROBARM3D::isGoalPosition(const std::vector<double> &pose, const 
         } 
       }
 
+      // Call the IK Checker only if the planner is within the ik_distance threshold of the IK. It returns false anyway, but the issue is that it uses getDist. getDist is going to give close to 0 because of multiple goals.
+
       if(prms_.use_ik_)
       {
         //try to reach orientation constraint with IK
+        ROS_INFO("Calling IK with goal: %u, %u, %u", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
         if(isGoalStateWithIK(pose,goal,jnt_angles))
         {
           EnvROBARMCfg.solved_by_ik++;
-
           //compute cost of the motion
           cost = getActionCost(jnt_angles,final_joint_config,0);
           return true;
@@ -949,6 +952,8 @@ bool EnvironmentROBARM3D::isGoalPosition(const std::vector<double> &pose, const 
 
 bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, const GoalPos &goal, std::vector<double> jnt_angles)
 {
+  // ROS_INFO("[isGoalPostion] %u %u %u", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
+
   //check distance to goal, if within range then run IK
   if(prms_.use_dijkstra_heuristic_)
   {
@@ -1015,7 +1020,7 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, con
     return false;
   }
 
-  SBPL_DEBUG("[isGoalStateWithIK] The path to the IK solution for the goal is valid.");
+  SBPL_INFO("[isGoalStateWithIK] The path to the IK solution for the goal is valid. Goal: %5d, %5d, %5d", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
 
   //added to be compatible with OP - 7/5/2010
   prefinal_joint_config = jnt_angles;
@@ -1077,6 +1082,7 @@ int EnvironmentROBARM3D::getEdgeCost(int FromStateID, int ToStateID)
 
 bool EnvironmentROBARM3D::isGoalStateWithOrientationSolver(const GoalPos &goal, std::vector<double> jnt_angles)
 {
+  // ROS_INFO("[orientationSolver] %u %u %u", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
   return rpysolver_->isOrientationFeasible(goal.rpy, jnt_angles, prefinal_joint_config, final_joint_config);
 }
 
@@ -1241,7 +1247,7 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
 
   for(unsigned int i = 0; i < EnvROBARMCfg.EndEffGoals.size(); i++)
   {
-    SBPL_INFO("[env] Setting goal %i:  grid: %u %u %u (cells)  xyz: %0.2f %0.2f %0.2f (meters)  (tol: %0.3fm %0.3fm %0.3fm) rpy: %1.2f %1.2f %1.2f (radians) (tol: %0.3f %0.3f %0.3f)",i,EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],tolerances[i][1],tolerances[i][2],EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][3],tolerances[i][4],tolerances[i][5]);
+    SBPL_INFO("[env] Setting goal %i:  grid: %u %u %u (cells)  xyz: %0.2f %0.2f %0.2f (meters)  (tol: %0.3fm %0.3fm %0.3fm) rpy: %1.2f %1.2f %1.2f (radians) (tol: %0.3f %0.3f %0.3f) is6dof: %d",i,EnvROBARMCfg.EndEffGoals[i].xyz[0], EnvROBARMCfg.EndEffGoals[i].xyz[1],EnvROBARMCfg.EndEffGoals[i].xyz[2],EnvROBARMCfg.EndEffGoals[i].pos[0],EnvROBARMCfg.EndEffGoals[i].pos[1],EnvROBARMCfg.EndEffGoals[i].pos[2],tolerances[i][0],tolerances[i][1],tolerances[i][2],EnvROBARMCfg.EndEffGoals[i].rpy[0],EnvROBARMCfg.EndEffGoals[i].rpy[1],EnvROBARMCfg.EndEffGoals[i].rpy[2],tolerances[i][3],tolerances[i][4],tolerances[i][5],EnvROBARMCfg.EndEffGoals[i].is_6dof_goal);
     SBPL_DEBUG("quat: %0.3f %0.3f %0.3f %0.3f",EnvROBARMCfg.EndEffGoals[i].q[0], EnvROBARMCfg.EndEffGoals[i].q[1], EnvROBARMCfg.EndEffGoals[i].q[2], EnvROBARMCfg.EndEffGoals[i].q[3]);
   }
 
