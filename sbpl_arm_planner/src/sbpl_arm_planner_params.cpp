@@ -97,7 +97,7 @@ void SBPLArmPlannerParams::initFromParamServer()
   ros::NodeHandle nh("~");
 
   /* planner */
-  nh.param("planner/epsilon",epsilon_, 10.0);
+  nh.param("planner/epsilon",epsilon_, 1.0);
   nh.param("planner/use_dijkstra_heuristic",use_dijkstra_heuristic_,true);
   nh.param("planner/use_research_heuristic",use_research_heuristic_,false);
   nh.param("planner/use_multiresolution_motion_primitives",use_multires_mprims_,true);

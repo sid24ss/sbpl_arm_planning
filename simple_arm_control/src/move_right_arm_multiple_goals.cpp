@@ -2,6 +2,8 @@
 #include <actionlib/client/simple_action_client.h>
 #include <geometry_msgs/Quaternion.h>
 #include <tf/tf.h>
+#include <sstream>
+#include <string>
 
 #include <arm_navigation_msgs/MoveArmAction.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
@@ -69,55 +71,77 @@ int main(int argc, char **argv){
 
   ROS_INFO("Number of goals received: %d",int(number_of_goals));
   double goal_x,goal_y,goal_z,goal_roll,goal_pitch,goal_yaw;
-  
+  std::stringstream ssTemp;
+  std::string sTemp;
+  char paramTemp[80];
+  // ssTemp << int(42);
+  // sTemp = ssTemp.str();
+  // paramTemp[0] = '\0';
+  // strcat(paramTemp,"goal_x_");
+  // strcat(paramTemp,sTemp.c_str());
+  // ROS_INFO("%s",paramTemp);
   for (int i = 0; i < int(number_of_goals); ++i)
   {
-      if(i==0){
-        ph.param<double>("goal_x",goal_x,0.75);
-        ph.param<double>("goal_y",goal_y,-0.188);
-        ph.param<double>("goal_z",goal_z,0.0);
+    ssTemp.str(std::string());
+    ssTemp.clear();
+    ssTemp << int(i);
+    sTemp = ssTemp.str();
+    ROS_INFO("Processing goal number : %s ",sTemp.c_str());
 
-        ph.param<double>("goal_roll",goal_roll,1.0);
-        ph.param<double>("goal_pitch",goal_pitch,0.5);
-        ph.param<double>("goal_yaw",goal_yaw,0.2);
-      }
-      else if(i==1){
-        ph.param<double>("goal_x_2",goal_x,0.75);
-        ph.param<double>("goal_y_2",goal_y,-0.188);
-        ph.param<double>("goal_z_2",goal_z,0.0);
+    paramTemp[0] = '\0';
+    strcat(paramTemp,"goal_x_");
+    strcat(paramTemp,sTemp.c_str());
+    ph.param<double>(paramTemp,goal_x,0.75);
+    paramTemp[0] = '\0';
+    strcat(paramTemp,"goal_y_");
+    strcat(paramTemp,sTemp.c_str());
+    ph.param<double>(paramTemp,goal_y,-0.188);
+    paramTemp[0] = '\0';
+    strcat(paramTemp,"goal_z_");
+    strcat(paramTemp,sTemp.c_str());
+    ph.param<double>(paramTemp,goal_z,0.0);
 
-        ph.param<double>("goal_roll_2",goal_roll,1.0);
-        ph.param<double>("goal_pitch_2",goal_pitch,0.5);
-        ph.param<double>("goal_yaw_2",goal_yaw,0.2);
-      }
-      tf::Quaternion gripper_goal;
-      geometry_msgs::Quaternion gripper_goal_msg;
-      gripper_goal.setRPY(goal_roll,goal_pitch,goal_yaw);
-      tf::quaternionTFToMsg(gripper_goal,gripper_goal_msg);
-     
-      arm_navigation_msgs::SimplePoseConstraint desired_pose;
-      desired_pose.header.frame_id = "base_link";
-      desired_pose.link_name = "r_wrist_roll_link";
-      desired_pose.pose.position.x = goal_x;
-      desired_pose.pose.position.y = goal_y;
-      desired_pose.pose.position.z = goal_z;
-      ROS_INFO("[send_move_arm_goal] Goal number: %d arm_name: %s frame: %s position: %0.3f %0.3f %0.3f orientation: %0.2f %0.2f %0.2f %0.2f",(i+1),arm_name.c_str(),desired_pose.header.frame_id.c_str(),goal_x,goal_y,goal_z,gripper_goal_msg.x,gripper_goal_msg.y,gripper_goal_msg.z,gripper_goal_msg.w);
+    paramTemp[0] = '\0';
+    strcat(paramTemp,"goal_roll_");
+    strcat(paramTemp,sTemp.c_str());
+    ph.param<double>(paramTemp,goal_roll,1.0);
+    paramTemp[0] = '\0';
+    strcat(paramTemp,"goal_pitch_");
+    strcat(paramTemp,sTemp.c_str());
+    ph.param<double>(paramTemp,goal_pitch,0.5);
+    paramTemp[0] = '\0';
+    strcat(paramTemp,"goal_yaw_");
+    strcat(paramTemp,sTemp.c_str());
+    ph.param<double>(paramTemp,goal_yaw,0.2);
 
-      desired_pose.pose.orientation.x = gripper_goal_msg.x;
-      desired_pose.pose.orientation.y = gripper_goal_msg.y;
-      desired_pose.pose.orientation.z = gripper_goal_msg.z;
-      desired_pose.pose.orientation.w = gripper_goal_msg.w;
+    tf::Quaternion gripper_goal;
+    geometry_msgs::Quaternion gripper_goal_msg;
+    gripper_goal.setRPY(goal_roll,goal_pitch,goal_yaw);
+    tf::quaternionTFToMsg(gripper_goal,gripper_goal_msg);
 
-      desired_pose.absolute_position_tolerance.x = 0.01;
-      desired_pose.absolute_position_tolerance.y = 0.01;
-      desired_pose.absolute_position_tolerance.z = 0.01;
+    arm_navigation_msgs::SimplePoseConstraint desired_pose;
+    desired_pose.header.frame_id = "base_link";
+    desired_pose.link_name = "r_wrist_roll_link";
+    desired_pose.pose.position.x = goal_x;
+    desired_pose.pose.position.y = goal_y;
+    desired_pose.pose.position.z = goal_z;
+    ROS_INFO("[send_move_arm_goal] Goal number: %d arm_name: %s frame: %s position: %0.3f %0.3f %0.3f orientation: %0.2f %0.2f %0.2f %0.2f",(i+1),arm_name.c_str(),desired_pose.header.frame_id.c_str(),goal_x,goal_y,goal_z,gripper_goal_msg.x,gripper_goal_msg.y,gripper_goal_msg.z,gripper_goal_msg.w);
 
-      desired_pose.absolute_roll_tolerance = 0.08;
-      desired_pose.absolute_pitch_tolerance = 0.08;
-      desired_pose.absolute_yaw_tolerance = 0.08;
-      ROS_INFO("Attaching Pose to goal");
-      arm_navigation_msgs::addGoalConstraintToMoveArmGoal(desired_pose,goalA);
-      
+    desired_pose.pose.orientation.x = gripper_goal_msg.x;
+    desired_pose.pose.orientation.y = gripper_goal_msg.y;
+    desired_pose.pose.orientation.z = gripper_goal_msg.z;
+    desired_pose.pose.orientation.w = gripper_goal_msg.w;
+
+    desired_pose.absolute_position_tolerance.x = 0.01;
+    desired_pose.absolute_position_tolerance.y = 0.01;
+    desired_pose.absolute_position_tolerance.z = 0.01;
+
+    desired_pose.absolute_roll_tolerance = 0.08;
+    desired_pose.absolute_pitch_tolerance = 0.08;
+    desired_pose.absolute_yaw_tolerance = 0.08;
+    ROS_INFO("Attaching Pose to goal");
+    arm_navigation_msgs::addGoalConstraintToMoveArmGoal(desired_pose,goalA);
+  
   }
  
   // ph.param<double>("goal_x",goal_x,0.75);

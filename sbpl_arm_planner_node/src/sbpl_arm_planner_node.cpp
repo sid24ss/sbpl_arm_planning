@@ -197,7 +197,7 @@ bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
   planner_->set_initialsolution_eps(sbpl_arm_env_.getEpsilon());
 
   //set search mode (true - settle with first solution)
-  search_mode_ = true;
+  search_mode_ = false;
   planner_->set_search_mode(search_mode_);
 
   if(!initChain(robot_description_))
@@ -690,6 +690,8 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
         if(print_path_)
           printPath(res.trajectory.joint_trajectory.points);
 
+        // visualizeArmPath();
+
         // Check if the last point in the trajectory satisfies the goal constraint
         if(!isGoalConstraintSatisfied(res.trajectory.joint_trajectory.points[res.trajectory.joint_trajectory.points.size()-1].positions, req.motion_plan_request.goal_constraints))
           ROS_WARN("[node] Uh Oh. Goal constraint isn't satisfied.");
@@ -760,8 +762,8 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
 {
   bool b_ret(false);
   int solution_cost;
-  std::vector<double>angles(num_joints_,0);
-  vector<int> solution_state_ids_v;
+  std::vector<double> angles(num_joints_,0);
+  std::vector<int> solution_state_ids_v;
 
   //reinitialize the search space
   planner_->force_planning_from_scratch();
@@ -777,6 +779,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   // vector<int> SIDV, CV;
   // sbpl_arm_env_.GetSuccs(solution_state_ids_v.back(),&SIDV, &CV);
   // solution_state_ids_v.back() = sbpl_arm_env_.EnvROBARM.goalHashEntry->stateID;
+  displayArmTrajectoryStates(solution_state_ids_v);
 
   //outputs debug information about the adaptive mprims
   sbpl_arm_env_.debugAdaptiveMotionPrims();
@@ -787,7 +790,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
     ROS_INFO("[plan] Initial Epsilon: %0.3f   Final Epsilon: %0.3f", planner_->get_initial_eps(),planner_->get_final_epsilon());
     arm_path.resize(solution_state_ids_v.size()+1);
     for(size_t i=0; i < solution_state_ids_v.size(); i++)
-    {       
+    {
       arm_path[i].positions.resize(num_joints_);
       sbpl_arm_env_.StateID2Angles(solution_state_ids_v[i], angles);
 
@@ -1108,6 +1111,46 @@ void SBPLArmPlannerNode::displayARAStarStates()
 
   ROS_INFO("[node] displaying %d expanded states.\n",int(expanded_states.size()));
 }
+
+void SBPLArmPlannerNode::displayArmTrajectoryStates(std::vector<int> &solution_state_ids_v)
+{
+  std::vector<std::vector<double> > arm_trajectory_states;
+  std::vector<double> expanded_color(4,1);
+  std::vector<geometry_msgs::Point> arm_trajectory_points;
+  expanded_color[0] = 0.5;
+  expanded_color[2] = 0;
+
+  sbpl_arm_env_.getArmTrajectoryStates(solution_state_ids_v,&(arm_trajectory_states));
+
+  if(!arm_trajectory_states.empty())
+  {
+    arm_trajectory_points.resize(arm_trajectory_states.size());
+    for (int i = 0; i < arm_trajectory_states.size(); ++i)
+    {
+      arm_trajectory_points[i].x = arm_trajectory_states[i][0];
+      arm_trajectory_points[i].y = arm_trajectory_states[i][1];
+      arm_trajectory_points[i].z = arm_trajectory_states[i][2];
+    }
+    std::vector<std::vector<double> > detailed_color(2);
+    detailed_color[0].resize(4,0);
+    detailed_color[0][0] = 0;
+    detailed_color[0][1] = 0;
+    detailed_color[0][2] = 1;
+    detailed_color[0][3] = 1;
+
+    detailed_color[1].resize(4,0);
+    detailed_color[1][0] = 0;
+    detailed_color[1][1] = 0;
+    detailed_color[1][2] = 1;
+    detailed_color[1][3] = 1;
+
+    aviz_->visualizeDetailedStates(arm_trajectory_states, detailed_color,"arm_trajectory_states",0.01);
+    aviz_->visualizeLine(arm_trajectory_points, "path_line", 1, 240, 0.01);
+  }
+
+  ROS_INFO("[node] displaying %d arm trajectory states.\n",int(arm_trajectory_states.size()));
+}
+
 
 void SBPLArmPlannerNode::visualizeGoalPosition(const arm_navigation_msgs::Constraints &goal_pose)
 {

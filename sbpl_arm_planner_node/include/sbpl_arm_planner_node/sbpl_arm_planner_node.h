@@ -232,6 +232,9 @@ namespace sbpl_arm_planner
       /** \brief Display states expanded by ARA* search */
       void displayARAStarStates();
 
+      /** \brief Display the states that are finally in the arm trajectory */
+      void displayArmTrajectoryStates(std::vector<int> &solution_state_ids_v);
+
       /* \brief Visualize the collision model of the attached object */
       void visualizeAttachedObject(trajectory_msgs::JointTrajectory &traj_msg, int throttle);
 

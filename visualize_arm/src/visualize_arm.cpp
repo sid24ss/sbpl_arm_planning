@@ -1311,7 +1311,7 @@ void VisualizeArm::visualizeDetailedStates(const std::vector<std::vector<double>
     marker_array.markers.resize(marker_array.markers.size()+1);
     marker_array.markers[mind].header.frame_id = reference_frame_;
     marker_array.markers[mind].header.stamp = ros::Time::now();
-    marker_array.markers[mind].ns = "expanded_states";
+    marker_array.markers[mind].ns = name.c_str();
     marker_array.markers[mind].id = mind;
     marker_array.markers[mind].type = visualization_msgs::Marker::CUBE;
     marker_array.markers[mind].action =  visualization_msgs::Marker::ADD;

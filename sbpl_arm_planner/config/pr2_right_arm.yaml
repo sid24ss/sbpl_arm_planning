@@ -1,5 +1,5 @@
 planner:
-  epsilon: 100
+  epsilon: 1.0
   verbose: true
   use_dijkstra_heuristic: true
   use_research_heuristic: false

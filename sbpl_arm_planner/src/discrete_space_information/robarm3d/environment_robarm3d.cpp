@@ -412,7 +412,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
 
     int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
-    // Sid: check if this state meets all the goal criteria
+    // Sid: check if this state meets any of the goal criteria- is this the right thing to do?
     for(int s = 0; s < EnvROBARMCfg.EndEffGoals.size(); ++s)
     {
       final_mp_cost = 0;
@@ -899,13 +899,13 @@ bool EnvironmentROBARM3D::isGoalPosition(const std::vector<double> &pose, const 
           fabs(pose[1]-goal.pos[1]) <= goal.pos_tolerance[1] && 
           fabs(pose[2]-goal.pos[2]) <= goal.pos_tolerance[2])
       {
-        ROS_INFO("Position constraint is satisfied! goal: %u, %u, %u", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
+        ROS_DEBUG("Position constraint is satisfied! goal: %u, %u, %u", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
         //log the amount of time required for the search to get close to the goal
         if(!near_goal)
         {
           time_to_goal_region = (clock() - starttime) / (double)CLOCKS_PER_SEC;
           near_goal = true;
-          ROS_INFO("Search is at %0.2f %0.2f %0.2f, within %0.3fm of the goal (%0.2f %0.2f %0.2f) after %.4f sec. (after %d expansions)\n", pose[0],pose[1],pose[2],goal.pos_tolerance[0], goal.pos[0], goal.pos[1], goal.pos[2], time_to_goal_region,(int)expanded_states.size());
+          ROS_DEBUG("Search is at %0.2f %0.2f %0.2f, within %0.3fm of the goal (%0.2f %0.2f %0.2f) after %.4f sec. (after %d expansions)\n", pose[0],pose[1],pose[2],goal.pos_tolerance[0], goal.pos[0], goal.pos[1], goal.pos[2], time_to_goal_region,(int)expanded_states.size());
           EnvROBARMCfg.num_expands_to_position_constraint = expanded_states.size();
         }
         
@@ -923,12 +923,10 @@ bool EnvironmentROBARM3D::isGoalPosition(const std::vector<double> &pose, const 
         } 
       }
 
-      // Call the IK Checker only if the planner is within the ik_distance threshold of the IK. It returns false anyway, but the issue is that it uses getDist. getDist is going to give close to 0 because of multiple goals.
-
+      // The IK Solver will not solve if the goal state is not within a particular threshold.
       if(prms_.use_ik_)
       {
         //try to reach orientation constraint with IK
-        ROS_INFO("Calling IK with goal: %u, %u, %u", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
         if(isGoalStateWithIK(pose,goal,jnt_angles))
         {
           EnvROBARMCfg.solved_by_ik++;
@@ -961,9 +959,19 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, con
     grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
     int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
+    // Doesn't seem to work; the getDist function returns negative distances (must investigate why).
     if(dijkstra_->getDist(endeff_short[0],endeff_short[1],endeff_short[2]) > prms_.solve_for_ik_thresh_)
       return false;
   }
+
+  // Check if within a particular distance. If not, return.
+  double edist_from_goal = fabs(sqrt((pose[0] - goal.pos[0])*(pose[0] - goal.pos[0]) + (pose[1] - goal.pos[1])*(pose[1] - goal.pos[1]) + (pose[2] - goal.pos[2])*(pose[2] - goal.pos[2])));
+  SBPL_INFO("[isGoalStateWithIK] Distance from goal: %4.4f; threshold %4.4f",edist_from_goal,prms_.solve_for_ik_thresh_m_);
+  if (edist_from_goal > prms_.solve_for_ik_thresh_m_){
+    return false;
+  }
+
+  // ROS_INFO("Checking IK with goal: %u, %u, %u; pose: %3.3f,%3.3f,%3.3f,", goal.xyz[0],goal.xyz[1],goal.xyz[2], pose[0],pose[1],pose[2]);
 
   EnvROBARMCfg.ik_solution=jnt_angles;
 
@@ -1519,6 +1527,20 @@ void EnvironmentROBARM3D::getExpandedStates(std::vector<std::vector<double> >* a
     arm_->getPlanningJointPose(angles,state);
     state[6] = EnvROBARM.StateID2CoordTable[expanded_states[i]]->heur;
     ara_states->push_back(state);
+  }
+}
+
+void EnvironmentROBARM3D::getArmTrajectoryStates(const std::vector<int> &solution_state_ids_v, std::vector<std::vector<double> >* arm_trajectory_states)
+{
+  std::vector<double> angles(arm_->num_joints_,0);
+  std::vector<double>state(7,0);
+
+  for(unsigned int i = 0; i < solution_state_ids_v.size(); ++i)
+  {
+    StateID2Angles(solution_state_ids_v[i],angles);
+    arm_->getPlanningJointPose(angles,state);
+    state[6] = EnvROBARM.StateID2CoordTable[solution_state_ids_v[i]]->heur;
+    arm_trajectory_states->push_back(state);
   }
 }
 

@@ -327,6 +327,12 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     */
     void getExpandedStates(std::vector<std::vector<double> >* ara_states);
 
+    /**
+     * @brief Returns the pose of the states that are finally in the arm trajectory.
+     * @param a pointer to a vector of the poses of the states that are in the trajectory.
+    */
+    void getArmTrajectoryStates(const std::vector<int> &solution_state_ids_v, std::vector<std::vector<double> >* arm_trajectory_states);
+
     void setReferenceFrameTransform(KDL::Frame f, std::string &name);
 
     SBPLCollisionSpace* getCollisionSpace() const;

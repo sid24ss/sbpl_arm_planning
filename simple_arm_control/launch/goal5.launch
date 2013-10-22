@@ -9,7 +9,7 @@
 	   <param name="goal_roll" value="2.138"  type="double"/>
 	   <param name="goal_yaw" value="1.362"    type="double"/>
 	   <param name="goal_pitch" value="-0.355"  type="double"/>
-     <param name="planning_duration" value="2.0" type="double" />
+     <param name="planning_duration" value="20.0" type="double" />
 
 	</node>
 </launch>
