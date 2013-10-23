@@ -322,21 +322,21 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
   SuccIDV->clear();
   CostV->clear();
 
-  //goal state should be absorbing
+  //goal state should be absorbing; TODO: Absorb for multiple goal states? How?
   if(SourceStateID == EnvROBARM.goalHashEntry->stateID)
     return;
 
   //get X, Y, Z for the state
   EnvROBARM3DHashEntry_t* HashEntry = EnvROBARM.StateID2CoordTable[SourceStateID];
 
-  //default coords of successor
+  //default coords of successor - set as the coords of the current state.
   for(i = 0; i < arm_->num_joints_; i++)
     succcoord[i] = HashEntry->coord[i];
 
   //used for interpolated collision check
   coordToAngles(succcoord, source_angles);
 
-  //check if cell is close to enough to goal to use higher resolution actions
+  //check if cell is close enough to goal to use higher resolution actions
   // TODO: Check distance to all goals. Is this captured in the Dijkstra costs itself?
   int dist_to_goal = getDijkstraDistToGoal(HashEntry->xyz[0],HashEntry->xyz[1],HashEntry->xyz[2]);
 
@@ -371,7 +371,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
         succcoord[a] = ((int)(HashEntry->coord[a] + int(prms_.mprims_[i][a])) % EnvROBARMCfg.anglevals[a]);
     }
 
-    //get the successor
+    //get the successor. Set cost to 0, and that it is not a goal.
     EnvROBARM3DHashEntry_t* OutHashEntry;
     bool bSuccisGoal = false;
     final_mp_cost = 0;
@@ -416,6 +416,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
     for(int s = 0; s < EnvROBARMCfg.EndEffGoals.size(); ++s)
     {
       final_mp_cost = 0;
+      bSuccisGoal = false;
       if(isGoalPosition(pose,EnvROBARMCfg.EndEffGoals[s], angles, final_mp_cost))
       {
         bSuccisGoal = true;
@@ -430,6 +431,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
         EnvROBARM.goalHashEntry->dist = dist;
 
         SBPL_INFO("[GetSuccs] Goal successor is generated. SourceStateID: %d (distance to nearest obstacle: %0.2fm); Grid coords: %d %d %d",SourceStateID,  (double)dist*grid_->getResolution(), endeff[0],endeff[1],endeff[2]);
+        break;
       }
     }
 
@@ -629,6 +631,8 @@ void EnvironmentROBARM3D::discretizeAngles()
 
 int EnvironmentROBARM3D::cost(EnvROBARM3DHashEntry_t* HashEntry1, EnvROBARM3DHashEntry_t* HashEntry2, bool bState2IsGoal)
 {
+  // bState2IsGoal doesn't matter.
+
   if(prms_.use_uniform_cost_)
     return prms_.cost_multiplier_;
   else
@@ -959,14 +963,16 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, con
     grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
     int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
-    // Doesn't seem to work; the getDist function returns negative distances (must investigate why).
+    // Returns the same as the edist calculated below.
     if(dijkstra_->getDist(endeff_short[0],endeff_short[1],endeff_short[2]) > prms_.solve_for_ik_thresh_)
       return false;
   }
 
   // Check if within a particular distance. If not, return.
   double edist_from_goal = fabs(sqrt((pose[0] - goal.pos[0])*(pose[0] - goal.pos[0]) + (pose[1] - goal.pos[1])*(pose[1] - goal.pos[1]) + (pose[2] - goal.pos[2])*(pose[2] - goal.pos[2])));
-  SBPL_INFO("[isGoalStateWithIK] Distance from goal: %4.4f; threshold %4.4f",edist_from_goal,prms_.solve_for_ik_thresh_m_);
+  int endeff[3];
+  grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
+  SBPL_INFO("[isGoalStateWithIK] Distance from goal: %4.4f; threshold %4.4f; Dijkstra distance: %4.4f",edist_from_goal,prms_.solve_for_ik_thresh_m_,dijkstra_->getDist(endeff[0],endeff[1],endeff[2]));
   if (edist_from_goal > prms_.solve_for_ik_thresh_m_){
     return false;
   }
@@ -1539,7 +1545,8 @@ void EnvironmentROBARM3D::getArmTrajectoryStates(const std::vector<int> &solutio
   {
     StateID2Angles(solution_state_ids_v[i],angles);
     arm_->getPlanningJointPose(angles,state);
-    state[6] = EnvROBARM.StateID2CoordTable[solution_state_ids_v[i]]->heur;
+    // state[6] = EnvROBARM.StateID2CoordTable[solution_state_ids_v[i]]->heur;
+    state[6] = getEndEffectorHeuristic(solution_state_ids_v[i],1);
     arm_trajectory_states->push_back(state);
   }
 }
@@ -1583,7 +1590,7 @@ void EnvironmentROBARM3D::computeCostPerCell()
 
   prms_.cost_per_meter_ = int(prms_.cost_per_cell_ / gridcell_size);
 
-  SBPL_DEBUG("[env] cost per cell: %d cost per meter: %d",prms_.cost_per_cell_,prms_.cost_per_meter_);
+  SBPL_INFO("[env] cost per cell: %d cost per meter: %d",prms_.cost_per_cell_,prms_.cost_per_meter_);
 }
 
 double EnvironmentROBARM3D::getDistToClosestGoal(double *xyz, int* goal_num)
@@ -1724,11 +1731,11 @@ std::vector<std::vector<double> > EnvironmentROBARM3D::getShortestPath()
       return dpath;
     }
 
-    for(int i=0; i < (int)path.size(); ++i)
-    {
-      grid_->gridToWorld(path[i][0], path[i][1], path[i][2], waypoint[0], waypoint[1], waypoint[2]);
-      dpath.push_back(waypoint);
-    }
+    // for(int i=0; i < (int)path.size(); ++i)
+    // {
+    //   grid_->gridToWorld(path[i][0], path[i][1], path[i][2], waypoint[0], waypoint[1], waypoint[2]);
+    //   dpath.push_back(waypoint);
+    // }
   }
   //compute a straight line path to goal
   else
@@ -2010,10 +2017,10 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID)
   //ROS_ERROR("heur_xyz: %0.3f %0.3f %0.3f", FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
 
   //get distance heuristic
-  if(prms_.use_dijkstra_heuristic_)
-    heur = dijkstra_->getDist(temp[0],temp[1],temp[2]);
-  else
-    heur = edist_to_goal_m * prms_.cost_per_meter_;
+  // if(prms_.use_dijkstra_heuristic_)
+  heur = dijkstra_->getDist(temp[0],temp[1],temp[2]);
+  // else
+    // heur = edist_to_goal_m * prms_.cost_per_meter_;
 
   //storing heuristic now for debugging 5/20/10
   FromHashEntry->heur = heur;

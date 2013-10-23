@@ -1119,6 +1119,8 @@ void SBPLArmPlannerNode::displayArmTrajectoryStates(std::vector<int> &solution_s
   std::vector<geometry_msgs::Point> arm_trajectory_points;
   expanded_color[0] = 0.5;
   expanded_color[2] = 0;
+  geometry_msgs::Pose pose;
+  std::vector<int> pos;
 
   sbpl_arm_env_.getArmTrajectoryStates(solution_state_ids_v,&(arm_trajectory_states));
 
@@ -1130,6 +1132,14 @@ void SBPLArmPlannerNode::displayArmTrajectoryStates(std::vector<int> &solution_s
       arm_trajectory_points[i].x = arm_trajectory_states[i][0];
       arm_trajectory_points[i].y = arm_trajectory_states[i][1];
       arm_trajectory_points[i].z = arm_trajectory_states[i][2];
+      pose.position.x = arm_trajectory_points[i].x;
+      pose.position.y = arm_trajectory_points[i].y;
+      pose.position.z = arm_trajectory_points[i].z;
+      std::stringstream ssTemp;
+      std::string sTemp;
+      ssTemp << arm_trajectory_states[i][6];
+      sTemp = ssTemp.str();
+      aviz_->visualizeText(pose, sTemp.c_str(), "heuristic_value", i, 0);
     }
     std::vector<std::vector<double> > detailed_color(2);
     detailed_color[0].resize(4,0);
@@ -1161,10 +1171,10 @@ void SBPLArmPlannerNode::visualizeGoalPosition(const arm_navigation_msgs::Constr
     poses[i].position = goal_pose.position_constraints[i].position;
     poses[i].orientation = goal_pose.orientation_constraints[i].orientation;
   }
-  if (int(poses.size() == 1))
-    aviz_->visualizePose(poses[0],"goal_pose");
-  else
-    aviz_->visualizePoses(poses,"goal_pose");
+  // if (int(poses.size() == 1))
+  //   aviz_->visualizePose(poses[0],"goal_pose");
+  // else
+  aviz_->visualizePoses(poses,"goal_pose");
   ROS_INFO("[node] Publishing %d goal marker visualizations.",int(goal_pose.position_constraints.size()));
 }
 

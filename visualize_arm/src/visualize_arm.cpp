@@ -1389,9 +1389,9 @@ void VisualizeArm::visualizeText(geometry_msgs::Pose pose, std::string text, std
   marker.id = id;
   marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
   marker.action = visualization_msgs::Marker::ADD;
-  marker.scale.x = 0.2;
-  marker.scale.y = 0.2;
-  marker.scale.z = 0.2;
+  marker.scale.x = 0.01;
+  marker.scale.y = 0.01;
+  marker.scale.z = 0.01;
   marker.pose = pose;
   
   marker.color.r = r;
@@ -1399,7 +1399,7 @@ void VisualizeArm::visualizeText(geometry_msgs::Pose pose, std::string text, std
   marker.color.b = b;
   marker.color.a = 1.0;
   marker.text = text;
-  marker.lifetime = ros::Duration(0.0);
+  marker.lifetime = ros::Duration(180.0);
 
   marker_publisher_.publish(marker);
 }

@@ -3,7 +3,7 @@
      
      <param name="planner_service_name" value="sbpl_planning/plan_path"/>
 
-	   <param name="number_of_goals" value="3"    type="double"/>
+	   <param name="number_of_goals" value="5"    type="double"/>
 
 	   <!-- Goal 4 -->
    	   <param name="goal_x_0" value="0.293"    type="double"/>
@@ -32,6 +32,24 @@
 	   <param name="goal_roll_2" value="-1.54"  type="double"/>
 	   <param name="goal_yaw_2" value="0.0"    type="double"/>
 	   <param name="goal_pitch_2" value="-0.672"  type="double"/>
+
+	   <!-- Goal 3 -->
+	   <param name="goal_x_3" value="0.532"    type="double"/>
+	   <param name="goal_y_3" value="-0.48"  type="double"/>
+	   <param name="goal_z_3" value="0.4862"     type="double"/>
+
+	   <param name="goal_roll_3" value="1.0"  type="double"/>
+	   <param name="goal_yaw_3" value="0.5"    type="double"/>
+	   <param name="goal_pitch_3" value="0.2"  type="double"/>
+
+		<!-- Goal 5 -->
+	   <param name="goal_x_4" value="0.662"    type="double"/>
+	   <param name="goal_y_4" value="0.19"  type="double"/>
+	   <param name="goal_z_4" value="0.621"     type="double"/>
+
+	   <param name="goal_roll_4" value="2.138"  type="double"/>
+	   <param name="goal_yaw_4" value="1.362"    type="double"/>
+	   <param name="goal_pitch_4" value="-0.355"  type="double"/>
      
      <param name="planning_duration" value="20.0" type="double" />
 

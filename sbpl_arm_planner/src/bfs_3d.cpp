@@ -210,6 +210,10 @@ bool BFS3D::runBFS()
   }
 
   dist_length_ =  (dimX_-1) + (dimY_-1)*(dimX_) + (dimZ_-1)*(dimX_)*(dimY_) + 1;
+  SBPL_INFO("Size of dist_ : %d",dist_.size());
+
+  // Added temporarily so that we force recomputation of the heuristic values. This is helpful when we change the goal states.
+  dist_.clear();
   dist_.resize(dist_length_);
 
   search3DwithFifo();
@@ -252,7 +256,7 @@ void BFS3D::search3DwithFifo()
     int z = goal_[i][2];
     //statespace[x][y][z].g = 0;
     // TODO: Set cost to each goal as the initial value. Not as 1.
-    dist_[xyzToIndex(x,y,z)] = 1; //Not 0 for theoretical reasons - Max (what?)
+    dist_[xyzToIndex(x,y,z)] = 0; //Max's suggestion is to not 0 for theoretical reasons (what?)
     q_->insert(x,y,z);
   }
 }
@@ -277,10 +281,16 @@ int BFS3D::getDist(int x, int y, int z)
           isValidCell(newX,newY,newZ) && //is not an obstacle
           (dist_[xyzToIndex(newX,newY,newZ)] == INFINITE_COST)){ //and has not already been put in the queue
         q_->insert(newX,newY,newZ);
-        dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_1_move_;
+        if (x != newX && y != newY && z != newZ)
+          dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_sqrt3_move_;
+        else if ((y != newY && z != newZ) ||
+            (x != newX && z != newZ) ||
+            (x != newX && y != newY))
+          dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_sqrt2_move_;
+        else
+          dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_1_move_;
       }
     }
-    
     d = dist_[idx];
   }
   return d;
