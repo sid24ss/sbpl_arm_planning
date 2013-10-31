@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build
 
 # Utility rule file for test-future.
 
@@ -57,6 +57,6 @@ CMakeFiles/test-future.dir/clean:
 .PHONY : CMakeFiles/test-future.dir/clean
 
 CMakeFiles/test-future.dir/depend:
-	cd /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles/test-future.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles/test-future.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/test-future.dir/depend
 

@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/visualize_arm.dir/depend.make
@@ -70,19 +70,19 @@ CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/share/actionli
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/share/std_msgs/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/share/trajectory_msgs/manifest.xml
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/share/visualization_msgs/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/robot_model/colladadom/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf_interface/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf_parser/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/robot_model/collada_parser/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf/manifest.xml
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -96,7 +96,7 @@ CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/common_
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -105,33 +105,33 @@ CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/laser_p
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/robot_model/kdl_parser/manifest.xml
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/visualize_arm.dir/src/visualize_arm.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/visualize_arm.dir/src/visualize_arm.o -c /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/src/visualize_arm.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/visualize_arm.dir/src/visualize_arm.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/src/visualize_arm.cpp
 
 CMakeFiles/visualize_arm.dir/src/visualize_arm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/visualize_arm.dir/src/visualize_arm.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/src/visualize_arm.cpp > CMakeFiles/visualize_arm.dir/src/visualize_arm.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/src/visualize_arm.cpp > CMakeFiles/visualize_arm.dir/src/visualize_arm.i
 
 CMakeFiles/visualize_arm.dir/src/visualize_arm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/visualize_arm.dir/src/visualize_arm.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/src/visualize_arm.cpp -o CMakeFiles/visualize_arm.dir/src/visualize_arm.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/src/visualize_arm.cpp -o CMakeFiles/visualize_arm.dir/src/visualize_arm.s
 
 CMakeFiles/visualize_arm.dir/src/visualize_arm.o.requires:
 .PHONY : CMakeFiles/visualize_arm.dir/src/visualize_arm.o.requires
@@ -167,6 +167,6 @@ CMakeFiles/visualize_arm.dir/clean:
 .PHONY : CMakeFiles/visualize_arm.dir/clean
 
 CMakeFiles/visualize_arm.dir/depend:
-	cd /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build/CMakeFiles/visualize_arm.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build/CMakeFiles/visualize_arm.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/visualize_arm.dir/depend
 

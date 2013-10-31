@@ -20,7 +20,7 @@ arm_navigation_msgs/CollisionObject.h
 arm_navigation_msgs/Shape.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp
 sbpl_arm_planner_node/add_objects_to_map.h
 -
 

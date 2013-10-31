@@ -3,7 +3,12 @@
 
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o
  ../include/sbpl_arm_planner/bfs_3d.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionMap.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientedBoundingBox.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/distance_field.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/propagation_distance_field.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/voxel_grid.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp
  /opt/ros/fuerte/include/XmlRpcDecl.h
  /opt/ros/fuerte/include/XmlRpcValue.h
  /opt/ros/fuerte/include/geometry_msgs/Point.h
@@ -66,11 +71,6 @@ CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o
  /opt/ros/fuerte/include/std_msgs/ColorRGBA.h
  /opt/ros/fuerte/include/std_msgs/Header.h
  /opt/ros/fuerte/include/visualization_msgs/Marker.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionMap.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientedBoundingBox.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/distance_field.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/propagation_distance_field.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/voxel_grid.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btMatrix3x3.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btMinMax.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btQuadWord.h
@@ -94,12 +94,43 @@ CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environm
  ../include/sbpl_arm_planner/robarm3d/environment_robarm3d.h
  ../include/sbpl_arm_planner/sbpl_arm_model.h
  ../include/sbpl_arm_planner/sbpl_arm_planner_params.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/bresenham.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/occupancy_grid.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_model.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_space.h
- /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/include/visualize_arm/visualize_arm.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/ArmNavigationErrorCodes.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionMap.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionObject.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionObjectOperation.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Constraints.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/DisplayTrajectory.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointLimits.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointState.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointTrajectory.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointTrajectoryPoint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientationConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientedBoundingBox.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/PositionConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotState.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotTrajectory.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Shape.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/VisibilityConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/include/geometric_shapes/bodies.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/include/geometric_shapes/shape_operations.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/include/geometric_shapes/shapes.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/KinematicSolverInfo.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/PositionIKRequest.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetConstraintAwarePositionIK.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetKinematicSolverInfo.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionFK.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionIK.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/include/planning_environment/monitors/joint_state_monitor.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/distance_field.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/propagation_distance_field.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/voxel_grid.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/bresenham.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/occupancy_grid.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_model.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_space.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/include/visualize_arm/visualize_arm.h
  /opt/ros/fuerte/include/XmlRpcDecl.h
  /opt/ros/fuerte/include/XmlRpcValue.h
  /opt/ros/fuerte/include/actionlib/action_definition.h
@@ -199,37 +230,6 @@ CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environm
  /opt/ros/fuerte/include/trajectory_msgs/JointTrajectoryPoint.h
  /opt/ros/fuerte/include/visualization_msgs/Marker.h
  /opt/ros/fuerte/include/visualization_msgs/MarkerArray.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/ArmNavigationErrorCodes.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionMap.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionObject.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionObjectOperation.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Constraints.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/DisplayTrajectory.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointLimits.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointState.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointTrajectory.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointTrajectoryPoint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientationConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientedBoundingBox.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/PositionConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotState.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotTrajectory.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Shape.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/VisibilityConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/include/geometric_shapes/bodies.h
- /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/include/geometric_shapes/shape_operations.h
- /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/include/geometric_shapes/shapes.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/KinematicSolverInfo.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/PositionIKRequest.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetConstraintAwarePositionIK.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetKinematicSolverInfo.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionFK.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionIK.h
- /opt/ros/fuerte/stacks/arm_navigation/planning_environment/include/planning_environment/monitors/joint_state_monitor.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/distance_field.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/propagation_distance_field.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/voxel_grid.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btMatrix3x3.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btMinMax.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btQuadWord.h
@@ -510,12 +510,43 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o
  ../include/sbpl_arm_planner/pr2/orientation_solver.h
  ../include/sbpl_arm_planner/pr2/sbpl_math.h
  ../include/sbpl_arm_planner/sbpl_arm_model.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/orientation_solver.cpp
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/bresenham.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/occupancy_grid.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_model.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_space.h
- /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/include/visualize_arm/visualize_arm.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/ArmNavigationErrorCodes.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionMap.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionObject.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionObjectOperation.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Constraints.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/DisplayTrajectory.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointLimits.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointState.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointTrajectory.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointTrajectoryPoint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientationConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientedBoundingBox.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/PositionConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotState.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotTrajectory.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Shape.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/VisibilityConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/include/geometric_shapes/bodies.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/include/geometric_shapes/shape_operations.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/include/geometric_shapes/shapes.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/KinematicSolverInfo.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/PositionIKRequest.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetConstraintAwarePositionIK.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetKinematicSolverInfo.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionFK.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionIK.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/include/planning_environment/monitors/joint_state_monitor.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/distance_field.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/propagation_distance_field.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/voxel_grid.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/orientation_solver.cpp
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/bresenham.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/occupancy_grid.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_model.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_space.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/include/visualize_arm/visualize_arm.h
  /opt/ros/fuerte/include/XmlRpcDecl.h
  /opt/ros/fuerte/include/XmlRpcValue.h
  /opt/ros/fuerte/include/actionlib/action_definition.h
@@ -615,37 +646,6 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o
  /opt/ros/fuerte/include/trajectory_msgs/JointTrajectoryPoint.h
  /opt/ros/fuerte/include/visualization_msgs/Marker.h
  /opt/ros/fuerte/include/visualization_msgs/MarkerArray.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/ArmNavigationErrorCodes.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionMap.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionObject.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/CollisionObjectOperation.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Constraints.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/DisplayTrajectory.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointLimits.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointState.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointTrajectory.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointTrajectoryPoint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientationConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientedBoundingBox.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/PositionConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotState.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotTrajectory.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Shape.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/VisibilityConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/include/geometric_shapes/bodies.h
- /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/include/geometric_shapes/shape_operations.h
- /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/include/geometric_shapes/shapes.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/KinematicSolverInfo.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/PositionIKRequest.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetConstraintAwarePositionIK.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetKinematicSolverInfo.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionFK.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionIK.h
- /opt/ros/fuerte/stacks/arm_navigation/planning_environment/include/planning_environment/monitors/joint_state_monitor.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/distance_field.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/propagation_distance_field.h
- /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/voxel_grid.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btMatrix3x3.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btMinMax.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btQuadWord.h
@@ -899,13 +899,29 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o
  ../include/sbpl_arm_planner/pr2/pr2_workspace.h
  ../include/sbpl_arm_planner/pr2/sbpl_math.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/pr2_workspace.cpp
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/pr2_workspace.cpp
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o
  ../include/sbpl_arm_planner/pr2/sbpl_math.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/sbpl_math.cpp
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/sbpl_math.cpp
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o
  ../include/sbpl_arm_planner/sbpl_arm_model.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_model.cpp
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/ArmNavigationErrorCodes.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Constraints.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointLimits.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointState.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientationConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/PositionConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotState.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Shape.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/VisibilityConstraint.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/KinematicSolverInfo.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/PositionIKRequest.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetConstraintAwarePositionIK.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetKinematicSolverInfo.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionFK.h
+ /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionIK.h
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_model.cpp
  /opt/ros/fuerte/include/XmlRpcDecl.h
  /opt/ros/fuerte/include/XmlRpcValue.h
  /opt/ros/fuerte/include/geometry_msgs/Point.h
@@ -980,22 +996,6 @@ CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o
  /opt/ros/fuerte/include/sensor_msgs/PointCloud.h
  /opt/ros/fuerte/include/std_msgs/Empty.h
  /opt/ros/fuerte/include/std_msgs/Header.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/ArmNavigationErrorCodes.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Constraints.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/JointLimits.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/MultiDOFJointState.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/OrientationConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/PositionConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/RobotState.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/Shape.h
- /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/VisibilityConstraint.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/KinematicSolverInfo.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/cpp/include/kinematics_msgs/PositionIKRequest.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetConstraintAwarePositionIK.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetKinematicSolverInfo.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionFK.h
- /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/GetPositionIK.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btMatrix3x3.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btMinMax.h
  /opt/ros/fuerte/stacks/bullet/include/LinearMath/btQuadWord.h
@@ -1178,7 +1178,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o
  /usr/local/include/sbpl/config.h
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o
  ../include/sbpl_arm_planner/sbpl_arm_planner_params.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_planner_params.cpp
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_planner_params.cpp
  /opt/ros/fuerte/include/XmlRpcDecl.h
  /opt/ros/fuerte/include/XmlRpcValue.h
  /opt/ros/fuerte/include/ros/advertise_options.h

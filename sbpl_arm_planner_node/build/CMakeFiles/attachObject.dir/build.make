@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/attachObject.dir/depend.make
@@ -110,12 +110,12 @@ CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuert
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /home/siddharth/ros-packages/sandbox/planning_environment/manifest.xml
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/manifest.xml
+CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/manifest.xml
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
@@ -128,17 +128,17 @@ CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuert
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/attach_object_to_right_gripper.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/attach_object_to_right_gripper.cpp
 
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/attach_object_to_right_gripper.cpp > CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/attach_object_to_right_gripper.cpp > CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.i
 
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/attach_object_to_right_gripper.cpp -o CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/attach_object_to_right_gripper.cpp -o CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.s
 
 CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o.requires:
 .PHONY : CMakeFiles/attachObject.dir/src/attach_object_to_right_gripper.o.requires
@@ -174,6 +174,6 @@ CMakeFiles/attachObject.dir/clean:
 .PHONY : CMakeFiles/attachObject.dir/clean
 
 CMakeFiles/attachObject.dir/depend:
-	cd /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/attachObject.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/attachObject.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/attachObject.dir/depend
 

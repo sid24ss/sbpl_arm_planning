@@ -52,7 +52,25 @@ kinematics_msgs/GetPositionIK.h
 kinematics_msgs/GetPositionFK.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/bfs_3d.h
+/home/siddharth/ros-packages/sandbox/planning_environment/include/planning_environment/monitors/joint_state_monitor.h
+ros/ros.h
+-
+sensor_msgs/JointState.h
+-
+urdf/model.h
+-
+boost/thread/mutex.hpp
+-
+boost/thread/condition.hpp
+-
+vector
+-
+string
+-
+map
+-
+
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/bfs_3d.h
 iostream
 -
 vector
@@ -74,7 +92,7 @@ sbpl/config.h
 distance_field/propagation_distance_field.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/pr2/orientation_solver.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/pr2/orientation_solver.h
 stdio.h
 -
 iostream
@@ -88,7 +106,7 @@ sbpl_arm_planner/sbpl_arm_model.h
 sbpl_collision_checking/sbpl_collision_space.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/pr2/pr2_workspace.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/pr2/pr2_workspace.h
 iostream
 -
 fstream
@@ -102,13 +120,13 @@ math.h
 sbpl_arm_planner/pr2/sbpl_math.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/pr2/sbpl_math.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/pr2/sbpl_math.h
 math.h
 -
 vector
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/robarm3d/environment_robarm3d.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/robarm3d/environment_robarm3d.h
 time.h
 -
 stdio.h
@@ -150,7 +168,7 @@ sbpl_arm_planner/pr2/pr2_workspace.h
 sbpl_collision_checking/sbpl_collision_space.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/sbpl_arm_model.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/sbpl_arm_model.h
 string
 -
 map
@@ -178,7 +196,7 @@ urdf/model.h
 pr2_arm_kinematics/pr2_arm_ik_solver.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/sbpl_arm_planner_params.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/include/sbpl_arm_planner/sbpl_arm_planner_params.h
 iostream
 -
 string
@@ -198,7 +216,7 @@ sstream
 boost/algorithm/string.hpp
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/sbpl_arm_planner_node.cpp
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/sbpl_arm_planner_node.cpp
 sbpl_arm_planner_node/sbpl_arm_planner_node.h
 -
 algorithm
@@ -206,7 +224,7 @@ algorithm
 math.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/bresenham.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/bresenham.h
 vector
 -
 iostream
@@ -214,7 +232,7 @@ iostream
 math.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/occupancy_grid.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/occupancy_grid.h
 sys/stat.h
 -
 vector
@@ -240,7 +258,7 @@ distance_field/voxel_grid.h
 distance_field/propagation_distance_field.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_model.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_model.h
 ros/ros.h
 -
 iostream
@@ -268,7 +286,7 @@ kdl/frames.hpp
 kdl/chainfksolverpos_recursive.hpp
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_space.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/include/sbpl_collision_checking/sbpl_collision_space.h
 ros/ros.h
 -
 vector
@@ -306,7 +324,7 @@ visualize_arm/visualize_arm.h
 geometry_msgs/Point.h
 -
 
-/home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/include/visualize_arm/visualize_arm.h
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/include/visualize_arm/visualize_arm.h
 string
 -
 fstream
@@ -2445,24 +2463,6 @@ arm_navigation_msgs/RobotState.h
 /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/arm_navigation_msgs/RobotState.h
 arm_navigation_msgs/ArmNavigationErrorCodes.h
 /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/cpp/include/kinematics_msgs/arm_navigation_msgs/ArmNavigationErrorCodes.h
-
-/opt/ros/fuerte/stacks/arm_navigation/planning_environment/include/planning_environment/monitors/joint_state_monitor.h
-ros/ros.h
--
-sensor_msgs/JointState.h
--
-urdf/model.h
--
-boost/thread/mutex.hpp
--
-boost/thread/condition.hpp
--
-vector
--
-string
--
-map
--
 
 /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/include/distance_field/distance_field.h
 distance_field/voxel_grid.h

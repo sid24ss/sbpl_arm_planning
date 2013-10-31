@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/src/control_left_arm.cpp
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_left_arm.cpp
 ros/ros.h
 -
 pr2_controllers_msgs/JointTrajectoryAction.h

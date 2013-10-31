@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/sbpl_collision_checking.dir/depend.make
@@ -74,18 +74,18 @@ CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/ro
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -99,7 +99,7 @@ CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/c
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -108,33 +108,33 @@ CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/l
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/bresenham.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/bresenham.cpp
 
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_collision_checking.dir/src/bresenham.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/bresenham.cpp > CMakeFiles/sbpl_collision_checking.dir/src/bresenham.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/bresenham.cpp > CMakeFiles/sbpl_collision_checking.dir/src/bresenham.i
 
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_collision_checking.dir/src/bresenham.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/bresenham.cpp -o CMakeFiles/sbpl_collision_checking.dir/src/bresenham.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/bresenham.cpp -o CMakeFiles/sbpl_collision_checking.dir/src/bresenham.s
 
 CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o.requires:
 .PHONY : CMakeFiles/sbpl_collision_checking.dir/src/bresenham.o.requires
@@ -173,18 +173,18 @@ CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/sha
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -198,7 +198,7 @@ CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/sta
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -207,33 +207,33 @@ CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/sta
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/occupancy_grid.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/occupancy_grid.cpp
 
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/occupancy_grid.cpp > CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/occupancy_grid.cpp > CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.i
 
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/occupancy_grid.cpp -o CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/occupancy_grid.cpp -o CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.s
 
 CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o.requires:
 .PHONY : CMakeFiles/sbpl_collision_checking.dir/src/occupancy_grid.o.requires
@@ -272,18 +272,18 @@ CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuer
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -297,7 +297,7 @@ CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuer
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -306,33 +306,33 @@ CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuer
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles $(CMAKE_PROGRESS_3)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_model.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_model.cpp
 
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_model.cpp > CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_model.cpp > CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.i
 
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_model.cpp -o CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_model.cpp -o CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.s
 
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o.requires:
 .PHONY : CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_model.o.requires
@@ -371,18 +371,18 @@ CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuer
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -396,7 +396,7 @@ CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuer
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -405,33 +405,33 @@ CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuer
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles $(CMAKE_PROGRESS_4)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_space.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_space.cpp
 
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_space.cpp > CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_space.cpp > CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.i
 
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_space.cpp -o CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_space.cpp -o CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.s
 
 CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o.requires:
 .PHONY : CMakeFiles/sbpl_collision_checking.dir/src/sbpl_collision_space.o.requires
@@ -476,6 +476,6 @@ CMakeFiles/sbpl_collision_checking.dir/clean:
 .PHONY : CMakeFiles/sbpl_collision_checking.dir/clean
 
 CMakeFiles/sbpl_collision_checking.dir/depend:
-	cd /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles/sbpl_collision_checking.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/build/CMakeFiles/sbpl_collision_checking.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/sbpl_collision_checking.dir/depend
 

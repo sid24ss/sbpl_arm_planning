@@ -122,8 +122,12 @@ class BFS3D
      * @return true if it succeed and false otherwise */
     bool runBFS();
 
+    /** \brief get distance to the goal in cells from (x,y,z) for a particular independent heuristic */
+    int getDist(int x, int y, int z, int heur_id);
+
     /** \brief get distance to the goal in cells from (x,y,z) */
     int getDist(int x, int y, int z);
+
 
     /** \brief for debugging - print the occupancy grid to the terminal (beware poor formatting) */
     void printGrid();
@@ -170,6 +174,8 @@ class BFS3D
 
     int dist_length_;
     std::vector<int> dist_;
+    // std::vector<int> dist_length_independent_heuristics_;
+    std::vector<std::vector<int> > dist_independent_heuristics_;
 
     void reInitializeState3D(State3D* state);
     void initializeState3D(State3D* state, int x, int y, int z);
@@ -182,6 +188,7 @@ class BFS3D
     bool isValidCell(const int x, const int y, const int z);
 
     FIFO *q_;
+    std::vector<FIFO*> q_independent_heuristics_;
 };
 
 inline int BFS3D::xyzToIndex(int x, int y, int z)

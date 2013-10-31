@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/src/move_right_arm.cpp
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/move_right_arm.cpp
 ros/ros.h
 -
 actionlib/client/simple_action_client.h

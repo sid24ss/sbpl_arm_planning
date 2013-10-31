@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/src/move_right_arm_multiple_goals.cpp
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/move_right_arm_multiple_goals.cpp
 ros/ros.h
 -
 actionlib/client/simple_action_client.h
@@ -30,6 +30,8 @@ sensor_msgs/JointState.h
 kinematics_msgs/GetKinematicSolverInfo.h
 -
 kinematics_msgs/GetPositionFK.h
+-
+arm_navigation_msgs/FilterJointTrajectoryWithConstraints.h
 -
 
 /opt/ros/fuerte/include/XmlRpcDecl.h
@@ -2165,6 +2167,44 @@ arm_navigation_msgs/Shape.h
 /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/arm_navigation_msgs/Shape.h
 geometry_msgs/PoseStamped.h
 /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/cpp/include/arm_navigation_msgs/geometry_msgs/PoseStamped.h
+
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/FilterJointTrajectoryWithConstraints.h
+string
+-
+vector
+-
+map
+-
+ostream
+-
+ros/serialization.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/ros/serialization.h
+ros/builtin_message_traits.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/ros/builtin_message_traits.h
+ros/message_operations.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/ros/message_operations.h
+ros/time.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/ros/time.h
+ros/macros.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/ros/macros.h
+ros/assert.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/ros/assert.h
+ros/service_traits.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/ros/service_traits.h
+trajectory_msgs/JointTrajectory.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/trajectory_msgs/JointTrajectory.h
+arm_navigation_msgs/JointLimits.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/arm_navigation_msgs/JointLimits.h
+arm_navigation_msgs/RobotState.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/arm_navigation_msgs/RobotState.h
+arm_navigation_msgs/Constraints.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/arm_navigation_msgs/Constraints.h
+arm_navigation_msgs/Constraints.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/arm_navigation_msgs/Constraints.h
+trajectory_msgs/JointTrajectory.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/trajectory_msgs/JointTrajectory.h
+arm_navigation_msgs/ArmNavigationErrorCodes.h
+/opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/arm_navigation_msgs/ArmNavigationErrorCodes.h
 
 /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/cpp/include/arm_navigation_msgs/GetMotionPlan.h
 string

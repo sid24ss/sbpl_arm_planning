@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/control_right_arm.dir/depend.make
@@ -67,24 +67,18 @@ CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/orocos_kdl/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/python_orocos_kdl/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/kdl/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/visualization_msgs/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/roslib/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/colladadom/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf_interface/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf_parser/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/collada_parser/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/kdl_parser/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/visualization_msgs/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/roslib/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
@@ -109,13 +103,21 @@ CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /home/siddharth/ros-packages/sandbox/planning_environment/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/orocos_kdl/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/python_orocos_kdl/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/kdl/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/control/control_msgs/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/move_arm/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/robot_model/kdl_parser/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
-CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/manifest.xml
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/manifest.xml
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
@@ -126,19 +128,20 @@ CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
+CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/control/control_msgs/msg_gen/generated
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/control_right_arm.dir/src/control_right_arm.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -O3 -g -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/control_right_arm.dir/src/control_right_arm.o -c /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/src/control_right_arm.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/control_right_arm.dir/src/control_right_arm.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_right_arm.cpp
 
 CMakeFiles/control_right_arm.dir/src/control_right_arm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/control_right_arm.dir/src/control_right_arm.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -O3 -g -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/src/control_right_arm.cpp > CMakeFiles/control_right_arm.dir/src/control_right_arm.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_right_arm.cpp > CMakeFiles/control_right_arm.dir/src/control_right_arm.i
 
 CMakeFiles/control_right_arm.dir/src/control_right_arm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/control_right_arm.dir/src/control_right_arm.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -O3 -g -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/src/control_right_arm.cpp -o CMakeFiles/control_right_arm.dir/src/control_right_arm.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_right_arm.cpp -o CMakeFiles/control_right_arm.dir/src/control_right_arm.s
 
 CMakeFiles/control_right_arm.dir/src/control_right_arm.o.requires:
 .PHONY : CMakeFiles/control_right_arm.dir/src/control_right_arm.o.requires
@@ -174,6 +177,6 @@ CMakeFiles/control_right_arm.dir/clean:
 .PHONY : CMakeFiles/control_right_arm.dir/clean
 
 CMakeFiles/control_right_arm.dir/depend:
-	cd /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/control_right_arm.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/control_right_arm.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/control_right_arm.dir/depend
 

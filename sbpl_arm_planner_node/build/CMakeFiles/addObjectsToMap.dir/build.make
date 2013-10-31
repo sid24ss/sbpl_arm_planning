@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/addObjectsToMap.dir/depend.make
@@ -110,12 +110,12 @@ CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /home/siddharth/ros-packages/sandbox/planning_environment/manifest.xml
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/manifest.xml
+CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/manifest.xml
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
@@ -128,17 +128,17 @@ CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp
 
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp > CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp > CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.i
 
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp -o CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp -o CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.s
 
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o.requires:
 .PHONY : CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o.requires
@@ -174,6 +174,6 @@ CMakeFiles/addObjectsToMap.dir/clean:
 .PHONY : CMakeFiles/addObjectsToMap.dir/clean
 
 CMakeFiles/addObjectsToMap.dir/depend:
-	cd /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/addObjectsToMap.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/addObjectsToMap.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/addObjectsToMap.dir/depend
 

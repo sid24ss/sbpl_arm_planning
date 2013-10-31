@@ -57,6 +57,7 @@ BFS3D::BFS3D(int dim_x, int dim_y, int dim_z, int radius, int cost_per_cell)
 
   fifo_size = 2*dimX_*dimY_ + 2*dimY_*dimZ_ + 2*dimX_*dimZ_;
   q_ = new FIFO(fifo_size);
+
   SBPL_DEBUG("[BFS3d] Allocated a FIFO of size %d", fifo_size);      
   SBPL_DEBUG("[BFS3D] grid dimensions: %d %d %d\n",dimX_, dimY_,dimZ_);
 }
@@ -139,7 +140,7 @@ bool BFS3D::setGoals(std::vector<std::vector<int> > goals)
 
   if(goal_.empty())
   {
-    SBPL_DEBUG("Error: No valid goals were received.\n");
+    SBPL_DEBUG("[bfs3d] Error: No valid goals were received.\n");
     return false;
   }
   return true;
@@ -209,12 +210,20 @@ bool BFS3D::runBFS()
     return false;
   }
 
-  dist_length_ =  (dimX_-1) + (dimY_-1)*(dimX_) + (dimZ_-1)*(dimX_)*(dimY_) + 1;
-  SBPL_INFO("Size of dist_ : %d",dist_.size());
 
-  // Added temporarily so that we force recomputation of the heuristic values. This is helpful when we change the goal states.
+  dist_length_ =  (dimX_-1) + (dimY_-1)*(dimX_) + (dimZ_-1)*(dimX_)*(dimY_) + 1;
+
+  // Added temporarily so that we force recomputation of the heuristic values. This is needed when we change the goal states.
   dist_.clear();
-  dist_.resize(dist_length_);
+  dist_.resize(dist_length_, INFINITE_COST);
+
+  // Clear the independent heuristics
+  dist_independent_heuristics_.clear();
+  // Inititialize them with the dist_ vector.
+  if(goal_.size()> 1)
+    dist_independent_heuristics_.resize(goal_.size(),dist_);
+
+  SBPL_INFO("Size of dist_ : %d; Initialized %d independent heuristics.",dist_.size(), dist_independent_heuristics_.size());
 
   search3DwithFifo();
   
@@ -240,58 +249,111 @@ int dz[DIRECTIONS3D] = {-1, -1, -1, -1, -1, -1, -1, -1, -1,    0,  0,  0,  0,  0
 /* Mike Philips */
 void BFS3D::search3DwithFifo()
 {
-  for(int x=0; x<dimX_; x++){
-    for(int y=0; y<dimY_; y++){
-      for(int z=0; z<dimZ_; z++){
-        //statespace[x][y][z].g = INFINITE_COST;
-        dist_[xyzToIndex(x,y,z)] = INFINITE_COST;
-      }
+  // Optimize - don't need this anymore since we are initializing with infinite cost anyway.
+  // for(int x=0; x<dimX_; x++){
+  //   for(int y=0; y<dimY_; y++){
+  //     for(int z=0; z<dimZ_; z++){
+  //       //statespace[x][y][z].g = INFINITE_COST;
+  //       dist_[xyzToIndex(x,y,z)] = INFINITE_COST;
+  //     }
+  //   }
+  // }
+
+  int fifo_size = 2*dimX_*dimY_ + 2*dimY_*dimZ_ + 2*dimX_*dimZ_;
+  ROS_INFO("About to initialize q_ s.");
+  q_->clear();
+  q_independent_heuristics_.clear();
+  if(goal_.size() > 1)
+  {
+    q_independent_heuristics_.resize(goal_.size());
+    for (int i = 0; i < q_independent_heuristics_.size(); ++i)
+    {
+      q_independent_heuristics_[i] = new FIFO(fifo_size);
+      q_independent_heuristics_[i]->clear();
     }
   }
 
-  q_->clear();
+  ROS_INFO("Initialized the q_ s.");
   for(unsigned int i=0; i<goal_.size(); i++){
     int x = goal_[i][0];
     int y = goal_[i][1];
     int z = goal_[i][2];
     //statespace[x][y][z].g = 0;
     // TODO: Set cost to each goal as the initial value. Not as 1.
-    dist_[xyzToIndex(x,y,z)] = 0; //Max's suggestion is to not 0 for theoretical reasons (what?)
+    dist_[xyzToIndex(x,y,z)] = 0;
+    if(goal_.size() > 1)
+      dist_independent_heuristics_[i][xyzToIndex(x,y,z)] = 0;
+
+    ROS_INFO("Set cost of goal to zero in heuristic %d",i);
+
     q_->insert(x,y,z);
+    if(goal_.size() > 1)
+      q_independent_heuristics_[i]->insert(x,y,z);
+
   }
+  ROS_INFO("Successfully set goal values to 0 in combined heuristic");
+  // Initialize the FIFOs for each independent goal.
+
+  // for (int i = 0; i < q_independent_heuristics_.size(); ++i)
+  // {
+  //     int x = goal_[i][0];
+  //     int y = goal_[i][1];
+  //     int z = goal_[i][2];
+  //     //statespace[x][y][z].g = 0;
+  //     // TODO: Set cost to each goal as the initial value. Not as 1.
+  //     dist_independent_heuristics_[i][xyzToIndex(x,y,z)] = 0;
+  //     q_independent_heuristics_[i]->insert(x,y,z);
+  // }
+  // ROS_INFO("Successfully set goal values to 0 in each heuristic");
+}
+
+// Get the combined heuristic
+int BFS3D::getDist(int x, int y, int z){
+  int heur_id = goal_.size();
+  return getDist(x, y, z, heur_id);
 }
 
 // Get distance from the goal. In case of multiple goals, it will be the distance to the nearest goal.
-int BFS3D::getDist(int x, int y, int z)
+int BFS3D::getDist(int x, int y, int z, int heur_id)
 {
   int idx = xyzToIndex(x,y,z);
-  int d = dist_[idx];
-  while(d==INFINITE_COST && !q_->empty()){
+  vector <int> *dist_pointer;
+  FIFO* q_pointer;
+  if (heur_id == goal_.size()){
+    dist_pointer = &dist_;
+    q_pointer = q_;
+  }
+  else{
+    dist_pointer = &dist_independent_heuristics_[heur_id];
+    q_pointer = q_independent_heuristics_[heur_id];
+  }
+  int d = (*dist_pointer)[idx];
+  while(d==INFINITE_COST && !q_pointer->empty()){
     int x,y,z;
-    q_->remove(&x,&y,&z);
+    q_pointer->remove(&x,&y,&z);
 
     bool onBoundary = x==0 || x==dimX_-1 || y==0 || y==dimY_-1 || z==0 || z==dimZ_-1;
 
-    int parentDist = dist_[xyzToIndex(x,y,z)];
+    int parentDist = (*dist_pointer)[xyzToIndex(x,y,z)];
     for(int i=0; i<DIRECTIONS3D; i++){
       int newX = x+dx[i];
       int newY = y+dy[i];
       int newZ = z+dz[i];
       if((!onBoundary || (newX>=0 && newX<dimX_ && newY>=0 && newY<dimY_ && newZ>=0 && newZ<dimZ_)) && //check if the successor is in work space
           isValidCell(newX,newY,newZ) && //is not an obstacle
-          (dist_[xyzToIndex(newX,newY,newZ)] == INFINITE_COST)){ //and has not already been put in the queue
-        q_->insert(newX,newY,newZ);
+          ((*dist_pointer)[xyzToIndex(newX,newY,newZ)] == INFINITE_COST)){ //and has not already been put in the queue
+        q_pointer->insert(newX,newY,newZ);
         if (x != newX && y != newY && z != newZ)
-          dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_sqrt3_move_;
+          (*dist_pointer)[xyzToIndex(newX,newY,newZ)] = parentDist + cost_sqrt3_move_;
         else if ((y != newY && z != newZ) ||
             (x != newX && z != newZ) ||
             (x != newX && y != newY))
-          dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_sqrt2_move_;
+          (*dist_pointer)[xyzToIndex(newX,newY,newZ)] = parentDist + cost_sqrt2_move_;
         else
-          dist_[xyzToIndex(newX,newY,newZ)] = parentDist + cost_1_move_;
+          (*dist_pointer)[xyzToIndex(newX,newY,newZ)] = parentDist + cost_1_move_;
       }
     }
-    d = dist_[idx];
+    d = (*dist_pointer)[idx];
   }
   return d;
 }

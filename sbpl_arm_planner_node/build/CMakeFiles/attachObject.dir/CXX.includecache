@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/attach_object_to_right_gripper.cpp
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/attach_object_to_right_gripper.cpp
 ros/ros.h
 -
 arm_navigation_msgs/AttachedCollisionObject.h

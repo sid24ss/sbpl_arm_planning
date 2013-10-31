@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/sbpl_arm_planner.dir/depend.make
@@ -74,18 +74,18 @@ CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environm
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -99,7 +99,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environm
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -108,36 +108,36 @@ CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environm
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp
 
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp > CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp > CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.i
 
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/discrete_space_information/robarm3d/environment_robarm3d.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.s
 
 CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o.requires:
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environment_robarm3d.o.requires
@@ -176,18 +176,18 @@ CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/rostest/mani
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -201,7 +201,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/common_rosd
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -210,36 +210,36 @@ CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/laser_pipel
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp
 
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp > CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp > CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.i
 
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/bfs_3d.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.s
 
 CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o.requires:
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/src/bfs_3d.o.requires
@@ -278,18 +278,18 @@ CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/rost
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -303,7 +303,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/com
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -312,36 +312,36 @@ CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/las
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_3)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_model.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_model.cpp
 
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_model.cpp > CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_model.cpp > CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.i
 
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_model.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_model.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.s
 
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o.requires:
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_model.o.requires
@@ -380,18 +380,18 @@ CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/s
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -405,7 +405,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/s
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -414,36 +414,36 @@ CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/s
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_4)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_planner_params.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_planner_params.cpp
 
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_planner_params.cpp > CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_planner_params.cpp > CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.i
 
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_planner_params.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/sbpl_arm_planner_params.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.s
 
 CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o.requires:
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/src/sbpl_arm_planner_params.o.requires
@@ -482,18 +482,18 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/roste
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -507,7 +507,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/comm
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -516,36 +516,36 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/lase
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_5)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_5)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/sbpl_math.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/sbpl_math.cpp
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/sbpl_math.cpp > CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/sbpl_math.cpp > CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.i
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/sbpl_math.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/sbpl_math.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.s
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o.requires:
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/src/pr2/sbpl_math.o.requires
@@ -584,18 +584,18 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/r
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -609,7 +609,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -618,36 +618,36 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_6)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_6)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/pr2_workspace.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/pr2_workspace.cpp
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/pr2_workspace.cpp > CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/pr2_workspace.cpp > CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.i
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/pr2_workspace.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/pr2_workspace.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.s
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o.requires:
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/src/pr2/pr2_workspace.o.requires
@@ -686,18 +686,18 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/sh
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/share/actionlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -711,7 +711,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/st
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -720,36 +720,36 @@ CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/st
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/planning_environment/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_7)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles $(CMAKE_PROGRESS_7)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o -c /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/orientation_solver.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/orientation_solver.cpp
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/orientation_solver.cpp > CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/orientation_solver.cpp > CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.i
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/src/pr2/orientation_solver.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -O3 -g -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -O3 -g -DdDOUBLE -pthread -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/src/pr2/orientation_solver.cpp -o CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.s
 
 CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o.requires:
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/src/pr2/orientation_solver.o.requires
@@ -803,6 +803,6 @@ CMakeFiles/sbpl_arm_planner.dir/clean:
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/clean
 
 CMakeFiles/sbpl_arm_planner.dir/depend:
-	cd /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles/sbpl_arm_planner.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/build/CMakeFiles/sbpl_arm_planner.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/sbpl_arm_planner.dir/depend
 

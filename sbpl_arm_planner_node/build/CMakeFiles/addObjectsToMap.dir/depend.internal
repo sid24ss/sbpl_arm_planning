@@ -3,7 +3,7 @@
 
 CMakeFiles/addObjectsToMap.dir/src/add_objects_to_map.o
  ../include/sbpl_arm_planner_node/add_objects_to_map.h
- /home/siddharth/ros-packages/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp
+ /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/src/add_objects_to_map.cpp
  /opt/ros/fuerte/include/XmlRpcDecl.h
  /opt/ros/fuerte/include/XmlRpcValue.h
  /opt/ros/fuerte/include/geometry_msgs/Point.h

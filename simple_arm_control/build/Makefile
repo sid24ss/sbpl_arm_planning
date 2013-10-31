@@ -36,10 +36,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -66,9 +66,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/siddharth/ros-packages/sbpl_arm_planning/simple_arm_control/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -237,6 +237,19 @@ move_right_arm_multiple_goals: cmake_check_build_system
 move_right_arm_multiple_goals/fast:
 	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/build
 .PHONY : move_right_arm_multiple_goals/fast
+
+#=============================================================================
+# Target rules for targets named move_right_arm_multiple_goals_move_arm
+
+# Build rule for target.
+move_right_arm_multiple_goals_move_arm: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 move_right_arm_multiple_goals_move_arm
+.PHONY : move_right_arm_multiple_goals_move_arm
+
+# fast build rule for target.
+move_right_arm_multiple_goals_move_arm/fast:
+	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals_move_arm.dir/build.make CMakeFiles/move_right_arm_multiple_goals_move_arm.dir/build
+.PHONY : move_right_arm_multiple_goals_move_arm/fast
 
 #=============================================================================
 # Target rules for targets named rosbuild_precompile
@@ -458,6 +471,21 @@ src/move_right_arm_multiple_goals.s:
 	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/src/move_right_arm_multiple_goals.s
 .PHONY : src/move_right_arm_multiple_goals.s
 
+# target to build an object file
+src/move_right_arm_multiple_goals_move_arm.o:
+	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals_move_arm.dir/build.make CMakeFiles/move_right_arm_multiple_goals_move_arm.dir/src/move_right_arm_multiple_goals_move_arm.o
+.PHONY : src/move_right_arm_multiple_goals_move_arm.o
+
+# target to preprocess a source file
+src/move_right_arm_multiple_goals_move_arm.i:
+	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals_move_arm.dir/build.make CMakeFiles/move_right_arm_multiple_goals_move_arm.dir/src/move_right_arm_multiple_goals_move_arm.i
+.PHONY : src/move_right_arm_multiple_goals_move_arm.i
+
+# target to generate assembly for a file
+src/move_right_arm_multiple_goals_move_arm.s:
+	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals_move_arm.dir/build.make CMakeFiles/move_right_arm_multiple_goals_move_arm.dir/src/move_right_arm_multiple_goals_move_arm.s
+.PHONY : src/move_right_arm_multiple_goals_move_arm.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -476,6 +504,7 @@ help:
 	@echo "... move_left_arm"
 	@echo "... move_right_arm"
 	@echo "... move_right_arm_multiple_goals"
+	@echo "... move_right_arm_multiple_goals_move_arm"
 	@echo "... rebuild_cache"
 	@echo "... rosbuild_precompile"
 	@echo "... rosbuild_premsgsrvgen"
@@ -505,6 +534,9 @@ help:
 	@echo "... src/move_right_arm_multiple_goals.o"
 	@echo "... src/move_right_arm_multiple_goals.i"
 	@echo "... src/move_right_arm_multiple_goals.s"
+	@echo "... src/move_right_arm_multiple_goals_move_arm.o"
+	@echo "... src/move_right_arm_multiple_goals_move_arm.i"
+	@echo "... src/move_right_arm_multiple_goals_move_arm.s"
 .PHONY : help
 
 

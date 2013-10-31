@@ -1,9 +1,18 @@
 <launch>
-	<node pkg="simple_arm_control" type="move_right_arm_multiple_goals" name="move_arm_mutliple_goals" output="screen">
+	<node pkg="simple_arm_control" type="move_right_arm_multiple_goals_move_arm" name="move_arm_mutliple_goals" output="screen">
      
      <param name="planner_service_name" value="sbpl_planning/plan_path"/>
 
 	   <param name="number_of_goals" value="5"    type="double"/>
+
+	   <!-- Goal 0 - for reference -->
+	   <!-- <param name="goal_x" value="0.72"    type="double"/>
+	   <param name="goal_y" value="-0.18"  type="double"/>
+	   <param name="goal_z" value="0.7"     type="double"/>
+
+	   <param name="goal_roll" value="0.0"  type="double"/>
+	   <param name="goal_yaw" value="0.0"    type="double"/>
+	   <param name="goal_pitch" value="0.0"  type="double"/> -->
 
 	   <!-- Goal 4 -->
    	   <param name="goal_x_0" value="0.293"    type="double"/>

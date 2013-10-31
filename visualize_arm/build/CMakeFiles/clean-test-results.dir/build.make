@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm
+CMAKE_SOURCE_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build
+CMAKE_BINARY_DIR = /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build
 
 # Utility rule file for clean-test-results.
 
@@ -58,6 +58,6 @@ CMakeFiles/clean-test-results.dir/clean:
 .PHONY : CMakeFiles/clean-test-results.dir/clean
 
 CMakeFiles/clean-test-results.dir/depend:
-	cd /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build /home/siddharth/ros-packages/sbpl_arm_planning/visualize_arm/build/CMakeFiles/clean-test-results.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/build/CMakeFiles/clean-test-results.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/clean-test-results.dir/depend
 

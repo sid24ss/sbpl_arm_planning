@@ -934,7 +934,7 @@ bool EnvironmentROBARM3D::isGoalPosition(const std::vector<double> &pose, const 
         if(isGoalStateWithIK(pose,goal,jnt_angles))
         {
           EnvROBARMCfg.solved_by_ik++;
-          //compute cost of the motion
+          //compute cost of the motion.
           cost = getActionCost(jnt_angles,final_joint_config,0);
           return true;
         }
@@ -968,11 +968,12 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, con
       return false;
   }
 
-  // Check if within a particular distance. If not, return.
+  // int endeff[3];
+  // grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
+  // SBPL_INFO("[isGoalStateWithIK] Distance from goal: %4.4f; threshold %4.4f; Dijkstra distance: %4.4f",edist_from_goal,prms_.solve_for_ik_thresh_m_,dijkstra_->getDist(endeff[0],endeff[1],endeff[2]));
+  
+  // Check if within a particular euclidean distance. If not, return.
   double edist_from_goal = fabs(sqrt((pose[0] - goal.pos[0])*(pose[0] - goal.pos[0]) + (pose[1] - goal.pos[1])*(pose[1] - goal.pos[1]) + (pose[2] - goal.pos[2])*(pose[2] - goal.pos[2])));
-  int endeff[3];
-  grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
-  SBPL_INFO("[isGoalStateWithIK] Distance from goal: %4.4f; threshold %4.4f; Dijkstra distance: %4.4f",edist_from_goal,prms_.solve_for_ik_thresh_m_,dijkstra_->getDist(endeff[0],endeff[1],endeff[2]));
   if (edist_from_goal > prms_.solve_for_ik_thresh_m_){
     return false;
   }
