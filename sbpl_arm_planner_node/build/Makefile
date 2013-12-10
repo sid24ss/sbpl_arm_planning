@@ -187,6 +187,19 @@ clean-test-results/fast:
 .PHONY : clean-test-results/fast
 
 #=============================================================================
+# Target rules for targets named removeObjectsFromMap
+
+# Build rule for target.
+removeObjectsFromMap: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 removeObjectsFromMap
+.PHONY : removeObjectsFromMap
+
+# fast build rule for target.
+removeObjectsFromMap/fast:
+	$(MAKE) -f CMakeFiles/removeObjectsFromMap.dir/build.make CMakeFiles/removeObjectsFromMap.dir/build
+.PHONY : removeObjectsFromMap/fast
+
+#=============================================================================
 # Target rules for targets named rosbuild_precompile
 
 # Build rule for target.
@@ -360,6 +373,21 @@ src/attach_object_to_right_gripper.s:
 .PHONY : src/attach_object_to_right_gripper.s
 
 # target to build an object file
+src/remove_objects_from_map.o:
+	$(MAKE) -f CMakeFiles/removeObjectsFromMap.dir/build.make CMakeFiles/removeObjectsFromMap.dir/src/remove_objects_from_map.o
+.PHONY : src/remove_objects_from_map.o
+
+# target to preprocess a source file
+src/remove_objects_from_map.i:
+	$(MAKE) -f CMakeFiles/removeObjectsFromMap.dir/build.make CMakeFiles/removeObjectsFromMap.dir/src/remove_objects_from_map.i
+.PHONY : src/remove_objects_from_map.i
+
+# target to generate assembly for a file
+src/remove_objects_from_map.s:
+	$(MAKE) -f CMakeFiles/removeObjectsFromMap.dir/build.make CMakeFiles/removeObjectsFromMap.dir/src/remove_objects_from_map.s
+.PHONY : src/remove_objects_from_map.s
+
+# target to build an object file
 src/sbpl_arm_planner_node.o:
 	$(MAKE) -f CMakeFiles/sbpl_arm_planner_node.dir/build.make CMakeFiles/sbpl_arm_planner_node.dir/src/sbpl_arm_planner_node.o
 .PHONY : src/sbpl_arm_planner_node.o
@@ -389,6 +417,7 @@ help:
 	@echo "... clean-test-results"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... removeObjectsFromMap"
 	@echo "... rosbuild_precompile"
 	@echo "... rosbuild_premsgsrvgen"
 	@echo "... rospack_genmsg"
@@ -406,6 +435,9 @@ help:
 	@echo "... src/attach_object_to_right_gripper.o"
 	@echo "... src/attach_object_to_right_gripper.i"
 	@echo "... src/attach_object_to_right_gripper.s"
+	@echo "... src/remove_objects_from_map.o"
+	@echo "... src/remove_objects_from_map.i"
+	@echo "... src/remove_objects_from_map.s"
 	@echo "... src/sbpl_arm_planner_node.o"
 	@echo "... src/sbpl_arm_planner_node.i"
 	@echo "... src/sbpl_arm_planner_node.s"

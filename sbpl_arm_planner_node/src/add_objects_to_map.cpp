@@ -147,9 +147,9 @@ int main(int argc, char** argv)
   sleep(2);
   AddObjectsToMap addobj;
 
-  ROS_INFO("Adding known objects to map 5 times.");
+  ROS_INFO("Adding known objects to map 3 times.");
   int i = 0;
-  while(i<5)
+  while(i<3)
   { 
     if(argc > 1)
       addobj.addObjectsFromFile(std::string(argv[1]));

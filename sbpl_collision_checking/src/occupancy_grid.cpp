@@ -213,9 +213,22 @@ void OccupancyGrid::getVoxelsInBox(const geometry_msgs::Pose &pose, const std::v
 void OccupancyGrid::visualize()
 {
   ROS_WARN_ONCE("[grid] Visualizing the grid is disabled. (DistanceField API changed...)");
-  //btTransform trans; 
-  //trans.setIdentity();
-  //grid_->visualize(0.01, 0.02, reference_frame_, trans, ros::Time::now());
+  btTransform trans; 
+  trans.setIdentity();
+  grid_->visualize(0.01, 0.02, reference_frame_, trans, ros::Time::now());
+}
+
+void OccupancyGrid::visualize(std::vector<visualization_msgs::Marker>* markers)
+{
+  // ROS_WARN_ONCE("[grid] Trying to visualize the grid.. ");
+  // btTransform trans; 
+  // trans.setIdentity();
+  // visualization_msgs::Marker m;
+  // // grid_->getIsoSurfaceMarkers(0.01, 0.3, reference_frame_, ros::Time::now(),trans, m);
+  // grid_->getOccupiedVoxelMarkers(reference_frame_, ros::Time::now(),trans, m);
+
+  // markers->clear();
+  // markers->push_back(m);
 }
 
 const distance_field::PropagationDistanceField* OccupancyGrid::getDistanceFieldPtr()

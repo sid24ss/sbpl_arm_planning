@@ -617,10 +617,6 @@ list
 -
 ros/ros.h
 -
-eigen3/Eigen/Core
--
-set
--
 
 /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/voxel_grid.h
 algorithm

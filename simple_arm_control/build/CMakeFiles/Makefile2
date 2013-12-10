@@ -380,38 +380,38 @@ clean: CMakeFiles/move_right_arm.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/move_right_arm_multiple_goals.dir
+# Target rules for target CMakeFiles/move_right_arm_grasp_database.dir
 
 # All Build rule for target.
-CMakeFiles/move_right_arm_multiple_goals.dir/all: CMakeFiles/rosbuild_precompile.dir/all
-	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/depend
-	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/build
+CMakeFiles/move_right_arm_grasp_database.dir/all: CMakeFiles/rosbuild_precompile.dir/all
+	$(MAKE) -f CMakeFiles/move_right_arm_grasp_database.dir/build.make CMakeFiles/move_right_arm_grasp_database.dir/depend
+	$(MAKE) -f CMakeFiles/move_right_arm_grasp_database.dir/build.make CMakeFiles/move_right_arm_grasp_database.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles  6
-	@echo "Built target move_right_arm_multiple_goals"
-.PHONY : CMakeFiles/move_right_arm_multiple_goals.dir/all
+	@echo "Built target move_right_arm_grasp_database"
+.PHONY : CMakeFiles/move_right_arm_grasp_database.dir/all
 
 # Include target in all.
-all: CMakeFiles/move_right_arm_multiple_goals.dir/all
+all: CMakeFiles/move_right_arm_grasp_database.dir/all
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/move_right_arm_multiple_goals.dir/rule: cmake_check_build_system
+CMakeFiles/move_right_arm_grasp_database.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles 1
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/move_right_arm_multiple_goals.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/move_right_arm_grasp_database.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles 0
-.PHONY : CMakeFiles/move_right_arm_multiple_goals.dir/rule
+.PHONY : CMakeFiles/move_right_arm_grasp_database.dir/rule
 
 # Convenience name for target.
-move_right_arm_multiple_goals: CMakeFiles/move_right_arm_multiple_goals.dir/rule
-.PHONY : move_right_arm_multiple_goals
+move_right_arm_grasp_database: CMakeFiles/move_right_arm_grasp_database.dir/rule
+.PHONY : move_right_arm_grasp_database
 
 # clean rule for target.
-CMakeFiles/move_right_arm_multiple_goals.dir/clean:
-	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/clean
-.PHONY : CMakeFiles/move_right_arm_multiple_goals.dir/clean
+CMakeFiles/move_right_arm_grasp_database.dir/clean:
+	$(MAKE) -f CMakeFiles/move_right_arm_grasp_database.dir/build.make CMakeFiles/move_right_arm_grasp_database.dir/clean
+.PHONY : CMakeFiles/move_right_arm_grasp_database.dir/clean
 
 # clean rule for target.
-clean: CMakeFiles/move_right_arm_multiple_goals.dir/clean
+clean: CMakeFiles/move_right_arm_grasp_database.dir/clean
 .PHONY : clean
 
 #=============================================================================

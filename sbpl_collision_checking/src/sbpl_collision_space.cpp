@@ -165,7 +165,7 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
       // check for collision with world
       if((dist_temp = grid_->getCell(x,y,z)) <= int((object_spheres_[i].radius) / grid_->getResolution() + 0.5))
       {
-        dist = dist_temp;
+        dist = (unsigned char)dist_temp;
         return false;
       }
       if(dist_temp < dist)
@@ -175,6 +175,7 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
 
   // check arm
   //clock_t spheres_start = clock();
+  // ROS_INFO("[cspace] number of spheres_: %d", spheres_.size());
   for(size_t i = 0; i < spheres_.size(); ++i)
   {
     v = frames_[spheres_[i]->kdl_chain][spheres_[i]->kdl_segment] * spheres_[i]->v;
@@ -190,9 +191,15 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
     }
 
     // check for collision with world
-    if((dist_temp = grid_->getCell(x,y,z)) <= int((spheres_[i]->radius + padding_) / grid_->getResolution() + 0.5))
+    // ROS_INFO("[cspace] Resolution of distance field grid: %3.3f",grid_->getResolution());
+    // ROS_INFO("get cell distance %d ", int(grid_->getCell(x,y,z)));
+    // ROS_INFO("Sphere radius stuff : %d", int(((spheres_[i]->radius + padding_) / grid_->getResolution()) + 0.5));
+    // dist_temp = int(grid_->getCell(x,y,z));
+    // sphere_allowed_distance = int(((spheres_[i]->radius + padding_) / grid_->getResolution()) + 0.5);
+    if((dist_temp = grid_->getCell(x,y,z))  <= int((spheres_[i]->radius + padding_) / grid_->getResolution() + 0.5))
     {
       dist = dist_temp;
+      // ROS_INFO("[cspace] That's a collision!");
       return false;
     }
     if(dist_temp < dist)
@@ -200,7 +207,7 @@ bool SBPLCollisionSpace::checkCollision(const std::vector<double> &angles, bool 
   }
 
   //printf("kinematics: %0.8fsec  spheres: %0.8fsec\n", fk_time, (clock() - spheres_start) / double(CLOCKS_PER_SEC));
-
+  // ROS_INFO("Not in collision!");
   num_false_collision_checks_++;
   return true;
 }
@@ -636,19 +643,19 @@ double SBPLCollisionSpace::distanceBetween3DLineSegments(std::vector<int> l1a, s
 
 void SBPLCollisionSpace::addArmCuboidsToGrid()
 {
-/*
-  std::vector<std::vector<double> > cuboids = arm_->getCollisionCuboids();
 
-  ROS_DEBUG("[SBPLCollisionSpace] received %d cuboids\n",int(cuboids.size()));
+  // std::vector<std::vector<double> > cuboids = arm_->getCollisionCuboids();
 
-  for(unsigned int i = 0; i < cuboids.size(); i++)
-  {
-    if(cuboids[i].size() == 6)
-      grid_->addCollisionCuboid(cuboids[i][0],cuboids[i][1],cuboids[i][2],cuboids[i][3],cuboids[i][4],cuboids[i][5]);
-    else
-      ROS_DEBUG("[addArmCuboidsToGrid] Self-collision cuboid #%d has an incomplete description.\n", i);
-  }
-*/
+  // ROS_INFO("[SBPLCollisionSpace] received %d cuboids\n",int(cuboids.size()));
+
+  // for(unsigned int i = 0; i < cuboids.size(); i++)
+  // {
+  //   if(cuboids[i].size() == 6)
+  //     grid_->addCollisionCuboid(cuboids[i][0],cuboids[i][1],cuboids[i][2],cuboids[i][3],cuboids[i][4],cuboids[i][5]);
+  //   else
+  //     ROS_DEBUG("[addArmCuboidsToGrid] Self-collision cuboid #%d has an incomplete description.\n", i);
+  // }
+
 }
 
 bool SBPLCollisionSpace::getCollisionCylinders(const std::vector<double> &angles, std::vector<std::vector<double> > &cylinders)
@@ -1008,6 +1015,7 @@ void SBPLCollisionSpace::processCollisionObjectMsg(const arm_navigation_msgs::Co
   }
   else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::REMOVE)
   {
+    // object_map_.erase(object.id);
     removeCollisionObject(object);
   }
   else if(object.operation.operation == arm_navigation_msgs::CollisionObjectOperation::DETACH_AND_ADD_AS_OBJECT)
@@ -1056,11 +1064,12 @@ void SBPLCollisionSpace::addCollisionObject(const arm_navigation_msgs::Collision
       new_object = false;
     }
   }
-  if(new_object)
+  if(new_object){
     known_objects_.push_back(object.id);
+  }
 
   grid_->addPointsToField(object_voxel_map_[object.id]);
-  ROS_DEBUG("[cspace] Just added %s to the distance field.", object.id.c_str());
+  ROS_INFO("[cspace] Just added %s to the distance field.", object.id.c_str());
 }
 
 void SBPLCollisionSpace::removeCollisionObject(const arm_navigation_msgs::CollisionObject &object)
@@ -1088,7 +1097,7 @@ void SBPLCollisionSpace::putCollisionObjectsInGrid()
   for(size_t i = 0; i < known_objects_.size(); ++i)
   {
     grid_->addPointsToField(object_voxel_map_[known_objects_[i]]);
-    ROS_INFO("[cspace] Added %s to grid with %d voxels.",known_objects_[i].c_str(), int(object_voxel_map_[known_objects_[i]].size()));
+    ROS_DEBUG("[cspace] Added %s to grid with %d voxels.",known_objects_[i].c_str(), int(object_voxel_map_[known_objects_[i]].size()));
   }
 }
 

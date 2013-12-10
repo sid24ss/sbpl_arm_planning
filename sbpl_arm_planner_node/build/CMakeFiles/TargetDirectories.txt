@@ -5,6 +5,7 @@
 /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/addObjectsToMap.dir
 /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/attachObject.dir
 /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/clean-test-results.dir
+/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/removeObjectsFromMap.dir
 /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/rosbuild_precompile.dir
 /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/rosbuild_premsgsrvgen.dir
 /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles/rospack_genmsg.dir

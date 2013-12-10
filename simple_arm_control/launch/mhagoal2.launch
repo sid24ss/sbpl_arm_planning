@@ -1,0 +1,39 @@
+<launch>
+	<node pkg="simple_arm_control" type="move_right_arm_multiple_goals_move_arm" name="move_arm_mutliple_goals" output="screen">
+	 
+	 <param name="planner_service_name" value="sbpl_planning/plan_path"/>
+
+	   <param name="number_of_goals" value="2" type="double"/>
+
+	   <!-- Goal 0 - for reference -->
+	   <!-- <param name="goal_x" value="0.72"    type="double"/>
+	   <param name="goal_y" value="-0.18"  type="double"/>
+	   <param name="goal_z" value="0.7"     type="double"/>
+
+	   <param name="goal_roll" value="0.0"  type="double"/>
+	   <param name="goal_yaw" value="0.0"    type="double"/>
+	   <param name="goal_pitch" value="0.0"  type="double"/> -->
+
+	
+	   <!-- Goal 3 -->
+	   <param name="goal_x_0" value="0.82"    type="double"/>
+	   <param name="goal_y_0" value="-0.18"  type="double"/>
+	   <param name="goal_z_0" value="0.8"     type="double"/>
+
+	   <param name="goal_roll_0" value="0.0"  type="double"/>
+	   <param name="goal_yaw_0" value="0.0"    type="double"/>
+	   <param name="goal_pitch_0" value="0.0"  type="double"/>
+
+		<!-- Goal 1prime -->
+	   <param name="goal_x_1" value="0.86"    type="double"/>
+	   <param name="goal_y_1" value="-0.16"  type="double"/>
+	   <param name="goal_z_1" value="1.0"     type="double"/>
+
+	   <param name="goal_roll_1" value="0.0"  type="double"/>
+	   <param name="goal_yaw_1" value="0.0"    type="double"/>
+	   <param name="goal_pitch_1" value="1.8"  type="double"/>
+
+	 <param name="planning_duration" value="40.0" type="double" />
+
+	</node>
+</launch>

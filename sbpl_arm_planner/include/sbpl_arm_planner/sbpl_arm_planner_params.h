@@ -190,6 +190,9 @@ class SBPLArmPlannerParams
 
     /** \brief use the elbow heuristic */
     bool use_research_heuristic_;
+
+    /** \brief use the independent heuristics */
+    bool use_independent_heuristics_;
     
     double max_mprim_offset_;
 

@@ -622,6 +622,17 @@ void VisualizeArm::visualizeJointTrajectoryMsg(trajectory_msgs::JointTrajectory 
   visualizeArmConfigurations(traj,throttle);
 }
 
+void VisualizeArm::visualizeDistanceField(std::vector<visualization_msgs::Marker>& markers)
+{
+  marker_array_.markers.clear();
+  for (int i = 0; i < markers.size(); ++i)
+  {
+    marker_array_.markers.push_back(markers[i]);
+  }
+  ROS_DEBUG("[distance field visualizing] %d markers in the array",(int)marker_array_.markers.size());
+  marker_array_publisher_.publish(marker_array_);
+}
+
 void VisualizeArm::visualizeArmConfigurations(const std::vector<std::vector<double> > &traj, int throttle, std::string ns, int id)
 {
   double color_inc = 260/traj.size();   //260 is blue
@@ -1250,7 +1261,7 @@ void VisualizeArm::visualizeBasicStates(const std::vector<std::vector<double> > 
   marker.color.g = color[1];
   marker.color.b = color[2];
   marker.color.a = color[3];
-  marker.lifetime = ros::Duration(360.0);
+  marker.lifetime = ros::Duration(800.0);
 
   unsigned int m_ind = 0;
   for(unsigned int i = 0; i < states.size(); i=i+inc)

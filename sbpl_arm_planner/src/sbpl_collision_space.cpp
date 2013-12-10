@@ -1008,7 +1008,7 @@ void SBPLCollisionSpace::addCollisionObject(const arm_navigation_msgs::Collision
     known_objects_.push_back(object.id);
 
   grid_->addPointsToField(object_voxel_map_[object.id]);
-  ROS_DEBUG("[addCollisionObject] Just added %s to the distance field.", object.id.c_str());
+  ROS_INFO("[addCollisionObject] Just added %s to the distance field.", object.id.c_str());
 }
 
 void SBPLCollisionSpace::removeCollisionObject(const arm_navigation_msgs::CollisionObject &object)

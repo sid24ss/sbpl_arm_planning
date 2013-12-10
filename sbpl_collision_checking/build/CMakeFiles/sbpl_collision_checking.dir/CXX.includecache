@@ -571,25 +571,9 @@ list
 -
 ros/ros.h
 -
-eigen3/Eigen/Core
--
-set
--
 
 /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/include/distance_field/voxel_grid.h
 algorithm
--
-
-/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/bresenham.cpp
-sbpl_collision_checking/bresenham.h
--
-
-/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/occupancy_grid.cpp
-sbpl_collision_checking/occupancy_grid.h
--
-
-/home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_model.cpp
-sbpl_collision_checking/sbpl_collision_model.h
 -
 
 /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/src/sbpl_collision_space.cpp

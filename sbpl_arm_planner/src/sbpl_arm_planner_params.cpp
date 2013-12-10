@@ -100,6 +100,7 @@ void SBPLArmPlannerParams::initFromParamServer()
   nh.param("planner/epsilon",epsilon_, 1.0);
   nh.param("planner/use_dijkstra_heuristic",use_dijkstra_heuristic_,true);
   nh.param("planner/use_research_heuristic",use_research_heuristic_,false);
+  nh.param("planner/use_independent_heuristics",use_independent_heuristics_,false);
   nh.param("planner/use_multiresolution_motion_primitives",use_multires_mprims_,true);
   nh.param("planner/use_uniform_obstacle_cost", use_uniform_cost_,false);
   nh.param("planner/verbose",verbose_,false);

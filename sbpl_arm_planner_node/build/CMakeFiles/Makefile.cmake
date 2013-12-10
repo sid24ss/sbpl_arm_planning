@@ -65,6 +65,7 @@ SET(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/addObjectsToMap.dir/DependInfo.cmake"
   "CMakeFiles/attachObject.dir/DependInfo.cmake"
   "CMakeFiles/clean-test-results.dir/DependInfo.cmake"
+  "CMakeFiles/removeObjectsFromMap.dir/DependInfo.cmake"
   "CMakeFiles/rosbuild_precompile.dir/DependInfo.cmake"
   "CMakeFiles/rosbuild_premsgsrvgen.dir/DependInfo.cmake"
   "CMakeFiles/rospack_genmsg.dir/DependInfo.cmake"

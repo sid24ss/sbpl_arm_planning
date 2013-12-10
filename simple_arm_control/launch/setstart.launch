@@ -1,0 +1,11 @@
+<launch>
+	<node pkg="simple_arm_control" type="control_right_arm" name="swing_out_right_arm" output="screen">
+		<param name="r_shoulder_pan" value="-1.4337" />
+		<param name="r_shoulder_lift" value="0.9854" />
+		<param name="r_upper_arm_roll" value="-0.4189" />
+		<param name="r_elbow_flex" value="-1.9512" />
+		<param name="r_forearm_roll" value="0.2786" />
+		<param name="r_wrist_flex" value="-0.6326" />
+ 		<param name="r_wrist_roll" value="2.3881" />
+	</node>
+</launch>

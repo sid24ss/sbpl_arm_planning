@@ -47,6 +47,7 @@ SBPLArmPlannerNode::SBPLArmPlannerNode() : node_handle_("~"),collision_map_subsc
   attached_object_frame_ = "r_gripper_r_finger_tip_link";
   allocated_time_ = 10.0;
   env_resolution_ = 0.02;
+  planning_ = false;
   cspace_ = NULL;
   map_frame_ = "base_link";
 
@@ -82,11 +83,14 @@ bool SBPLArmPlannerNode::init()
   node_handle_.param ("planner/use_research_heuristic", use_research_heuristic_, false);
   node_handle_.param<std::string>("planner/arm_description_file", arm_description_filename_, "");
   node_handle_.param<std::string>("planner/motion_primitive_file", mprims_filename_, "");
+  node_handle_.param<std::string>("planner/custom_env_file", custom_env_filename_, "");
   node_handle_.param ("debug/print_out_path", print_path_, true);
   node_handle_.param ("seconds_per_waypoint", waypoint_time_, 0.35);
   node_handle_.param<std::string>("reference_frame", reference_frame_, std::string("base_link"));
   node_handle_.param<std::string>("fk_service_name", fk_service_name_, "pr2_right_arm_kinematics/get_fk");
   node_handle_.param<std::string>("ik_service_name", ik_service_name_, "pr2_right_arm_kinematics/get_ik");
+
+  // node_handle_.param ("planner/use_independent_heuristics", use_independent_heuristics_, false);
 
   //robot description
   node_handle_.param<std::string>("robot/arm_name", arm_name_, "right_arm");
@@ -150,7 +154,7 @@ bool SBPLArmPlannerNode::init()
 
   // main planning service
   planning_service_ = root_handle_.advertiseService("/sbpl_planning/plan_path", &SBPLArmPlannerNode::planKinematicPath,this);
-  
+
   planner_initialized_ = true;
   ROS_INFO("The SBPL arm planner node initialized succesfully.");
   return true;
@@ -164,7 +168,11 @@ int SBPLArmPlannerNode::run()
 
 bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
 {
-  planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
+  // planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
+
+  planner_ = new MPlanner(&sbpl_arm_env_, 3, forward_search_);
+  planner_->set_initialsolution_eps1(25);
+  planner_->set_initialsolution_eps2(2);
 
   if(robot_description_.empty())
   {
@@ -178,6 +186,17 @@ bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
     ROS_ERROR("ERROR: initEnvironment failed");
     return false;
   }
+
+  // ROS_INFO("Custom file name is : %s", custom_env_filename_.c_str());
+  // if(!sbpl_arm_env_.initCustomEnvironment(custom_env_filename_.c_str()))
+  // {
+  //   ROS_ERROR("[node] Custom initEnvironment failed");
+  //   return false;
+  // }
+
+  // sbpl_arm_env_.updateCustomCollisionMap();
+
+  // visualizeCollisionObjects();
 
   //initialize MDP 
   if(!sbpl_arm_env_.InitializeMDPCfg(&mdp_cfg_))
@@ -197,7 +216,7 @@ bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
   planner_->set_initialsolution_eps(sbpl_arm_env_.getEpsilon());
 
   //set search mode (true - settle with first solution)
-  search_mode_ = false;
+  search_mode_ = true;
   planner_->set_search_mode(search_mode_);
 
   if(!initChain(robot_description_))
@@ -243,7 +262,8 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const arm_navigation_msgs::Co
 
     // add self collision blocks
     //cspace_->addArmCuboidsToGrid();
-  
+
+    ROS_DEBUG("[node] Updating map from collision map");
     cspace_->putCollisionObjectsInGrid();
 
     map_frame_ = collision_map->header.frame_id; 
@@ -254,12 +274,16 @@ void SBPLArmPlannerNode::updateMapFromCollisionMap(const arm_navigation_msgs::Co
 
     visualizeCollisionObjects();
 
+    // std::vector<visualization_msgs::Marker> markers;
+    // grid_->visualize(&markers);
+    // aviz_->visualizeDistanceField(markers);
+
     grid_->visualize();
     return;
   }
   else
   {
-    ROS_DEBUG("[node] failed trying to get colmap_mutex_ mutex");
+    ROS_INFO("[node] failed trying to get colmap_mutex_ mutex");
     return;
   }
 }
@@ -374,6 +398,7 @@ void SBPLArmPlannerNode::attachedObjectCallback(const arm_navigation_msgs::Attac
 
 void SBPLArmPlannerNode::collisionObjectCallback(const arm_navigation_msgs::CollisionObjectConstPtr &collision_object)
 {
+  ROS_INFO("Collision object callback triggered.");
   if(object_mutex_.try_lock())
   {
     // debug: have we seen this collision object before?
@@ -585,6 +610,12 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
   // add collision objects to occupancy grid
   cspace_->putCollisionObjectsInGrid();
 
+  // sbpl_arm_env_.updateCustomCollisionMap();
+
+  // std::vector<visualization_msgs::Marker> markers;
+  // grid_->visualize(&markers);
+  // aviz_->visualizeDistanceField(markers);
+
   //check if planning for wrist (only link supported for now)
   planning_joint_ = req.motion_plan_request.goal_constraints.position_constraints[0].link_name;
 
@@ -619,7 +650,7 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
     ROS_INFO("[node] Transformed goal from (%s): %0.3f %0.3f %0.3f to (%s): %0.3f %0.3f %0.3f", req.motion_plan_request.goal_constraints.position_constraints[i].header.frame_id.c_str(),pose_in[i].pose.position.x, pose_in[i].pose.position.y, pose_in[i].pose.position.z, map_frame_.c_str(), pose_out[i].pose.position.x,pose_out[i].pose.position.y,pose_out[i].pose.position.z);
   }
   
-  //get the initial state of the planning joints; This necessitates a certain order in the incoming joint states.
+  //get the initial state of the planning joints
   start.position.resize(num_joints_);
   for(i = 0; i < req.motion_plan_request.start_state.joint_state.position.size(); i++)
   {
@@ -654,6 +685,8 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
     
     if(visualize_goal_)
       visualizeGoalPosition(req.motion_plan_request.goal_constraints);
+
+    // sbpl_arm_env_.printStateMap();
 
     if(setGoalPosition(req.motion_plan_request.goal_constraints))
     {
@@ -697,6 +730,9 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
           ROS_WARN("[node] Uh Oh. Goal constraint isn't satisfied.");
         
         // visualizations
+
+        // displayCollidedStates();
+
         if(visualize_expanded_states_)
           displayARAStarStates();
 
@@ -729,6 +765,8 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
   colmap_mutex_.unlock();
   object_mutex_.unlock();
 
+  // displayCollidedStates();
+
   if(visualize_expanded_states_)
     displayARAStarStates();
   
@@ -740,6 +778,8 @@ bool SBPLArmPlannerNode::planToPosition(arm_navigation_msgs::GetMotionPlan::Requ
 
 bool SBPLArmPlannerNode::planKinematicPath(arm_navigation_msgs::GetMotionPlan::Request &req, arm_navigation_msgs::GetMotionPlan::Response &res)
 {
+  ROS_INFO("planKinematicPath called.");
+
   if(!planner_initialized_)
   {
     ROS_ERROR("Hold up a second...the planner isn't initialized yet. Try again in a second or two.");
@@ -751,9 +791,15 @@ bool SBPLArmPlannerNode::planKinematicPath(arm_navigation_msgs::GetMotionPlan::R
     ROS_ERROR("There are no goal pose constraints in the request message. We need those to plan :).");
     return false;
   }
-
-  if(!planToPosition(req, res))
-    return false;
+  if(!planning_){
+    if(!planToPosition(req, res)){
+      return false;
+    }
+    planning_ = false;
+  }
+  else{
+    return true;
+  }
 
   return true;
 }
@@ -765,8 +811,18 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
   std::vector<double> angles(num_joints_,0);
   std::vector<int> solution_state_ids_v;
 
+
+
   //reinitialize the search space
   planner_->force_planning_from_scratch();
+
+  double param_epsilon, param_epsilon1, param_epsilon2;
+  node_handle_.param ("planner/epsilon", param_epsilon, 20.0);
+  node_handle_.param ("planner/epsilon1", param_epsilon1, 15.0);
+  node_handle_.param ("planner/epsilon2", param_epsilon2, 3.0);
+  planner_->set_initialsolution_eps(param_epsilon);
+  planner_->set_initialsolution_eps1(param_epsilon1);
+  planner_->set_initialsolution_eps2(param_epsilon2);
 
   //plan
   b_ret = planner_->replan(allocated_time_, &solution_state_ids_v, &solution_cost);
@@ -826,9 +882,39 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
     stats_[8] = arm_path.size();
     
     ROS_INFO("\n%50s","-- Planning Statistics --");
-    for(size_t i = 0; i < stats_.size(); ++i)
+
+    for(size_t i = 0; i < stats_.size(); ++i){
       ROS_INFO("%44s: %0.2f", stats_field_names_[i].c_str(), stats_[i]);
+    }
     ROS_INFO("\n");
+
+    // FILE* stats_file = fopen("/home/siddharth/IMHA_debug_single_heuristic_timing.csv", "a");
+    // std::vector<std::string> names;
+    // std::vector<std::string> values;
+        
+    // for(size_t i = 0; i < stats_.size(); ++i){
+    //   names.push_back(stats_field_names_[i]);
+    //   values.push_back(boost::lexical_cast<std::string>(stats_[i]));
+    // }
+        
+    // for(size_t i = 0; i < names.size(); i++){
+    //   SBPL_FPRINTF(stats_file, "%s", names[i].c_str());
+    //   if(i + 1 == names.size()){
+    //     SBPL_FPRINTF(stats_file, "\n");
+    //   } else {
+    //     SBPL_FPRINTF(stats_file, ",");
+    //   }
+    // }
+    // for(size_t i = 0; i < values.size(); i++){
+    //   SBPL_FPRINTF(stats_file, "%s", values[i].c_str());
+    //   if(i + 1 == names.size()){
+    //     SBPL_FPRINTF(stats_file, "\n");
+    //   } else {
+    //     SBPL_FPRINTF(stats_file, ",");
+    //   }
+    // }
+    // fclose(stats_file);
+
   }
 
   return b_ret;
@@ -1112,6 +1198,36 @@ void SBPLArmPlannerNode::displayARAStarStates()
   ROS_INFO("[node] displaying %d expanded states.\n",int(expanded_states.size()));
 }
 
+void SBPLArmPlannerNode::displayCollidedStates()
+{
+  std::vector<std::vector<double> > collided_states;
+  std::vector<double> expanded_color(4,1);
+  expanded_color[0] = 0.5;
+  expanded_color[2] = 0;
+
+  sbpl_arm_env_.getCollidedStates(&(collided_states));
+
+  if(!collided_states.empty())
+  {
+    std::vector<std::vector<double> > detailed_color(2);
+    detailed_color[0].resize(4,0);
+    detailed_color[0][0] = 1;
+    detailed_color[0][1] = 0;
+    detailed_color[0][2] = 0;
+    detailed_color[0][3] = 1;
+
+    detailed_color[1].resize(4,0);
+    detailed_color[1][0] = 0;
+    detailed_color[1][1] = 1;
+    detailed_color[1][2] = 0;
+    detailed_color[1][3] = 1;
+
+    aviz_->visualizeDetailedStates(collided_states, detailed_color,"collided",0.01);
+  }
+
+  ROS_INFO("[node] displaying %d collided states.\n",int(collided_states.size()));
+}
+
 void SBPLArmPlannerNode::displayArmTrajectoryStates(std::vector<int> &solution_state_ids_v)
 {
   std::vector<std::vector<double> > arm_trajectory_states;
@@ -1325,11 +1441,16 @@ void SBPLArmPlannerNode::updateCollisionMap()
   if(!cmap_.boxes.empty())
     grid_->updateFromCollisionMap(cmap_);
 
+  ROS_INFO("[node] Updating collision map");
   cspace_->putCollisionObjectsInGrid();
 
   // visualizations
+
   visualizeCollisionObjects();
-  grid_->visualize();
+
+  // std::vector<visualization_msgs::Marker> markers;
+  // grid_->visualize(&markers);
+
 }
 
 /* Node

@@ -120,6 +120,10 @@ class VisualizeArm
 
     /* \brief display a sphere */
     void visualizeSphere(std::vector<double> pose, int hue, std::string text, double radius);
+
+    /* \brief Visualize the distance field*/
+    void visualizeDistanceField(std::vector<visualization_msgs::Marker>& markers);
+
     
     /* \brief display a list of spheres of the same radius and color */
     void visualizeSpheres(const std::vector<std::vector<double> > &pose, int hue, std::string text, double radius);

@@ -21,8 +21,10 @@ rosbuild_add_executable(control_left_arm src/control_left_arm.cpp)
 
 rosbuild_add_executable(move_right_arm src/move_right_arm.cpp)
 rosbuild_add_executable(move_left_arm src/move_left_arm.cpp)
-rosbuild_add_executable(move_right_arm_multiple_goals src/move_right_arm_multiple_goals.cpp)
 rosbuild_add_executable(move_right_arm_multiple_goals_move_arm src/move_right_arm_multiple_goals_move_arm.cpp)
+rosbuild_add_executable(move_right_arm_grasp_database src/move_right_arm_grasp_database.cpp)
+
 
 
 rosbuild_add_executable(attachObject src/attach_object_to_gripper.cpp)
+target_link_libraries(move_right_arm_grasp_database pr2_grasp_database)

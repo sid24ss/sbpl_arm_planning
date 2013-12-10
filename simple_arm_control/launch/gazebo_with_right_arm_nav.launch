@@ -18,6 +18,6 @@
   <include file="$(find pr2_arm_navigation_filtering)/launch/trajectory_filter.launch"/>
 
   <!-- load ik -->
-  <include file="$(find pr2_arm_navigation_kinematics)/launch/right_arm_collision_free_ik.launch"/>
+  <include file="$(find pr2_arm_navigation_kinematics)/launch/pr2_ik_rarm_node.launch"/>
 
 </launch>

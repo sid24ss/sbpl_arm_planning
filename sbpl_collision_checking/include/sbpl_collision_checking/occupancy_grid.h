@@ -121,6 +121,9 @@ class OccupancyGrid
     
     /** @brief display distance field visualizations to rviz */
     void visualize();
+
+    void visualize(std::vector<visualization_msgs::Marker>* markers);
+
     
     /** 
      * @brief manually add a cuboid to the collision map
@@ -171,6 +174,7 @@ inline void OccupancyGrid::worldToGrid(double wx, double wy, double wz, int &x, 
 
 inline unsigned char OccupancyGrid::getCell(int x, int y, int z)
 {
+  // ROS_INFO("[OccupancyGrid] grid_resolution_ : %3.3f",grid_resolution_);
   return (unsigned char)(grid_->getDistanceFromCell(x,y,z) / grid_resolution_);
 }
 

@@ -491,6 +491,7 @@ CMakeFiles/sbpl_arm_planner.dir/src/discrete_space_information/robarm3d/environm
  /usr/local/include/sbpl/planners/ANAplanner.h
  /usr/local/include/sbpl/planners/adplanner.h
  /usr/local/include/sbpl/planners/araplanner.h
+ /usr/local/include/sbpl/planners/mplanner.h
  /usr/local/include/sbpl/planners/planner.h
  /usr/local/include/sbpl/planners/ppcpplanner.h
  /usr/local/include/sbpl/planners/rstarplanner.h

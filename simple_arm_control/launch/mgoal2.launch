@@ -33,7 +33,7 @@
 	   <param name="goal_pitch_1" value="5.0"  type="double"/>
 
      
-     <param name="planning_duration" value="20.0" type="double" />
+     <param name="planning_duration" value="5.0" type="double" />
 
 	</node>
 </launch>

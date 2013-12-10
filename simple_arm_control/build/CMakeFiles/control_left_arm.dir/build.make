@@ -66,21 +66,21 @@ CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/g
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/share/roswtf/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/share/message_filters/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/geometry/tf/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/share/visualization_msgs/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/share/roslib/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/robot_model/resource_retriever/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/geometric_shapes/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/geometric_shapes/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/robot_model/colladadom/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf_interface/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf_parser/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/robot_model/collada_parser/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/robot_model/urdf/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/planning_models/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_models/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/share/rosbag/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/share/std_srvs/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/physics_ode/opende/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/collision_space/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/collision_space/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/pluginlib/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/bond_core/bond/manifest.xml
@@ -94,7 +94,7 @@ CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/c
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/filters/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/share/pcl/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/robot_self_filter/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/robot_self_filter/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/python_qt_binding/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/visualization_common/ogre/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/visualization_common/ogre_tools/manifest.xml
@@ -103,45 +103,46 @@ CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/l
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/visualization/interactive_markers/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/visualization/rviz/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/planning_environment/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/planning_environment/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/orocos_kdl/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/python_orocos_kdl/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/orocos_kinematics_dynamics/kdl/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/geometry/tf_conversions/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/control/control_msgs/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/move_arm/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/move_arm/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/robot_model/kdl_parser/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation_experimental/distance_field/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation_experimental/distance_field/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/visualize_arm/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_collision_checking/manifest.xml
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_base/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_base/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/pr2_kinematics/pr2_arm_kinematics/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner/manifest.xml
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/pr2-grasp-database/pr2_grasp_database/manifest.xml
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/msg_gen/generated
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/pr2_controllers/pr2_controllers_msgs/srv_gen/generated
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/msg_gen/generated
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/arm_navigation_msgs/srv_gen/generated
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/msg_gen/generated
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/arm_navigation_msgs/srv_gen/generated
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/control/control_msgs/msg_gen/generated
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/msg_gen/generated
-CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /opt/ros/fuerte/stacks/arm_navigation/kinematics_msgs/srv_gen/generated
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/msg_gen/generated
+CMakeFiles/control_left_arm.dir/src/control_left_arm.o: /home/siddharth/ros-packages/sandbox/arm_navigation/kinematics_msgs/srv_gen/generated
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/control_left_arm.dir/src/control_left_arm.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/control_left_arm.dir/src/control_left_arm.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_left_arm.cpp
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -o CMakeFiles/control_left_arm.dir/src/control_left_arm.o -c /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_left_arm.cpp
 
 CMakeFiles/control_left_arm.dir/src/control_left_arm.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/control_left_arm.dir/src/control_left_arm.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_left_arm.cpp > CMakeFiles/control_left_arm.dir/src/control_left_arm.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -E /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_left_arm.cpp > CMakeFiles/control_left_arm.dir/src/control_left_arm.i
 
 CMakeFiles/control_left_arm.dir/src/control_left_arm.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/control_left_arm.dir/src/control_left_arm.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_left_arm.cpp -o CMakeFiles/control_left_arm.dir/src/control_left_arm.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX -DdDOUBLE -pthread -O3 -g -O3 -g -O3 -g -O3 -g -W -Wall -Wno-unused-parameter -fno-strict-aliasing -pthread -S /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/simple_arm_control/src/control_left_arm.cpp -o CMakeFiles/control_left_arm.dir/src/control_left_arm.s
 
 CMakeFiles/control_left_arm.dir/src/control_left_arm.o.requires:
 .PHONY : CMakeFiles/control_left_arm.dir/src/control_left_arm.o.requires

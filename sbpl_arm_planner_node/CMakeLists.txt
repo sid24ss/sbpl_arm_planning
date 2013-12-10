@@ -31,6 +31,8 @@ rosbuild_add_executable(sbpl_arm_planner_node src/sbpl_arm_planner_node.cpp)
 rosbuild_add_executable(attachObject src/attach_object_to_right_gripper.cpp)
 
 rosbuild_add_executable(addObjectsToMap src/add_objects_to_map.cpp)
+rosbuild_add_executable(removeObjectsFromMap src/remove_objects_from_map.cpp)
+
 
 target_link_libraries(sbpl_arm_planner_node sbpl_arm_planner)
 target_link_libraries(sbpl_arm_planner_node visualize_arm)

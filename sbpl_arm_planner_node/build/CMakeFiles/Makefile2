@@ -275,6 +275,41 @@ clean: CMakeFiles/clean-test-results.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/removeObjectsFromMap.dir
+
+# All Build rule for target.
+CMakeFiles/removeObjectsFromMap.dir/all: CMakeFiles/rosbuild_precompile.dir/all
+	$(MAKE) -f CMakeFiles/removeObjectsFromMap.dir/build.make CMakeFiles/removeObjectsFromMap.dir/depend
+	$(MAKE) -f CMakeFiles/removeObjectsFromMap.dir/build.make CMakeFiles/removeObjectsFromMap.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles  3
+	@echo "Built target removeObjectsFromMap"
+.PHONY : CMakeFiles/removeObjectsFromMap.dir/all
+
+# Include target in all.
+all: CMakeFiles/removeObjectsFromMap.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/removeObjectsFromMap.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/removeObjectsFromMap.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles 0
+.PHONY : CMakeFiles/removeObjectsFromMap.dir/rule
+
+# Convenience name for target.
+removeObjectsFromMap: CMakeFiles/removeObjectsFromMap.dir/rule
+.PHONY : removeObjectsFromMap
+
+# clean rule for target.
+CMakeFiles/removeObjectsFromMap.dir/clean:
+	$(MAKE) -f CMakeFiles/removeObjectsFromMap.dir/build.make CMakeFiles/removeObjectsFromMap.dir/clean
+.PHONY : CMakeFiles/removeObjectsFromMap.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/removeObjectsFromMap.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/rosbuild_precompile.dir
 
 # All Build rule for target.
@@ -438,7 +473,7 @@ clean: CMakeFiles/rospack_gensrv.dir/clean
 CMakeFiles/sbpl_arm_planner_node.dir/all: CMakeFiles/rosbuild_precompile.dir/all
 	$(MAKE) -f CMakeFiles/sbpl_arm_planner_node.dir/build.make CMakeFiles/sbpl_arm_planner_node.dir/depend
 	$(MAKE) -f CMakeFiles/sbpl_arm_planner_node.dir/build.make CMakeFiles/sbpl_arm_planner_node.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles  3
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/siddharth/ros-packages/sandbox/sbpl_arm_planning/sbpl_arm_planner_node/build/CMakeFiles  4
 	@echo "Built target sbpl_arm_planner_node"
 .PHONY : CMakeFiles/sbpl_arm_planner_node.dir/all
 

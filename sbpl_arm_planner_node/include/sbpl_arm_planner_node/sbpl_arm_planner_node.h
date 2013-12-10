@@ -123,8 +123,10 @@ namespace sbpl_arm_planner
       bool visualize_trajectory_;
       bool visualize_collision_model_trajectory_;
       bool use_research_heuristic_;
+      bool use_independent_heuristics_;
       bool use_first_solution_;
       bool attached_object_;
+      bool planning_;
       int throttle_;
       int num_joints_;
 
@@ -138,6 +140,7 @@ namespace sbpl_arm_planner
       std::string trajectory_type_;
       std::string arm_description_filename_;
       std::string mprims_filename_;
+      std::string custom_env_filename_;
       std::string attached_object_frame_;
       std::vector<std::string> stats_field_names_;
       std::vector<std::string> joint_names_;
@@ -231,6 +234,8 @@ namespace sbpl_arm_planner
 
       /** \brief Display states expanded by ARA* search */
       void displayARAStarStates();
+
+      void displayCollidedStates();
 
       /** \brief Display the states that are finally in the arm trajectory */
       void displayArmTrajectoryStates(std::vector<int> &solution_state_ids_v);

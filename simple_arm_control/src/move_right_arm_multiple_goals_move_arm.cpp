@@ -105,6 +105,7 @@ int main(int argc, char **argv){
 
   goalA.accept_partial_plans = true;
   goalA.accept_invalid_goals = true;
+  goalA.disable_collision_monitoring = true;
 
   if (nh.ok())
   {

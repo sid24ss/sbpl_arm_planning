@@ -60,7 +60,7 @@
 	   <param name="goal_yaw_4" value="1.362"    type="double"/>
 	   <param name="goal_pitch_4" value="-0.355"  type="double"/>
      
-     <param name="planning_duration" value="20.0" type="double" />
+     <param name="planning_duration" value="10.0" type="double" />
 
 	</node>
 </launch>

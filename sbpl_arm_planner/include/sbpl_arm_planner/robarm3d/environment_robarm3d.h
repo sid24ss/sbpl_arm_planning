@@ -42,6 +42,8 @@
 #include <string>
 #include <list>
 #include <algorithm>
+#include <cstdlib>
+#include <cfloat>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
@@ -136,6 +138,10 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     std::vector<int> expanded_states;
     bool save_expanded_states;
 
+    std::vector<int> collided_states;
+    std::vector<unsigned long int> stateHashMultipliers;
+    int interp_val_;
+    int num_joints_to_plan_;
     /**
      * @brief Default constructor
     */
@@ -154,6 +160,14 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     bool InitializeEnv(const char* sEnvFile);
     
     bool InitializeEnv(const char* sEnvFile, std::string params_file, std::string arm_file);
+
+    /** 
+     * @brief Initialize a custom environment from a text file. Add obstacles directly to the grid.
+     * @param name of environment text file
+     * @return true if successful, false otherwise
+    */
+    bool initCustomEnvironment(std::string sEnvFile);
+    void updateCustomCollisionMap();
 
     /**
      * @brief Check if the states with StateID1 & StateID2 are equivalent
@@ -195,6 +209,8 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
      * @return h(s,s')
     */
     int GetFromToHeuristic(int FromStateID, int ToStateID);
+    int GetFromToHeuristic(int FromStateID, int ToStateID, int goal_id);
+
     
     /**
      * @brief Get the heuristic of a state to the planner's goal state.
@@ -202,6 +218,8 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
      * @return h(s,s_goal)
     */
     int GetGoalHeuristic(int stateID);
+    int GetGoalHeuristic(int stateID, int goal_id);
+
 
     /**
      * @brief Get the heuristic of a state to the planner's start state.
@@ -327,6 +345,9 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     */
     void getExpandedStates(std::vector<std::vector<double> >* ara_states);
 
+    void getCollidedStates(std::vector<std::vector<double> >* collided_states);
+
+
     /**
      * @brief Returns the pose of the states that are finally in the arm trajectory.
      * @param a pointer to a vector of the poses of the states that are in the trajectory.
@@ -365,6 +386,13 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
 
     void getArmChainRootLinkName(std::string &name);
 
+// Added for Euclidean distance state map
+    void printStateMap();
+    unsigned long int getStateHash(std::vector<int> coords);
+    void getCoordsFromHash(std::vector <int> &coords, unsigned long int hash);
+    std::vector< std::vector<int> > seed_ik_solutions;
+    void getEuclideanMappingFromCoords(std::vector<int> coords, std::vector<double> mapping);
+
   private:
 
     EnvROBARM3DConfig_t EnvROBARMCfg;
@@ -379,6 +407,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
 
     OccupancyGrid *grid_;
     BFS3D *dijkstra_;
+    std::vector<BFS3D*> dijkstra_independent_heuristics_;
     BFS3D *elbow_dijkstra_;
     SBPLArmModel *arm_;
     RPYSolver* rpysolver_;
@@ -405,6 +434,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     bool initEnvConfig();
     bool initGeneral();
     void initDijkstra();
+    void initIndependentHeuristics();
     void initElbowDijkstra();
     void readConfiguration(FILE* fCfg);
 
@@ -422,6 +452,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
 
     /** costs */
     int cost(EnvROBARM3DHashEntry_t* HashEntry1, EnvROBARM3DHashEntry_t* HashEntry2, bool bState2IsGoal);
+    int getStateCost(unsigned char dist);
     int getEdgeCost(int FromStateID, int ToStateID);
     void computeCostPerCell();
     void computeCostPerRadian();
@@ -432,13 +463,20 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     void printJointArray(FILE* fOut, EnvROBARM3DHashEntry_t* HashEntry, bool bGoal, bool bVerbose);
 
     /** distance */
-    int getDijkstraDistToGoal(int x, int y, int z) const;
+    int getDijkstraDistToGoal(int x, int y, int z);
+    int getDijkstraDistToGoal(int x, int y, int z, int goal_id);
     double getDistToClosestGoal(double *xyz,int *goal_num); 
     int getElbowHeuristic(int FromStateID, int ToStateID);
     int getEndEffectorHeuristic(int FromStateID, int ToStateID);
+    int getEndEffectorHeuristic(int FromStateID, int ToStateID, int goal_id);
     int getCombinedHeuristic(int FromStateID, int ToStateID);
-    int getEuclideanDistance(int x1, int y1, int z1, int x2, int y2, int z2) const; 
+    int getEuclideanDistance(double x1, double y1, double z1, double x2, double y2, double z2) const; 
     void getBresenhamPath(const int a[],const int b[], std::vector<std::vector<int> > *path);
+
+    std::vector<std::vector<int> > coordToStateHashMap;
+    std::vector<std::vector<int> > stateHashMapToCoord;
+    std::vector<std::vector<double> > euclideanMapping;
+    void readEuclideanMapping();
 
     void clearStats();
 };
@@ -493,7 +531,7 @@ inline void EnvironmentROBARM3D::anglesToCoord(const std::vector<double> &angle,
 }
 
 /* intended to be used to measure distance in cells on a grid */
-int EnvironmentROBARM3D::getEuclideanDistance(int x1, int y1, int z1, int x2, int y2, int z2) const
+int EnvironmentROBARM3D::getEuclideanDistance(double x1, double y1, double z1, double x2, double y2, double z2) const
 {
   return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
 }

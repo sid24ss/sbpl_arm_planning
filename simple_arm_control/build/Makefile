@@ -226,17 +226,17 @@ move_right_arm/fast:
 .PHONY : move_right_arm/fast
 
 #=============================================================================
-# Target rules for targets named move_right_arm_multiple_goals
+# Target rules for targets named move_right_arm_grasp_database
 
 # Build rule for target.
-move_right_arm_multiple_goals: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 move_right_arm_multiple_goals
-.PHONY : move_right_arm_multiple_goals
+move_right_arm_grasp_database: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 move_right_arm_grasp_database
+.PHONY : move_right_arm_grasp_database
 
 # fast build rule for target.
-move_right_arm_multiple_goals/fast:
-	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/build
-.PHONY : move_right_arm_multiple_goals/fast
+move_right_arm_grasp_database/fast:
+	$(MAKE) -f CMakeFiles/move_right_arm_grasp_database.dir/build.make CMakeFiles/move_right_arm_grasp_database.dir/build
+.PHONY : move_right_arm_grasp_database/fast
 
 #=============================================================================
 # Target rules for targets named move_right_arm_multiple_goals_move_arm
@@ -457,19 +457,19 @@ src/move_right_arm.s:
 .PHONY : src/move_right_arm.s
 
 # target to build an object file
-src/move_right_arm_multiple_goals.o:
-	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/src/move_right_arm_multiple_goals.o
-.PHONY : src/move_right_arm_multiple_goals.o
+src/move_right_arm_grasp_database.o:
+	$(MAKE) -f CMakeFiles/move_right_arm_grasp_database.dir/build.make CMakeFiles/move_right_arm_grasp_database.dir/src/move_right_arm_grasp_database.o
+.PHONY : src/move_right_arm_grasp_database.o
 
 # target to preprocess a source file
-src/move_right_arm_multiple_goals.i:
-	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/src/move_right_arm_multiple_goals.i
-.PHONY : src/move_right_arm_multiple_goals.i
+src/move_right_arm_grasp_database.i:
+	$(MAKE) -f CMakeFiles/move_right_arm_grasp_database.dir/build.make CMakeFiles/move_right_arm_grasp_database.dir/src/move_right_arm_grasp_database.i
+.PHONY : src/move_right_arm_grasp_database.i
 
 # target to generate assembly for a file
-src/move_right_arm_multiple_goals.s:
-	$(MAKE) -f CMakeFiles/move_right_arm_multiple_goals.dir/build.make CMakeFiles/move_right_arm_multiple_goals.dir/src/move_right_arm_multiple_goals.s
-.PHONY : src/move_right_arm_multiple_goals.s
+src/move_right_arm_grasp_database.s:
+	$(MAKE) -f CMakeFiles/move_right_arm_grasp_database.dir/build.make CMakeFiles/move_right_arm_grasp_database.dir/src/move_right_arm_grasp_database.s
+.PHONY : src/move_right_arm_grasp_database.s
 
 # target to build an object file
 src/move_right_arm_multiple_goals_move_arm.o:
@@ -503,7 +503,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... move_left_arm"
 	@echo "... move_right_arm"
-	@echo "... move_right_arm_multiple_goals"
+	@echo "... move_right_arm_grasp_database"
 	@echo "... move_right_arm_multiple_goals_move_arm"
 	@echo "... rebuild_cache"
 	@echo "... rosbuild_precompile"
@@ -531,9 +531,9 @@ help:
 	@echo "... src/move_right_arm.o"
 	@echo "... src/move_right_arm.i"
 	@echo "... src/move_right_arm.s"
-	@echo "... src/move_right_arm_multiple_goals.o"
-	@echo "... src/move_right_arm_multiple_goals.i"
-	@echo "... src/move_right_arm_multiple_goals.s"
+	@echo "... src/move_right_arm_grasp_database.o"
+	@echo "... src/move_right_arm_grasp_database.i"
+	@echo "... src/move_right_arm_grasp_database.s"
 	@echo "... src/move_right_arm_multiple_goals_move_arm.o"
 	@echo "... src/move_right_arm_multiple_goals_move_arm.i"
 	@echo "... src/move_right_arm_multiple_goals_move_arm.s"
