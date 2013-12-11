@@ -5,7 +5,7 @@ planner:
   verbose: true
   use_dijkstra_heuristic: true
   use_research_heuristic: false
-  use_independent_heuristics: false
+  use_independent_heuristics: true
   use_uniform_obstacle_cost: false
   use_multiresolution_motion_primitives: false
   obstacle_distance_cost_far: 2

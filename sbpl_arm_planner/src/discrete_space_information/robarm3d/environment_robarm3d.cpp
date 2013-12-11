@@ -2416,8 +2416,8 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID,
     // heur = max(heur, int(euclHeur));
   }
   else{
-    // heur = dijkstra_independent_heuristics_[goal_id-1]->getDist(temp[0],temp[1],temp[2]);
-    heur = dijkstra_->getDist(temp[0],temp[1],temp[2]);
+    heur = dijkstra_independent_heuristics_[goal_id-1]->getDist(temp[0],temp[1],temp[2]);
+    // heur = dijkstra_->getDist(temp[0],temp[1],temp[2]);
   }
   // else
     // heur = edist_to_goal_m * prms_.cost_per_meter_;
