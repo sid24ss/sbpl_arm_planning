@@ -12,6 +12,7 @@ private:
   // used to trigger the arm movement action
   TrajClient* traj_client_;
 
+
 public:
   //! Initialize the action client and wait for action server to come up
   RobotArm() 
@@ -37,6 +38,7 @@ public:
     // When to start the trajectory: 1s from now
     goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
     traj_client_->sendGoal(goal);
+
   }
 
   //! Generates a simple trajectory with two waypoints, used as an example
@@ -87,7 +89,7 @@ public:
     }
     // To be reached 1 second after starting along the trajectory
     goal.trajectory.points[0].time_from_start = ros::Duration(2.0);
-
+    
     //we are done; return the goal
     return goal;
   }
@@ -113,4 +115,5 @@ int main(int argc, char** argv)
   {
     usleep(50000);
   }
+
 }

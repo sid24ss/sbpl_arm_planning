@@ -168,11 +168,11 @@ int SBPLArmPlannerNode::run()
 
 bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
 {
-  // planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
+  planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
 
-  planner_ = new MPlanner(&sbpl_arm_env_, 3, forward_search_);
-  planner_->set_initialsolution_eps1(5);
-  planner_->set_initialsolution_eps2(2);
+  // planner_ = new MPlanner(&sbpl_arm_env_, 3, forward_search_);
+  // planner_->set_initialsolution_eps1(5);
+  // planner_->set_initialsolution_eps2(2);
 
   if(robot_description_.empty())
   {
@@ -1174,6 +1174,8 @@ void SBPLArmPlannerNode::displayARAStarStates()
   std::vector<double> expanded_color(4,1);
   expanded_color[0] = 0.5;
   expanded_color[2] = 0;
+  geometry_msgs::Pose pose;
+  
 
   sbpl_arm_env_.getExpandedStates(&(expanded_states));
 
@@ -1191,6 +1193,18 @@ void SBPLArmPlannerNode::displayARAStarStates()
     detailed_color[1][1] = 1;
     detailed_color[1][2] = 0;
     detailed_color[1][3] = 1;
+
+    for (int i = 0; i < expanded_states.size(); ++i)
+    {
+      pose.position.x = expanded_states[i][0];
+      pose.position.y = expanded_states[i][1];
+      pose.position.z = expanded_states[i][2];
+      std::stringstream ssTemp;
+      std::string sTemp;
+      ssTemp << expanded_states[i][6];
+      sTemp = ssTemp.str();
+      aviz_->visualizeText(pose, sTemp.c_str(), "heuristic_value", i, 0);
+    }
 
     aviz_->visualizeDetailedStates(expanded_states, detailed_color,"expanded",0.01);
   }

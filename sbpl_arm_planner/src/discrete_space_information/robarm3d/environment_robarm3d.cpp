@@ -506,6 +506,13 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
         EnvROBARM.goalHashEntry->action = i;
         EnvROBARM.goalHashEntry->dist = dist;
 
+        // We have angles here. Modify it, get a new goal.
+        std::vector<double> new_goal_angles (angles.begin(), angles.end());
+        std::vector<double> new_goal_pose(6,0);
+        new_goal_angles[0] -= 0.5;
+        arm_->getPlanningJointPose(new_goal_angles,new_goal_pose);
+        ROS_INFO("Next goal pose: %f %f %f %f %f %f", new_goal_pose[0], new_goal_pose[1], new_goal_pose[2], new_goal_pose[3], new_goal_pose[4], new_goal_pose[5]);
+
         SBPL_DEBUG("[GetSuccs] Goal successor is generated. SourceStateID: %d (distance to nearest obstacle: %0.2fm); Grid coords: %d %d %d",SourceStateID,  (double)dist*grid_->getResolution(), endeff[0],endeff[1],endeff[2]);
         break;
       }
@@ -675,7 +682,7 @@ void EnvironmentROBARM3D::readEuclideanMapping(){
     euclideanMapping.push_back(v);
   }while(!feof(fCfg));
   ROS_INFO("Initialized Euclidean Mapping : %d states", euclideanMapping.size());
-  // ROS_INFO("First Euclidean Mapping : %f %f %f states", euclideanMapping[0][0], euclideanMapping[0][1], euclideanMapping[0][2]);
+  ROS_INFO("First Euclidean Mapping : %f %f %f %f", euclideanMapping[0][0], euclideanMapping[0][1], euclideanMapping[0][2],  euclideanMapping[0][3]);
 }
 
 void EnvironmentROBARM3D::printHashTableHist()
@@ -1043,40 +1050,41 @@ bool EnvironmentROBARM3D::initGeneral()
 
   // Euclidean distance - MVU
   // Initialize the stateHashMultipliers
-  // interp_val_ = 8;
-  // num_joints_to_plan_ = 3;
-  // stateHashMultipliers.resize(arm_->num_joints_,1);
-  // stateHashMultipliers[0] = 1;
-  // stateHashMultipliers[1] = 22;
-  // stateHashMultipliers[2] = 22*12;
-  // stateHashMultipliers[3] = 22*12*35;
-  // stateHashMultipliers[4] = 22*12*35*19;
-  // for (int i = 1; i < stateHashMultipliers.size(); ++i)
-  // {
-  //   // stateHashMultipliers[i] = stateHashMultipliers[i-1]*EnvROBARMCfg.anglevals[i-1]/interp_val_;
-  //   ROS_INFO("stateHashMultipliers: %d, %lld", i, stateHashMultipliers[i]);
-  // }
-  // coordToStateHashMap.resize(num_joints_to_plan_);
-  // stateHashMapToCoord.resize(num_joints_to_plan_);
-  // int coordToStateHashMapValues[][35] = {
-  //   {0, 8, 16, 24, 32, 40, 232, 240, 248, 256, 264, 272, 280, 288, 296, 304, 312, 320, 328, 336, 344, 352},
-  //   {0, 8, 16, 24, 32, 40, 48, 56, 64, 336, 344, 352},
-  //   {0, 8, 16, 24, 32, 40, 48, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 264, 272, 280, 288, 296, 304, 312, 320, 328, 336, 344, 352},
-  //   {0, 8, 16, 232, 240, 248, 256, 264, 272, 280, 288, 296, 304, 312, 320, 328, 336, 344, 352}};
-  // for (int i = 0; i < coordToStateHashMap.size(); ++i)
-  // {
-  //   coordToStateHashMap[i].assign(&coordToStateHashMapValues[i][0],&coordToStateHashMapValues[i][0] + sizeof(coordToStateHashMapValues[i])/sizeof(coordToStateHashMapValues[i][0]));
-  //   coordToStateHashMap[i].resize(stateHashMultipliers[i+1]/stateHashMultipliers[i]);
-  // }
-  // for (int i = 0; i < coordToStateHashMap.size(); ++i)
-  // {
-  //   stateHashMapToCoord[i].resize(360,0);
-  //   for (int j = 0; j < coordToStateHashMap[i].size(); ++j)
-  //   {
-  //     stateHashMapToCoord[i][coordToStateHashMap[i][j]] = j;
-  //   }
-  // }
-  // readEuclideanMapping();
+  pviz.setReferenceFrame("/base_footprint");
+  interp_val_ = 8;
+  num_joints_to_plan_ = 3;
+  stateHashMultipliers.resize(arm_->num_joints_,1);
+  stateHashMultipliers[0] = 1;
+  stateHashMultipliers[1] = 22;
+  stateHashMultipliers[2] = 22*12;
+  stateHashMultipliers[3] = 22*12*35;
+  stateHashMultipliers[4] = 22*12*35*19;
+  for (int i = 1; i < stateHashMultipliers.size(); ++i)
+  {
+    // stateHashMultipliers[i] = stateHashMultipliers[i-1]*EnvROBARMCfg.anglevals[i-1]/interp_val_;
+    ROS_INFO("stateHashMultipliers: %d, %lld", i, stateHashMultipliers[i]);
+  }
+  coordToStateHashMap.resize(num_joints_to_plan_);
+  stateHashMapToCoord.resize(num_joints_to_plan_);
+  int coordToStateHashMapValues[][35] = {
+    {0, 8, 16, 24, 32, 40, 232, 240, 248, 256, 264, 272, 280, 288, 296, 304, 312, 320, 328, 336, 344, 352},
+    {0, 8, 16, 24, 32, 40, 48, 56, 64, 336, 344, 352},
+    {0, 8, 16, 24, 32, 40, 48, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 264, 272, 280, 288, 296, 304, 312, 320, 328, 336, 344, 352},
+    {0, 8, 16, 232, 240, 248, 256, 264, 272, 280, 288, 296, 304, 312, 320, 328, 336, 344, 352}};
+  for (int i = 0; i < coordToStateHashMap.size(); ++i)
+  {
+    coordToStateHashMap[i].assign(&coordToStateHashMapValues[i][0],&coordToStateHashMapValues[i][0] + sizeof(coordToStateHashMapValues[i])/sizeof(coordToStateHashMapValues[i][0]));
+    coordToStateHashMap[i].resize(stateHashMultipliers[i+1]/stateHashMultipliers[i]);
+  }
+  for (int i = 0; i < coordToStateHashMap.size(); ++i)
+  {
+    stateHashMapToCoord[i].resize(360,0);
+    for (int j = 0; j < coordToStateHashMap[i].size(); ++j)
+    {
+      stateHashMapToCoord[i][coordToStateHashMap[i][j]] = j;
+    }
+  }
+  readEuclideanMapping();
   /******* End Euclidean Heuristics init  *********/
 
   SBPL_INFO("[env] Use Research heuristics: %d",prms_.use_research_heuristic_);
@@ -1491,43 +1499,65 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
   // Check if an IK solution exists for the goal pose before we do the search
   // we plan even if there is no solution
   std::vector<double> pose(7,0);
+  std::vector<double> base_pose(3,0);
   std::vector<double> jnt_angles(7,0);
   std::vector<int> ik_sol_coords(7,0);
+  std::vector <double> start_angles(7,0);
+  std::vector <double> goalStateEuclMapping(num_joints_to_plan_,0);
+  std::vector <double> curStateEuclMapping(num_joints_to_plan_,0);
+  unsigned int dist_to_seed_ik = 40000;
+  unsigned int temp_dist;
 
 
-  // Seed IK Routine; let's say we do 5 sample states for now.
-  // pose[0] = goals[0][0];
-  // pose[1] = goals[0][1];
-  // pose[2] = goals[0][2];
-  // pose[3] = goals[0][7];
-  // pose[4] = goals[0][8];
-  // pose[5] = goals[0][9];
-  // pose[6] = goals[0][10];
-  // int num_states = 0;
-  // unsigned char dist_ik;
-  // while(num_states < 5){
-  //   anglesToCoord(EnvROBARMCfg.ik_solution, ik_sol_coords);
-  //   ik_sol_coords[2] += (rand()%10 -5)*8;
-  //   coordToAngles(ik_sol_coords,jnt_angles);
-  //   if(!arm_->computeIK(pose, jnt_angles, EnvROBARMCfg.ik_solution))
-  //     SBPL_INFO("[setGoalPosition] No valid IK solution for the goal pose.");
-  //   else
-  //   {
-  //     if(!cspace_->checkCollision(EnvROBARMCfg.ik_solution, false, false, dist_ik))
-  //       SBPL_DEBUG("[setGoalPosition] An IK solution for the goal pose was found but it's in collision. Valid solutions may exist.");
-  //     else{
-  //       SBPL_INFO("[setGoalPosition] A valid IK solution for the goal pose was found.");
-  //       // Convert to coords so that we can get the hash
-  //       anglesToCoord(EnvROBARMCfg.ik_solution, ik_sol_coords);
-  //       seed_ik_solutions.push_back(ik_sol_coords);
-  //       ROS_INFO("Adding :: %d %d %d %d to the init IK sol", ik_sol_coords[0],ik_sol_coords[1],ik_sol_coords[2],ik_sol_coords[3]);
-  //       num_states++;
-  //       // Perturb for next seed
-  //       ik_sol_coords[2] += (rand()%10 -5)*8;
-  //       coordToAngles(ik_sol_coords,jnt_angles);
-  //     }
-  //   }
-  // }
+  coordToAngles(EnvROBARM.startHashEntry->coord,start_angles);
+  getEuclideanMappingFromCoords(EnvROBARM.startHashEntry->coord, curStateEuclMapping);
+
+
+
+  // Seed IK Routine; let's say we do 5 sample states for now. <For Euclidean heuristic mapping>
+  pose[0] = goals[0][0];
+  pose[1] = goals[0][1];
+  pose[2] = goals[0][2];
+  pose[3] = goals[0][7];
+  pose[4] = goals[0][8];
+  pose[5] = goals[0][9];
+  pose[6] = goals[0][10];
+  int num_states = 0;
+  unsigned char dist_ik;
+  while(num_states < 20){
+    anglesToCoord(EnvROBARMCfg.ik_solution, ik_sol_coords);
+    ik_sol_coords[2] += (rand()%10 -5)*8;
+    coordToAngles(ik_sol_coords,jnt_angles);
+    if(!arm_->computeIK(pose, jnt_angles, EnvROBARMCfg.ik_solution))
+      SBPL_INFO("[setGoalPosition] No valid IK solution for the goal pose.");
+    else
+    {
+      if(!cspace_->checkCollision(EnvROBARMCfg.ik_solution, false, false, dist_ik))
+        SBPL_DEBUG("[setGoalPosition] An IK solution for the goal pose was found but it's in collision. Valid solutions may exist.");
+      else{
+        SBPL_INFO("[setGoalPosition] A valid IK solution for the goal pose was found.");
+        anglesToCoord(EnvROBARMCfg.ik_solution, ik_sol_coords);
+
+        getEuclideanMappingFromCoords(ik_sol_coords, goalStateEuclMapping);
+        // Convert to coords so that we can get the hash
+        temp_dist = getEuclideanDistance(curStateEuclMapping[0], curStateEuclMapping[1], curStateEuclMapping[2], goalStateEuclMapping[0], goalStateEuclMapping[1], goalStateEuclMapping[2]);
+        ROS_INFO("temp_dist %d", temp_dist);
+        if( temp_dist < dist_to_seed_ik){
+          dist_to_seed_ik = temp_dist;
+          seed_ik_solutions.insert(seed_ik_solutions.begin(),ik_sol_coords);
+          ROS_INFO("Adding :: %d %d %d %d to the init IK sol", ik_sol_coords[0],ik_sol_coords[1],ik_sol_coords[2],ik_sol_coords[3]);
+
+        }
+        num_states++;
+        // Perturb for next seed
+        ik_sol_coords[2] += (rand()%10 -5)*8;
+        coordToAngles(ik_sol_coords,jnt_angles);
+
+      }
+    }
+  }
+  coordToAngles(seed_ik_solutions[0],jnt_angles);
+  pviz.visualizeRobot(jnt_angles, start_angles, base_pose, 0.0, 30.0, "robot_pviz", 1);
 
   EnvROBARMCfg.EndEffGoals.resize(goals.size());
   for(unsigned int i = 0; i < EnvROBARMCfg.EndEffGoals.size(); i++)
@@ -2382,8 +2412,8 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID)
 int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID, int goal_id)
 {
   int heur = 0;//, closest_goal = 0;
-  // unsigned int euclHeur = UINT_MAX;
-  // std::vector<double> curStateEuclMapping(7,0), goalStateEuclMapping(7,0);
+  unsigned int euclHeur = UINT_MAX;
+  std::vector<double> curStateEuclMapping(7,0), goalStateEuclMapping(7,0);
   // double FromEndEff_m[3];
   // double edist_to_goal_m;
 
@@ -2399,21 +2429,25 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID,
 
   //get distance heuristic
   // if(prms_.use_dijkstra_heuristic_)
-  // getEuclideanMappingFromCoords(FromHashEntry->coord, curStateEuclMapping);
+  getEuclideanMappingFromCoords(FromHashEntry->coord, curStateEuclMapping);
+  // ROS_INFO("curStateEucl: %f %f %f", curStateEuclMapping[0], curStateEuclMapping[1], curStateEuclMapping[2]);
   if(goal_id == 0){
     heur = dijkstra_->getDist(temp[0],temp[1],temp[2]);
-    // for (int i = 0; i < seed_ik_solutions.size(); ++i)
-    // {
-    //   getEuclideanMappingFromCoords(seed_ik_solutions[i], goalStateEuclMapping);
-    //   unsigned int tempEucl = getEuclideanDistance(curStateEuclMapping[0], curStateEuclMapping[1], curStateEuclMapping[2], goalStateEuclMapping[0], goalStateEuclMapping[1], goalStateEuclMapping[2]);
-    //   euclHeur = min(euclHeur, tempEucl);
-    // }
-    // // Set to 0 if it was unchanged.
+    for (int i = 0; i < seed_ik_solutions.size(); ++i)
+    {
+      getEuclideanMappingFromCoords(seed_ik_solutions[i], goalStateEuclMapping);
+      unsigned int tempEucl = getEuclideanDistance(curStateEuclMapping[0], curStateEuclMapping[1], curStateEuclMapping[2], goalStateEuclMapping[0], goalStateEuclMapping[1], goalStateEuclMapping[2]);
+      // unsigned int tempEucl = getEuclideanDistance4D(curStateEuclMapping[0], curStateEuclMapping[1], curStateEuclMapping[2], curStateEuclMapping[3], goalStateEuclMapping[0], goalStateEuclMapping[1], goalStateEuclMapping[2], goalStateEuclMapping[3]);
+      // unsigned int tempEucl = getEuclideanDistance(curStateEuclMapping[0], curStateEuclMapping[1], curStateEuclMapping[3],goalStateEuclMapping[0], goalStateEuclMapping[1], goalStateEuclMapping[3]);
+      euclHeur = min(euclHeur, tempEucl);
+    }
+    // Set to 0 if it was unchanged.
     // euclHeur = (euclHeur == UINT_MAX)?0:euclHeur;
 
-    // // return the max of both
-    // // ROS_INFO("heur: %d %d", heur, euclHeur);
-    // heur = max(heur, int(euclHeur));
+    // return the max of both
+    // ROS_INFO("heur: %d %d", heur, euclHeur);
+    heur = max(heur, int(euclHeur));
+    // heur = euclHeur;
   }
   else{
     heur = dijkstra_independent_heuristics_[goal_id-1]->getDist(temp[0],temp[1],temp[2]);
@@ -2428,17 +2462,19 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID,
   return heur;
 }
 
-void EnvironmentROBARM3D::getEuclideanMappingFromCoords(std::vector<int> coords, std::vector<double> mapping){
+void EnvironmentROBARM3D::getEuclideanMappingFromCoords(std::vector<int> coords, std::vector<double> &mapping){
   std::vector<double> lamdas(num_joints_to_plan_,1);
   std::vector<int> next_state(7,0);
   for (int i = 0; i < num_joints_to_plan_; ++i)
   {
-    lamdas[i] = (coords[i] - coords[i]%interp_val_)/interp_val_;
+    lamdas[i] = 1.0f - double(coords[i]%interp_val_)/interp_val_;
+    // ROS_INFO("lamdas: %f", lamdas[i]);
     next_state[i] = (coords[i] - coords[i]%interp_val_);
     next_state[i] += (next_state[i]==352)?0:interp_val_;
   }
   int cur_hash = getStateHash(coords);
   int next_hash = getStateHash(next_state);
+  // ROS_INFO("%d %d", cur_hash, next_hash);
   for (int i = 0; i < num_joints_to_plan_; ++i)
   {
     mapping[i] = euclideanMapping[cur_hash-1][i]*lamdas[i] + (1-lamdas[i])*euclideanMapping[next_hash-1][i];

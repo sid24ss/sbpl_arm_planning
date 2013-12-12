@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cfloat>
+#include <pviz/pviz.h>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
@@ -391,7 +392,7 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     unsigned long int getStateHash(std::vector<int> coords);
     void getCoordsFromHash(std::vector <int> &coords, unsigned long int hash);
     std::vector< std::vector<int> > seed_ik_solutions;
-    void getEuclideanMappingFromCoords(std::vector<int> coords, std::vector<double> mapping);
+    void getEuclideanMappingFromCoords(std::vector<int> coords, std::vector<double> &mapping);
 
   private:
 
@@ -471,12 +472,14 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     int getEndEffectorHeuristic(int FromStateID, int ToStateID, int goal_id);
     int getCombinedHeuristic(int FromStateID, int ToStateID);
     int getEuclideanDistance(double x1, double y1, double z1, double x2, double y2, double z2) const; 
+    int getEuclideanDistance4D(double x1, double y1, double z1, double w1, double x2, double y2, double z2, double w2) const; 
     void getBresenhamPath(const int a[],const int b[], std::vector<std::vector<int> > *path);
 
     std::vector<std::vector<int> > coordToStateHashMap;
     std::vector<std::vector<int> > stateHashMapToCoord;
     std::vector<std::vector<double> > euclideanMapping;
     void readEuclideanMapping();
+    PViz pviz;
 
     void clearStats();
 };
@@ -535,6 +538,12 @@ int EnvironmentROBARM3D::getEuclideanDistance(double x1, double y1, double z1, d
 {
   return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
 }
+
+int EnvironmentROBARM3D::getEuclideanDistance4D(double x1, double y1, double z1, double w1, double x2, double y2, double z2, double w2) const
+{
+  return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2) + (w1-w2)*(w1-w2));
+}
+
 
 inline SBPLCollisionSpace* EnvironmentROBARM3D::getCollisionSpace() const
 {
