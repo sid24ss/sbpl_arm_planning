@@ -139,9 +139,6 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     bool save_expanded_states;
 
     std::vector<int> collided_states;
-    std::vector<unsigned long int> stateHashMultipliers;
-    int interp_val_;
-    int num_joints_to_plan_;
     /**
      * @brief Default constructor
     */
@@ -385,13 +382,6 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
     void getElbowPoints(std::vector<std::vector<double> > &elbow_points);
 
     void getArmChainRootLinkName(std::string &name);
-
-// Added for Euclidean distance state map
-    void printStateMap();
-    unsigned long int getStateHash(std::vector<int> coords);
-    void getCoordsFromHash(std::vector <int> &coords, unsigned long int hash);
-    std::vector< std::vector<int> > seed_ik_solutions;
-    void getEuclideanMappingFromCoords(std::vector<int> coords, std::vector<double> mapping);
 
   private:
 

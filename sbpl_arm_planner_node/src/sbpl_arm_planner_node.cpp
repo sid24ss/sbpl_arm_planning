@@ -168,11 +168,7 @@ int SBPLArmPlannerNode::run()
 
 bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
 {
-  // planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
-
-  planner_ = new MPlanner(&sbpl_arm_env_, 3, forward_search_);
-  planner_->set_initialsolution_eps1(5);
-  planner_->set_initialsolution_eps2(2);
+  planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
 
   if(robot_description_.empty())
   {
@@ -887,34 +883,6 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
       ROS_INFO("%44s: %0.2f", stats_field_names_[i].c_str(), stats_[i]);
     }
     ROS_INFO("\n");
-
-    // FILE* stats_file = fopen("/home/siddharth/IMHA_debug_single_heuristic_timing.csv", "a");
-    // std::vector<std::string> names;
-    // std::vector<std::string> values;
-        
-    // for(size_t i = 0; i < stats_.size(); ++i){
-    //   names.push_back(stats_field_names_[i]);
-    //   values.push_back(boost::lexical_cast<std::string>(stats_[i]));
-    // }
-        
-    // for(size_t i = 0; i < names.size(); i++){
-    //   SBPL_FPRINTF(stats_file, "%s", names[i].c_str());
-    //   if(i + 1 == names.size()){
-    //     SBPL_FPRINTF(stats_file, "\n");
-    //   } else {
-    //     SBPL_FPRINTF(stats_file, ",");
-    //   }
-    // }
-    // for(size_t i = 0; i < values.size(); i++){
-    //   SBPL_FPRINTF(stats_file, "%s", values[i].c_str());
-    //   if(i + 1 == names.size()){
-    //     SBPL_FPRINTF(stats_file, "\n");
-    //   } else {
-    //     SBPL_FPRINTF(stats_file, ",");
-    //   }
-    // }
-    // fclose(stats_file);
-
   }
 
   return b_ret;
