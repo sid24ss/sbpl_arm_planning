@@ -386,13 +386,6 @@ class EnvironmentROBARM3D: public DiscreteSpaceInformation
 
     void getArmChainRootLinkName(std::string &name);
 
-// Added for Euclidean distance state map
-    void printStateMap();
-    unsigned long int getStateHash(std::vector<int> coords);
-    void getCoordsFromHash(std::vector <int> &coords, unsigned long int hash);
-    std::vector< std::vector<int> > seed_ik_solutions;
-    void getEuclideanMappingFromCoords(std::vector<int> coords, std::vector<double> mapping);
-
   private:
 
     EnvROBARM3DConfig_t EnvROBARMCfg;
