@@ -168,11 +168,11 @@ int SBPLArmPlannerNode::run()
 
 bool SBPLArmPlannerNode::initializePlannerAndEnvironment()
 {
-	// planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
+	planner_ = new ARAPlanner(&sbpl_arm_env_, forward_search_);
 
-	planner_ = new MPlanner(&sbpl_arm_env_, 3, forward_search_);
-	planner_->set_initialsolution_eps1(5);
-	planner_->set_initialsolution_eps2(2);
+	// planner_ = new MPlanner(&sbpl_arm_env_, 3, forward_search_);
+	// planner_->set_initialsolution_eps1(5);
+	// planner_->set_initialsolution_eps2(2);
 
 	if(robot_description_.empty())
 	{
@@ -888,7 +888,7 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
 		}
 		ROS_INFO("\n");
 
-		FILE* stats_file = fopen("/home/siddharth/Dropbox/Academics/CMU/Research/SBPL/Multiple_Hypothesis_Heuristics/raw_data/inflated/IMHA_dijkstra.csv", "a");
+		FILE* stats_file = fopen("/home/siddharth/Dropbox/Academics/CMU/Research/SBPL/Multiple_Hypothesis_Heuristics/raw_data/inflated/ARA_dijkstra.csv", "a");
 		std::vector<std::string> names;
 		std::vector<std::string> values;
 				
