@@ -412,14 +412,7 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
 
 	//check if cell is close enough to goal to use higher resolution actions
 	// TODO: Check distance to all goals. Is this captured in the Dijkstra costs itself?
-	// int dist_to_goal = getDijkstraDistToGoal(HashEntry->xyz[0],HashEntry->xyz[1],HashEntry->xyz[2]);
-	int closest_goal;
-	double cur_xyz[3];
-	cur_xyz[0] = HashEntry->xyz[0];
-	cur_xyz[1] = HashEntry->xyz[1];
-	cur_xyz[2] = HashEntry->xyz[2];
-	int dist_to_goal = getDistToClosestGoal(cur_xyz, &closest_goal);
-
+	int dist_to_goal = getDijkstraDistToGoal(HashEntry->xyz[0],HashEntry->xyz[1],HashEntry->xyz[2]);
 
 	if(prms_.use_multires_mprims_)
 	{
@@ -938,7 +931,7 @@ bool EnvironmentROBARM3D::initGeneral()
 	computeCostPerCell();
 
 	//initialize dijkstra 
-	// initDijkstra();
+	initDijkstra();
 
 	SBPL_INFO("[env] Use Research heuristics: %d",prms_.use_research_heuristic_);
 	SBPL_INFO("[env] Use Independent heuristics: %d",prms_.use_independent_heuristics_);
@@ -1421,16 +1414,16 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
 		}
 	#endif
 
-	// if(prms_.use_independent_heuristics_){
-	// 	initIndependentHeuristics();
-	// }
+	if(prms_.use_independent_heuristics_){
+		initIndependentHeuristics();
+	}
 
 	// precompute heuristics
-	// if(!precomputeHeuristics())
-	// {
-	// 	SBPL_ERROR("Precomputing heuristics failed. Exiting.");
-	// 	return false;
-	// }
+	if(!precomputeHeuristics())
+	{
+		SBPL_ERROR("Precomputing heuristics failed. Exiting.");
+		return false;
+	}
 
 	clearStats();
 
@@ -1490,22 +1483,22 @@ bool EnvironmentROBARM3D::precomputeHeuristics()
 		heuristic_thread_ = new boost::thread(boost::bind(&EnvironmentROBARM3D::precomputeElbowHeuristic, this));
 	}
 
-	// precompute h_endeff
-	// if(!dijkstra_->runBFS())
-	// {
-	// 	SBPL_ERROR("[env] Executing the BFS for the end-effector heuristic failed. Exiting.");
-	// 	return false;
-	// }
+	//precompute h_endeff
+	if(!dijkstra_->runBFS())
+	{
+		SBPL_ERROR("[env] Executing the BFS for the end-effector heuristic failed. Exiting.");
+		return false;
+	}
 
-	// if(prms_.use_independent_heuristics_){
-	// 	for (int i = 0; i < dijkstra_independent_heuristics_.size(); ++i)
-	// 	{
-	// 		if(!dijkstra_independent_heuristics_[i]->runBFS()){
-	// 			SBPL_ERROR("[env] Executing the independent BFS for the end-effector heuristic failed. Exiting.");
-	// 			return false;
-	// 		}
-	// 	}
-	// }
+	if(prms_.use_independent_heuristics_){
+		for (int i = 0; i < dijkstra_independent_heuristics_.size(); ++i)
+		{
+			if(!dijkstra_independent_heuristics_[i]->runBFS()){
+				SBPL_ERROR("[env] Executing the independent BFS for the end-effector heuristic failed. Exiting.");
+				return false;
+			}
+		}
+	}
 
 	//kill the elbow heuristic thread 
 	if(prms_.use_research_heuristic_)
@@ -2211,23 +2204,23 @@ int EnvironmentROBARM3D::getEndEffectorHeuristic(int FromStateID, int ToStateID,
 	int temp[3] = {FromHashEntry->xyz[0], FromHashEntry->xyz[1], FromHashEntry->xyz[2]};
 
 	//distance to closest goal in meters
-	grid_->gridToWorld(FromHashEntry->xyz[0],FromHashEntry->xyz[1],FromHashEntry->xyz[2],FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
-	edist_to_goal_m = getDistToClosestGoal(FromEndEff_m, &closest_goal);  //Gets Euclidean Distance
+	// grid_->gridToWorld(FromHashEntry->xyz[0],FromHashEntry->xyz[1],FromHashEntry->xyz[2],FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
+	// edist_to_goal_m = getDistToClosestGoal(FromEndEff_m, &closest_goal);  //Gets Euclidean Distance
 
 	//ROS_ERROR("heur_xyz: %0.3f %0.3f %0.3f", FromEndEff_m[0],FromEndEff_m[1],FromEndEff_m[2]);
 
 	//get distance heuristic
 	// if(prms_.use_dijkstra_heuristic_)
 	if(goal_id == 0){
-		// heur = dijkstra_->getDist(temp[0],temp[1],temp[2]);
-		heur = edist_to_goal_m * prms_.cost_per_meter_;
+		heur = dijkstra_->getDist(temp[0],temp[1],temp[2]);
+		// heur = edist_to_goal_m * prms_.cost_per_meter_;
 	}
 	else{
-		// heur = dijkstra_independent_heuristics_[goal_id-1]->getDist(temp[0],temp[1],temp[2]);
+		heur = dijkstra_independent_heuristics_[goal_id-1]->getDist(temp[0],temp[1],temp[2]);
 		//Get Euclidean distance to that particular goal.
-		heur = sqrt((EnvROBARMCfg.EndEffGoals[goal_id-1].pos[0] - FromEndEff_m[0])*(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[0] - FromEndEff_m[0]) +
-				(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[1] - FromEndEff_m[1])*(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[1] - FromEndEff_m[1]) +
-				(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[2] - FromEndEff_m[2])*(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[2] - FromEndEff_m[2])) * prms_.cost_per_meter_;
+		// heur = sqrt((EnvROBARMCfg.EndEffGoals[goal_id-1].pos[0] - FromEndEff_m[0])*(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[0] - FromEndEff_m[0]) +
+		// 		(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[1] - FromEndEff_m[1])*(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[1] - FromEndEff_m[1]) +
+		// 		(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[2] - FromEndEff_m[2])*(EnvROBARMCfg.EndEffGoals[goal_id-1].pos[2] - FromEndEff_m[2])) * prms_.cost_per_meter_;
 	}
 
 	//storing heuristic now for debugging 5/20/10

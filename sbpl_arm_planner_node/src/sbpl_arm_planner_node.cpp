@@ -888,32 +888,32 @@ bool SBPLArmPlannerNode::plan(std::vector<trajectory_msgs::JointTrajectoryPoint>
 		}
 		ROS_INFO("\n");
 
-		// FILE* stats_file = fopen("/home/siddharth/Dropbox/Academics/CMU/Research/SBPL/Multiple_Hypothesis_Heuristics/raw_data/inflated/IMHA_euclidean.csv", "a");
-		// std::vector<std::string> names;
-		// std::vector<std::string> values;
+		FILE* stats_file = fopen("/home/siddharth/Dropbox/Academics/CMU/Research/SBPL/Multiple_Hypothesis_Heuristics/raw_data/inflated/IMHA_dijkstra.csv", "a");
+		std::vector<std::string> names;
+		std::vector<std::string> values;
 				
-		// for(size_t i = 0; i < stats_.size(); ++i){
-		// 	names.push_back(stats_field_names_[i]);
-		// 	values.push_back(boost::lexical_cast<std::string>(stats_[i]));
-		// }
+		for(size_t i = 0; i < stats_.size(); ++i){
+			names.push_back(stats_field_names_[i]);
+			values.push_back(boost::lexical_cast<std::string>(stats_[i]));
+		}
 				
-		// for(size_t i = 0; i < names.size(); i++){
-		// 	SBPL_FPRINTF(stats_file, "%s", names[i].c_str());
-		// 	if(i + 1 == names.size()){
-		// 		SBPL_FPRINTF(stats_file, "\n");
-		// 	} else {
-		// 		SBPL_FPRINTF(stats_file, ",");
-		// 	}
-		// }
-		// for(size_t i = 0; i < values.size(); i++){
-		// 	SBPL_FPRINTF(stats_file, "%s", values[i].c_str());
-		// 	if(i + 1 == names.size()){
-		// 		SBPL_FPRINTF(stats_file, "\n");
-		// 	} else {
-		// 		SBPL_FPRINTF(stats_file, ",");
-		// 	}
-		// }
-		// fclose(stats_file);
+		for(size_t i = 0; i < names.size(); i++){
+			SBPL_FPRINTF(stats_file, "%s", names[i].c_str());
+			if(i + 1 == names.size()){
+				SBPL_FPRINTF(stats_file, "\n");
+			} else {
+				SBPL_FPRINTF(stats_file, ",");
+			}
+		}
+		for(size_t i = 0; i < values.size(); i++){
+			SBPL_FPRINTF(stats_file, "%s", values[i].c_str());
+			if(i + 1 == names.size()){
+				SBPL_FPRINTF(stats_file, "\n");
+			} else {
+				SBPL_FPRINTF(stats_file, ",");
+			}
+		}
+		fclose(stats_file);
 
 	}
 
