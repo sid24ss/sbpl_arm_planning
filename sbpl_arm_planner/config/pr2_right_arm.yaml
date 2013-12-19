@@ -24,7 +24,7 @@ debug:
   print_out_path: true
 
 visualizations:
-  heuristic: true
+  heuristic: false
   goal: true
   expanded_states: true
   trajectory: true

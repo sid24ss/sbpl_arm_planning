@@ -412,7 +412,14 @@ void EnvironmentROBARM3D::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vect
 
 	//check if cell is close enough to goal to use higher resolution actions
 	// TODO: Check distance to all goals. Is this captured in the Dijkstra costs itself?
-	int dist_to_goal = getDijkstraDistToGoal(HashEntry->xyz[0],HashEntry->xyz[1],HashEntry->xyz[2]);
+	// int dist_to_goal = getDijkstraDistToGoal(HashEntry->xyz[0],HashEntry->xyz[1],HashEntry->xyz[2]);
+	int closest_goal;
+	double cur_xyz[3];
+	cur_xyz[0] = HashEntry->xyz[0];
+	cur_xyz[1] = HashEntry->xyz[1];
+	cur_xyz[2] = HashEntry->xyz[2];
+	int dist_to_goal = getDistToClosestGoal(cur_xyz, &closest_goal);
+
 
 	if(prms_.use_multires_mprims_)
 	{
@@ -931,7 +938,7 @@ bool EnvironmentROBARM3D::initGeneral()
 	computeCostPerCell();
 
 	//initialize dijkstra 
-	initDijkstra();
+	// initDijkstra();
 
 	SBPL_INFO("[env] Use Research heuristics: %d",prms_.use_research_heuristic_);
 	SBPL_INFO("[env] Use Independent heuristics: %d",prms_.use_independent_heuristics_);
@@ -1106,16 +1113,16 @@ bool EnvironmentROBARM3D::isGoalStateWithIK(const std::vector<double> &pose, con
 	// ROS_INFO("[isGoalPostion] %u %u %u", goal.xyz[0],goal.xyz[1],goal.xyz[2]);
 
 	//check distance to goal, if within range then run IK
-	if(prms_.use_dijkstra_heuristic_)
-	{
-		int endeff[3];
-		grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
-		int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
+	// if(prms_.use_dijkstra_heuristic_)
+	// {
+	// 	int endeff[3];
+	// 	grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
+	// 	int endeff_short[3]={endeff[0],endeff[1],endeff[2]};
 
-		// Returns the same as the edist calculated below.
-		if(dijkstra_->getDist(endeff_short[0],endeff_short[1],endeff_short[2]) > prms_.solve_for_ik_thresh_)
-			return false;
-	}
+	// 	// Returns the same as the edist calculated below.
+	// 	if(dijkstra_->getDist(endeff_short[0],endeff_short[1],endeff_short[2]) > prms_.solve_for_ik_thresh_)
+	// 		return false;
+	// }
 
 	// int endeff[3];
 	// grid_->worldToGrid(pose[0],pose[1],pose[2],endeff[0],endeff[1],endeff[2]);
@@ -1414,16 +1421,16 @@ bool EnvironmentROBARM3D::setGoalPosition(const std::vector <std::vector<double>
 		}
 	#endif
 
-	if(prms_.use_independent_heuristics_){
-		initIndependentHeuristics();
-	}
+	// if(prms_.use_independent_heuristics_){
+	// 	initIndependentHeuristics();
+	// }
 
 	// precompute heuristics
-	if(!precomputeHeuristics())
-	{
-		SBPL_ERROR("Precomputing heuristics failed. Exiting.");
-		return false;
-	}
+	// if(!precomputeHeuristics())
+	// {
+	// 	SBPL_ERROR("Precomputing heuristics failed. Exiting.");
+	// 	return false;
+	// }
 
 	clearStats();
 
@@ -1483,22 +1490,22 @@ bool EnvironmentROBARM3D::precomputeHeuristics()
 		heuristic_thread_ = new boost::thread(boost::bind(&EnvironmentROBARM3D::precomputeElbowHeuristic, this));
 	}
 
-	//precompute h_endeff
-	if(!dijkstra_->runBFS())
-	{
-		SBPL_ERROR("[env] Executing the BFS for the end-effector heuristic failed. Exiting.");
-		return false;
-	}
+	// precompute h_endeff
+	// if(!dijkstra_->runBFS())
+	// {
+	// 	SBPL_ERROR("[env] Executing the BFS for the end-effector heuristic failed. Exiting.");
+	// 	return false;
+	// }
 
-	if(prms_.use_independent_heuristics_){
-		for (int i = 0; i < dijkstra_independent_heuristics_.size(); ++i)
-		{
-			if(!dijkstra_independent_heuristics_[i]->runBFS()){
-				SBPL_ERROR("[env] Executing the independent BFS for the end-effector heuristic failed. Exiting.");
-				return false;
-			}
-		}
-	}
+	// if(prms_.use_independent_heuristics_){
+	// 	for (int i = 0; i < dijkstra_independent_heuristics_.size(); ++i)
+	// 	{
+	// 		if(!dijkstra_independent_heuristics_[i]->runBFS()){
+	// 			SBPL_ERROR("[env] Executing the independent BFS for the end-effector heuristic failed. Exiting.");
+	// 			return false;
+	// 		}
+	// 	}
+	// }
 
 	//kill the elbow heuristic thread 
 	if(prms_.use_research_heuristic_)
